@@ -11,6 +11,12 @@ export const CATEGORIES = {
     description: 'Игры, сгенерированные нейросетями, — играть прямо в браузере',
     gradient: 'linear-gradient(135deg, #ff2e54, #ff9004)',
   },
+  prompts: {
+    label: 'Промпты',
+    icon: 'sparkles',
+    description: 'Промпты, которые я использую в работе над сайтом и экспериментами',
+    gradient: 'linear-gradient(135deg, #c959dd, #ff2e54)',
+  },
 } as const;
 
 export type CategorySlug = keyof typeof CATEGORIES;

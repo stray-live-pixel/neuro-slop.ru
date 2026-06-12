@@ -7,7 +7,7 @@ const posts = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
-    category: z.enum(['news', 'games']),
+    category: z.enum(['news', 'games', 'prompts']),
     cover: z.string().optional(),
     // Поля записей-игр (category: games)
     model: z.string().optional(),
