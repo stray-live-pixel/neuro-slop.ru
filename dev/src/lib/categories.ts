@@ -29,6 +29,11 @@ export const CATEGORIES = {
     emoji: '⚖️',
     description: 'Модели лицом к лицу',
   },
+  games: {
+    label: 'Игры',
+    emoji: '🎮',
+    description: 'Игры, сгенерированные нейросетями, — играть прямо в браузере',
+  },
 } as const;
 
 export type CategorySlug = keyof typeof CATEGORIES;

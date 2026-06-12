@@ -7,8 +7,20 @@ const posts = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
-    category: z.enum(['experiments', 'articles', 'prompts', 'notes', 'news', 'comparisons']),
+    category: z.enum([
+      'experiments',
+      'articles',
+      'prompts',
+      'notes',
+      'news',
+      'comparisons',
+      'games',
+    ]),
     cover: z.string().optional(),
+    // Поля записей-игр (category: games)
+    model: z.string().optional(),
+    timeSpent: z.string().optional(),
+    gameUrl: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });

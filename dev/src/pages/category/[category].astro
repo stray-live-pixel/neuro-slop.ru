@@ -12,7 +12,10 @@ const category = Astro.params.category as CategorySlug;
 const cat = CATEGORIES[category];
 
 const posts = (
-  await getCollection('posts', ({ data }) => !data.draft && data.category === category)
+  await getCollection(
+    'posts',
+    ({ data }) => (import.meta.env.DEV || !data.draft) && data.category === category
+  )
 ).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 

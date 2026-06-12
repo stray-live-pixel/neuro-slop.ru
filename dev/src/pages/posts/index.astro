@@ -4,7 +4,9 @@ import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import { CATEGORIES } from '../../lib/categories';
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+const posts = (
+  await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft)
+).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 ---

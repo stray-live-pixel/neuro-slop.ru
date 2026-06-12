@@ -5,7 +5,9 @@ import PostCard from '../components/PostCard.astro';
 import { CATEGORIES } from '../lib/categories';
 import { Button } from '@/components/ui/button';
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+const posts = (
+  await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft)
+).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 const latest = posts.slice(0, 6);

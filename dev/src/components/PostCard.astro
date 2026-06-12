@@ -14,6 +14,16 @@ const cat = CATEGORIES[post.data.category];
   class="glow-card group bg-card/60 border-border/60 hover:shadow-xl flex flex-col gap-3 rounded-2xl border p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
   href={`/posts/${post.id}/`}
 >
+  {
+    post.data.cover && (
+      <img
+        src={post.data.cover}
+        alt=""
+        loading="lazy"
+        class="-mx-7 -mt-7 mb-1 aspect-[2/1] w-[calc(100%+3.5rem)] max-w-none rounded-t-2xl object-cover"
+      />
+    )
+  }
   <p class="text-muted-foreground flex items-center justify-between gap-3 text-[13px]">
     <span class="font-semibold">{cat.emoji} {cat.label}</span>
     <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="brand" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="4%" stop-color="#0894ff"/>
+      <stop offset="51%" stop-color="#c959dd"/>
+      <stop offset="78%" stop-color="#ff2e54"/>
+      <stop offset="97%" stop-color="#ff9004"/>
+    </linearGradient>
+    <radialGradient id="shade" cx="50%" cy="0%" r="120%">
+      <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.35"/>
+    </radialGradient>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="#fff" fill-opacity="0.25"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="600" fill="url(#brand)"/>
+  <rect width="1200" height="600" fill="url(#dots)"/>
+  <rect width="1200" height="600" fill="url(#shade)"/>
+  <text x="600" y="318" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="120" fill="#fff" fill-opacity="0.95">🎮</text>
+  <text x="600" y="420" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="30" font-weight="600" fill="#fff" fill-opacity="0.85">Обложка-заглушка — замените на скриншот игры</text>
+</svg>

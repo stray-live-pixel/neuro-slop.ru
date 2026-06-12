@@ -4,9 +4,10 @@
 
 ## Контент
 
-- **Записи** — markdown-файлы в `dev/src/content/posts/`. Фронтматтер: `title`, `description`, `date`, `category` (одна из: `experiments`, `articles`, `prompts`, `notes`, `news`, `comparisons`), опционально `draft: true`. Имя файла = слаг URL (`/posts/<имя>/`), писать его латиницей.
+- **Записи** — markdown-файлы в `dev/src/content/posts/`. Фронтматтер: `title`, `description`, `date`, `category` (одна из: `experiments`, `articles`, `prompts`, `notes`, `news`, `comparisons`, `games`), опционально `cover` (путь к картинке, показывается в карточке) и `draft: true`. Имя файла = слаг URL (`/posts/<имя>/`), писать его латиницей. Черновики (`draft: true`) видны в `npm run dev`, но не попадают в сборку.
 - **Категории** (названия, эмодзи, описания) — в `dev/src/lib/categories.ts`; новые категории добавлять туда и в enum в `dev/src/content.config.ts`.
-- **Отдельные сгенерированные сайты** — кладутся целиком в `dev/public/lab/<имя>/` и попадают на `neuro-slop.ru/lab/<имя>/`.
+- **Отдельные сгенерированные сайты и игры** — кладутся целиком в `dev/public/lab/<имя>/` (минимум `index.html`, рядом js/ассеты) и попадают на `neuro-slop.ru/lab/<имя>/`.
+- **Записи-игры** (`category: games`) — обычная запись с доп. полями фронтматтера: `model` (название модели), `timeSpent` (время разработки), `gameUrl` (ссылка на игру, обычно `/lab/<имя>/`), `cover` (обложка, обычно `/lab/<имя>/cover.<ext>`). При наличии `gameUrl` страница записи показывает метаданные (модель · версия от `date` · время) и баннер с обложкой и кнопкой «Играть» (открывает игру в новой вкладке).
 - Карточка записи — компонент `dev/src/components/PostCard.astro`; типографика markdown — класс `.prose` в `global.css`.
 - В `dev/src/content/posts/` лежат записи-примеры с префиксом `primer-` — удалить, когда появится настоящий контент.
 
