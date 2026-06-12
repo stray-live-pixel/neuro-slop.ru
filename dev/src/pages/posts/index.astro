@@ -1,0 +1,60 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { CATEGORIES } from '../../lib/categories';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout title="Записи — neuro-slop.ru">
+  <main class="container">
+    <h1>Записи</h1>
+    <div class="chips">
+      {
+        Object.entries(CATEGORIES).map(([slug, cat]) => (
+          <a class="chip" href={`/category/${slug}/`}>
+            {cat.emoji} {cat.label}
+          </a>
+        ))
+      }
+    </div>
+    <div class="grid">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    padding-top: 4rem;
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.5rem 0 2.5rem;
+  }
+
+  .chip {
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+  }
+
+  .chip:hover {
+    text-decoration: none;
+    opacity: 0.7;
+  }
+</style>

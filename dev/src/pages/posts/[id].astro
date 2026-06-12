@@ -1,0 +1,76 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { CATEGORIES, formatDate } from '../../lib/categories';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const cat = CATEGORIES[post.data.category];
+---
+
+<Layout title={`${post.data.title} — neuro-slop.ru`} description={post.data.description}>
+  <main class="container">
+    <article>
+      <header>
+        <p class="meta">
+          <a href={`/category/${post.data.category}/`}>{cat.emoji} {cat.label}</a>
+          <span>·</span>
+          <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+        </p>
+        <h1>{post.data.title}</h1>
+        <p class="lede">{post.data.description}</p>
+      </header>
+      <div class="prose">
+        <Content />
+      </div>
+      <p class="back"><a href="/posts/">← Все записи</a></p>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  main {
+    padding-top: 4rem;
+  }
+
+  article > header {
+    max-width: 680px;
+    margin: 0 auto 3rem;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .meta a {
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+
+  .lede {
+    margin-top: 1rem;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .back {
+    max-width: 680px;
+    margin: 3rem auto 0;
+  }
+</style>

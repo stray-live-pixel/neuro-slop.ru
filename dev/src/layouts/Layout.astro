@@ -7,8 +7,8 @@ interface Props {
 }
 
 const {
-  title = 'neuro-slop.ru',
-  description = 'Скоро здесь что-то будет.',
+  title = 'neuro-slop.ru — эксперименты с нейросетями',
+  description = 'Личная лаборатория экспериментов с нейросетями: статьи, промпты, наблюдения и сравнения моделей.',
 } = Astro.props;
 ---
 
@@ -18,19 +18,25 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
     <title>{title}</title>
   </head>
   <body>
     <header>
       <nav>
         <a href="/" class="brand">neuro‑slop.ru</a>
+        <div class="links">
+          <a href="/posts/">Записи</a>
+        </div>
       </nav>
     </header>
 
     <slot />
 
     <footer>
-      <p>© 2026 neuro-slop.ru</p>
+      <p>© 2026 neuro-slop.ru · Сделано вместе с нейросетями</p>
     </footer>
   </body>
 </html>
@@ -52,25 +58,36 @@ const {
     height: var(--nav-height);
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0 1rem;
+    justify-content: space-between;
+    padding: 0 1.25rem;
   }
 
   .brand {
     color: var(--text);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: -0.01em;
   }
 
-  .brand:hover {
+  .links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .links a {
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  nav a:hover {
     text-decoration: none;
+    opacity: 0.7;
   }
 
   footer {
     max-width: 980px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
+    margin: 4rem auto 0;
+    padding: 1.5rem 1.25rem;
     border-top: 1px solid var(--separator);
     color: var(--text-secondary);
     font-size: 12px;
