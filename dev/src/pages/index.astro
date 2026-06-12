@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
 import { CATEGORIES } from '../lib/categories';
-import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 
 const posts = (
@@ -34,12 +33,12 @@ const news = posts.filter((post) => post.data.category === 'news').slice(0, 4);
         Игры, сгенерированные нейросетями, и новости из мира ИИ.
       </p>
 
-      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
-        <Button href="/posts/" size="lg" class="rounded-full px-7 text-base">Смотреть записи</Button>
-        <Button href="/posts/privet/" size="lg" variant="ghost" class="rounded-full px-7 text-base">
-          О проекте
-        </Button>
-      </div>
+      <a
+        href="/posts/"
+        class="glass-button text-foreground mt-10 inline-flex h-14 items-center justify-center rounded-full px-12 text-lg font-bold"
+      >
+        Смотреть записи
+      </a>
     </section>
 
     <!-- Новости -->

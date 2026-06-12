@@ -229,6 +229,36 @@
   50% { background-position: 100% 50%; }
 }
 
+/* Стеклянная кнопка: прозрачная с блюром, объём за счёт бликов сверху/снизу,
+   рамка 1px — основной цвет, осветлённый на 25% */
+.glass-button {
+  background: color-mix(in oklch, var(--card) 45%, transparent);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid color-mix(in oklch, var(--card) 75%, white);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, white 40%, transparent),
+    inset 0 -1px 0 color-mix(in oklch, black 15%, transparent),
+    0 10px 30px -10px color-mix(in oklch, var(--foreground) 30%, transparent);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  background: color-mix(in oklch, var(--card) 60%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, white 50%, transparent),
+    inset 0 -1px 0 color-mix(in oklch, black 15%, transparent),
+    0 16px 40px -12px color-mix(in oklch, var(--foreground) 35%, transparent);
+}
+
+.glass-button:active {
+  transform: translateY(0);
+}
+
 /* Карточка с градиентной обводкой при наведении */
 .glow-card {
   position: relative;
