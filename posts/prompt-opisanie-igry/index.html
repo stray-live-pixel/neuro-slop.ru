@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ru"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Промпт для ИИ-агента с доступом к репозиторию: сам изучает код игры и создаёт готовую запись. Руками — только обложка."><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://neuro-slop.ru/posts/prompt-opisanie-igry/"><meta property="og:title" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta property="og:description" content="Промпт для ИИ-агента с доступом к репозиторию: сам изучает код игры и создаёт готовую запись. Руками — только обложка."><meta property="og:type" content="website"><meta property="og:url" content="https://neuro-slop.ru/posts/prompt-opisanie-igry/"><meta property="og:site_name" content="neuro-slop.ru"><meta property="og:locale" content="ru_RU"><meta property="og:image" content="https://neuro-slop.ru/images/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta name="twitter:description" content="Промпт для ИИ-агента с доступом к репозиторию: сам изучает код игры и создаёт готовую запись. Руками — только обложка."><meta name="twitter:image" content="https://neuro-slop.ru/images/og.png"><title>Промпт: запись об игре для раздела «Игры» — Neuro Slop</title><script>
+<!DOCTYPE html><html lang="ru"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Промпт для ИИ-агента в репозитории игры: изучает код и историю разработки и отдаёт готовую запись для сайта. Руками — только обложка."><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://neuro-slop.ru/posts/prompt-opisanie-igry/"><meta property="og:title" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta property="og:description" content="Промпт для ИИ-агента в репозитории игры: изучает код и историю разработки и отдаёт готовую запись для сайта. Руками — только обложка."><meta property="og:type" content="website"><meta property="og:url" content="https://neuro-slop.ru/posts/prompt-opisanie-igry/"><meta property="og:site_name" content="neuro-slop.ru"><meta property="og:locale" content="ru_RU"><meta property="og:image" content="https://neuro-slop.ru/images/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta name="twitter:description" content="Промпт для ИИ-агента в репозитории игры: изучает код и историю разработки и отдаёт готовую запись для сайта. Руками — только обложка."><meta name="twitter:image" content="https://neuro-slop.ru/images/og.png"><title>Промпт: запись об игре для раздела «Игры» — Neuro Slop</title><script>
       // Тема: localStorage → системная. Выполняется до отрисовки, чтобы не мигало.
       (() => {
         const stored = localStorage.getItem('theme');
@@ -93,39 +93,60 @@
   <path d="M20 2v4" />
   <path d="M22 4h-4" />
   <circle cx="4" cy="20" r="2" />
-</svg> Промпты </a> <span>·</span> <time datetime="2026-06-13T00:00:00.000Z">13 июня 2026 г.</time> </p> <h1 class="mt-4 text-[clamp(2.25rem,5.5vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance"> Промпт: запись об игре для раздела «Игры» </h1> <p class="text-muted-foreground mt-5 text-xl leading-relaxed font-medium"> Промпт для ИИ-агента с доступом к репозиторию: сам изучает код игры и создаёт готовую запись. Руками — только обложка. </p>  <div class="from-border mt-10 h-px w-full bg-gradient-to-r to-transparent"></div> </header>  <div class="prose"> <p>Записи об играх на этом сайте публикует ИИ-агент (Claude Code), у которого есть доступ к репозиторию. Раньше я собирал данные для записи руками, теперь агент делает всё сам: читает код игры, разбирается в механике и создаёт готовую запись. Мне остаётся только положить картинку-превью.</p>
+</svg> Промпты </a> <span>·</span> <time datetime="2026-06-13T00:00:00.000Z">13 июня 2026 г.</time> </p> <h1 class="mt-4 text-[clamp(2.25rem,5.5vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance"> Промпт: запись об игре для раздела «Игры» </h1> <p class="text-muted-foreground mt-5 text-xl leading-relaxed font-medium"> Промпт для ИИ-агента в репозитории игры: изучает код и историю разработки и отдаёт готовую запись для сайта. Руками — только обложка. </p>  <div class="from-border mt-10 h-px w-full bg-gradient-to-r to-transparent"></div> </header>  <div class="prose"> <p>Записи об играх на этом сайте пишет ИИ-агент (Claude Code). Раньше промпт запускался в репозитории самого сайта, и агент видел только готовый код игры. Теперь промпт вставляется в репозиторий, где игра разрабатывалась: там агенту доступны git log, заметки и исходные промпты, поэтому раздел «что криво и почему» получается честнее — видно, что не вышло с первого раза и что пришлось переделывать. На выходе — готовый markdown-файл, который остаётся скопировать на сайт.</p>
 <h2 id="промпт">Промпт</h2>
-<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Опубликуй на сайте запись о новой игре из раздела «Игры».</span></span>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Подготовь текст записи для моего сайта об экспериментах с нейросетями.</span></span>
+<span class="line"><span>Запись — про игру из этого репозитория.</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>Игра лежит в dev/public/lab/{имя-игры}/ — изучи её самостоятельно:</span></span>
-<span class="line"><span>прочитай index.html и js-файлы, разберись, что это за игра, какая</span></span>
-<span class="line"><span>у неё механика, как в неё играть и что в ней получилось</span></span>
-<span class="line"><span>интересного (включая забавные баги, если они видны из кода).</span></span>
+<span class="line"><span>Изучи игру самостоятельно: прочитай index.html и js-файлы, разберись,</span></span>
+<span class="line"><span>что это за игра, какая у неё механика, как в неё играть и что в ней</span></span>
+<span class="line"><span>получилось интересного (включая забавные баги, если они видны из кода).</span></span>
+<span class="line"><span>Если в репозитории есть история разработки — git log, заметки, исходные</span></span>
+<span class="line"><span>промпты, — используй её: что не вышло с первого раза и что пришлось</span></span>
+<span class="line"><span>переделывать, тем честнее запись.</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>Модель, которая сгенерировала игру: {модель}</span></span>
-<span class="line"><span>Время разработки: {сколько заняло}</span></span>
+<span class="line"><span>Данные:</span></span>
+<span class="line"><span>- слаг игры на сайте: {имя-игры} (латиницей)</span></span>
+<span class="line"><span>- модель, которая сгенерировала игру: {модель}</span></span>
+<span class="line"><span>- время разработки: {сколько заняло}</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>Создай запись dev/src/content/posts/{имя-игры}.md:</span></span>
+<span class="line"><span>В этом репозитории ничего не создавай и не меняй. Результат — один</span></span>
+<span class="line"><span>fenced-блок в ответе с полным содержимым markdown-файла, я скопирую</span></span>
+<span class="line"><span>его на сайт как есть. Строкой перед блоком укажи путь:</span></span>
+<span class="line"><span>dev/src/content/posts/{имя-игры}.md</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Шаблон файла (формат фронтматтера менять нельзя):</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span>title: '...'</span></span>
+<span class="line"><span>description: '...'</span></span>
+<span class="line"><span>date: &#x3C;сегодняшняя дата, ГГГГ-ММ-ДД></span></span>
+<span class="line"><span>category: games</span></span>
+<span class="line"><span>model: '{модель}'</span></span>
+<span class="line"><span>timeSpent: '{сколько заняло}'</span></span>
+<span class="line"><span>cover: /lab/{имя-игры}/cover.png</span></span>
+<span class="line"><span>gameUrl: /lab/{имя-игры}/</span></span>
+<span class="line"><span>draft: true</span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&#x3C;текст записи></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Требования к содержимому:</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>1. title — короткое название игры по-русски, без кавычек и слова «игра».</span></span>
-<span class="line"><span>2. description — 1–2 предложения, не больше 160 символов: сначала</span></span>
-<span class="line"><span>   суть игры, потом — чем она цепляет. Тон лёгкий и честный,</span></span>
-<span class="line"><span>   самоирония уместна, канцелярит — нет. Запрещены слова</span></span>
-<span class="line"><span>   «уникальный», «инновационный», «погрузиться» и восклицательные</span></span>
-<span class="line"><span>   знаки. Это эксперимент, а не коммерческий релиз, — не продавай.</span></span>
-<span class="line"><span>3. Фронтматтер: date — сегодня, category: games, model и timeSpent —</span></span>
-<span class="line"><span>   из данных выше, gameUrl: /lab/{имя-игры}/,</span></span>
-<span class="line"><span>   cover: /lab/{имя-игры}/cover.png (картинку я добавлю сам).</span></span>
-<span class="line"><span>4. Текст записи — 2–4 абзаца: как играть, что вышло хорошо,</span></span>
-<span class="line"><span>   что криво и почему. Пиши по делу, без воды.</span></span>
-<span class="line"><span></span></span>
-<span class="line"><span>Запись создай черновиком (draft: true), чтобы я посмотрел её</span></span>
-<span class="line"><span>в npm run dev. Не собирай и не публикуй сайт — это я сделаю сам,</span></span>
-<span class="line"><span>когда добавлю обложку и сниму черновик.</span></span></code></pre>
+<span class="line"><span>2. description — 1–2 предложения, не больше 160 символов: сначала суть</span></span>
+<span class="line"><span>   игры, потом — чем она цепляет. Тон лёгкий и честный, самоирония</span></span>
+<span class="line"><span>   уместна, канцелярит — нет. Запрещены слова «уникальный»,</span></span>
+<span class="line"><span>   «инновационный», «погрузиться» и восклицательные знаки.</span></span>
+<span class="line"><span>   Это эксперимент, а не коммерческий релиз, — не продавай.</span></span>
+<span class="line"><span>3. Текст записи — 2–4 абзаца: как играть, что вышло хорошо, что криво</span></span>
+<span class="line"><span>   и почему. Пиши по делу, без воды. Раздел «## Управление» списком —</span></span>
+<span class="line"><span>   можно, если в игре есть чем управлять.</span></span></code></pre>
 <h2 id="как-пользоваться">Как пользоваться</h2>
 <ol>
-<li>Подставь имя папки с игрой, модель и время разработки.</li>
-<li>Агент прочитает код игры и создаст черновик записи.</li>
+<li>Вставь промпт в сессию агента в репозитории игры, подставив слаг, модель и время разработки.</li>
+<li>Агент изучит код и историю разработки и отдаст готовый markdown-файл прямо в чате.</li>
+<li>Скопируй запись в <code>dev/src/content/posts/{имя-игры}.md</code>, а саму игру — в <code>dev/public/lab/{имя-игры}/</code> (запись ссылается на <code>/lab/{имя-игры}/</code>, без файлов игры кнопка «Играть» поведёт в пустоту).</li>
 <li>Положи скриншот игры в <code>dev/public/lab/{имя-игры}/cover.png</code> — это единственное, что делается руками.</li>
 <li>Проверь черновик в <code>npm run dev</code>, убери <code>draft: true</code> — и публикуй.</li>
 </ol>
