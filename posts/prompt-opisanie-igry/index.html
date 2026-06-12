@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ru"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Готовый промпт, который превращает заметки об игре в короткое описание для карточки записи."><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://neuro-slop.ru/posts/prompt-opisanie-igry/"><meta property="og:title" content="Промпт: описание для игры из раздела «Игры» — Neuro Slop"><meta property="og:description" content="Готовый промпт, который превращает заметки об игре в короткое описание для карточки записи."><meta property="og:type" content="website"><meta property="og:url" content="https://neuro-slop.ru/posts/prompt-opisanie-igry/"><meta property="og:site_name" content="neuro-slop.ru"><meta property="og:locale" content="ru_RU"><meta property="og:image" content="https://neuro-slop.ru/images/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Промпт: описание для игры из раздела «Игры» — Neuro Slop"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Промпт: описание для игры из раздела «Игры» — Neuro Slop"><meta name="twitter:description" content="Готовый промпт, который превращает заметки об игре в короткое описание для карточки записи."><meta name="twitter:image" content="https://neuro-slop.ru/images/og.png"><title>Промпт: описание для игры из раздела «Игры» — Neuro Slop</title><script>
+<!DOCTYPE html><html lang="ru"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Промпт для ИИ-агента с доступом к репозиторию: сам изучает код игры и создаёт готовую запись. Руками — только обложка."><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://neuro-slop.ru/posts/prompt-opisanie-igry/"><meta property="og:title" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta property="og:description" content="Промпт для ИИ-агента с доступом к репозиторию: сам изучает код игры и создаёт готовую запись. Руками — только обложка."><meta property="og:type" content="website"><meta property="og:url" content="https://neuro-slop.ru/posts/prompt-opisanie-igry/"><meta property="og:site_name" content="neuro-slop.ru"><meta property="og:locale" content="ru_RU"><meta property="og:image" content="https://neuro-slop.ru/images/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Промпт: запись об игре для раздела «Игры» — Neuro Slop"><meta name="twitter:description" content="Промпт для ИИ-агента с доступом к репозиторию: сам изучает код игры и создаёт готовую запись. Руками — только обложка."><meta name="twitter:image" content="https://neuro-slop.ru/images/og.png"><title>Промпт: запись об игре для раздела «Игры» — Neuro Slop</title><script>
       // Тема: localStorage → системная. Выполняется до отрисовки, чтобы не мигало.
       (() => {
         const stored = localStorage.getItem('theme');
@@ -93,32 +93,40 @@
   <path d="M20 2v4" />
   <path d="M22 4h-4" />
   <circle cx="4" cy="20" r="2" />
-</svg> Промпты </a> <span>·</span> <time datetime="2026-06-13T00:00:00.000Z">13 июня 2026 г.</time> </p> <h1 class="mt-4 text-[clamp(2.25rem,5.5vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance"> Промпт: описание для игры из раздела «Игры» </h1> <p class="text-muted-foreground mt-5 text-xl leading-relaxed font-medium"> Готовый промпт, который превращает заметки об игре в короткое описание для карточки записи. </p>  <div class="from-border mt-10 h-px w-full bg-gradient-to-r to-transparent"></div> </header>  <div class="prose"> <p>У каждой игры на сайте есть короткое описание — оно показывается в карточке записи, в шапке страницы и в meta description. Писать его руками лень, поэтому вот промпт, который делает это за меня.</p>
+</svg> Промпты </a> <span>·</span> <time datetime="2026-06-13T00:00:00.000Z">13 июня 2026 г.</time> </p> <h1 class="mt-4 text-[clamp(2.25rem,5.5vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance"> Промпт: запись об игре для раздела «Игры» </h1> <p class="text-muted-foreground mt-5 text-xl leading-relaxed font-medium"> Промпт для ИИ-агента с доступом к репозиторию: сам изучает код игры и создаёт готовую запись. Руками — только обложка. </p>  <div class="from-border mt-10 h-px w-full bg-gradient-to-r to-transparent"></div> </header>  <div class="prose"> <p>Записи об играх на этом сайте публикует ИИ-агент (Claude Code), у которого есть доступ к репозиторию. Раньше я собирал данные для записи руками, теперь агент делает всё сам: читает код игры, разбирается в механике и создаёт готовую запись. Мне остаётся только положить картинку-превью.</p>
 <h2 id="промпт">Промпт</h2>
-<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Ты — редактор сайта neuro-slop.ru, лаборатории экспериментов с нейросетями.</span></span>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Опубликуй на сайте запись о новой игре из раздела «Игры».</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>Напиши описание для игры из раздела «Игры». Игра целиком сгенерирована</span></span>
-<span class="line"><span>нейросетью — это эксперимент, а не коммерческий релиз.</span></span>
+<span class="line"><span>Игра лежит в dev/public/lab/{имя-игры}/ — изучи её самостоятельно:</span></span>
+<span class="line"><span>прочитай index.html и js-файлы, разберись, что это за игра, какая</span></span>
+<span class="line"><span>у неё механика, как в неё играть и что в ней получилось</span></span>
+<span class="line"><span>интересного (включая забавные баги, если они видны из кода).</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>Входные данные:</span></span>
-<span class="line"><span>- Название игры: {название}</span></span>
-<span class="line"><span>- Жанр и суть: {что за игра и как в неё играть}</span></span>
-<span class="line"><span>- Модель: {какая нейросеть её сделала}</span></span>
-<span class="line"><span>- Время разработки: {сколько заняла генерация}</span></span>
-<span class="line"><span>- Что получилось интересного: {фишки, баги-фичи, забавные детали}</span></span>
+<span class="line"><span>Модель, которая сгенерировала игру: {модель}</span></span>
+<span class="line"><span>Время разработки: {сколько заняло}</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>Требования к описанию:</span></span>
-<span class="line"><span>1. Длина — 1–2 предложения, не больше 160 символов: текст идёт</span></span>
-<span class="line"><span>   в карточку записи и в meta description.</span></span>
-<span class="line"><span>2. Сначала суть игры, потом — чем она цепляет.</span></span>
-<span class="line"><span>3. Тон лёгкий и честный, самоирония уместна, канцелярит — нет.</span></span>
-<span class="line"><span>4. Запрещены слова «уникальный», «инновационный», «погрузиться»</span></span>
-<span class="line"><span>   и восклицательные знаки.</span></span>
-<span class="line"><span>5. Дай 3 варианта на выбор.</span></span></code></pre>
+<span class="line"><span>Создай запись dev/src/content/posts/{имя-игры}.md:</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>1. title — короткое название игры по-русски, без кавычек и слова «игра».</span></span>
+<span class="line"><span>2. description — 1–2 предложения, не больше 160 символов: сначала</span></span>
+<span class="line"><span>   суть игры, потом — чем она цепляет. Тон лёгкий и честный,</span></span>
+<span class="line"><span>   самоирония уместна, канцелярит — нет. Запрещены слова</span></span>
+<span class="line"><span>   «уникальный», «инновационный», «погрузиться» и восклицательные</span></span>
+<span class="line"><span>   знаки. Это эксперимент, а не коммерческий релиз, — не продавай.</span></span>
+<span class="line"><span>3. Фронтматтер: date — сегодня, category: games, model и timeSpent —</span></span>
+<span class="line"><span>   из данных выше, gameUrl: /lab/{имя-игры}/,</span></span>
+<span class="line"><span>   cover: /lab/{имя-игры}/cover.png (картинку я добавлю сам).</span></span>
+<span class="line"><span>4. Текст записи — 2–4 абзаца: как играть, что вышло хорошо,</span></span>
+<span class="line"><span>   что криво и почему. Пиши по делу, без воды.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Запись создай черновиком (draft: true), чтобы я посмотрел её</span></span>
+<span class="line"><span>в npm run dev. Не собирай и не публикуй сайт — это я сделаю сам,</span></span>
+<span class="line"><span>когда добавлю обложку и сниму черновик.</span></span></code></pre>
 <h2 id="как-пользоваться">Как пользоваться</h2>
 <ol>
-<li>Подставь данные игры вместо плейсхолдеров в фигурных скобках.</li>
-<li>Из трёх вариантов выбери тот, что звучит живее всего, — или собери описание из кусочков.</li>
-<li>Результат положи в поле <code>description</code> фронтматтера записи.</li>
+<li>Подставь имя папки с игрой, модель и время разработки.</li>
+<li>Агент прочитает код игры и создаст черновик записи.</li>
+<li>Положи скриншот игры в <code>dev/public/lab/{имя-игры}/cover.png</code> — это единственное, что делается руками.</li>
+<li>Проверь черновик в <code>npm run dev</code>, убери <code>draft: true</code> — и публикуй.</li>
 </ol>
-<p>Ограничение в 160 символов не каприз: более длинные описания обрезаются в поисковой выдаче и расползаются в карточках.</p> </div> <p class="mt-14"> <a href="/posts/" class="text-primary text-sm font-medium hover:underline">← Все записи</a> </p> </article> </main>  </div> <footer class="border-border/60 mt-16 border-t"> <div class="text-muted-foreground mx-auto flex w-full max-w-[1920px] flex-col items-center justify-between gap-2 px-5 py-8 text-[13px] sm:flex-row md:px-10 2xl:px-16"> <p>© 2026 neuro-slop.ru</p> <p>Сделано вместе с нейросетями</p> </div> </footer> </body> </html>
+<p>Ограничение в 160 символов для description не каприз: более длинные описания обрезаются в поисковой выдаче и расползаются в карточках.</p> </div> <p class="mt-14"> <a href="/posts/" class="text-primary text-sm font-medium hover:underline">← Все записи</a> </p> </article> </main>  </div> <footer class="border-border/60 mt-16 border-t"> <div class="text-muted-foreground mx-auto flex w-full max-w-[1920px] flex-col items-center justify-between gap-2 px-5 py-8 text-[13px] sm:flex-row md:px-10 2xl:px-16"> <p>© 2026 neuro-slop.ru</p> <p>Сделано вместе с нейросетями</p> </div> </footer> </body> </html>
