@@ -208,8 +208,19 @@
 }
 
 .text-gradient-animated {
-  /* Широкий фон + долгий цикл — переливание едва заметное и без рывков */
-  background-size: 250% 250%;
+  /* Палиндромная палитра: в любой момент видна вся гамма (синий → оранжевый),
+     а на развороте анимации нет шва */
+  background-image: linear-gradient(
+    108deg,
+    #0894ff,
+    #c959dd,
+    #ff2e54,
+    #ff9004,
+    #ff2e54,
+    #c959dd,
+    #0894ff
+  );
+  background-size: 200% 200%;
   animation: gradient-shift 16s ease-in-out infinite;
 }
 
