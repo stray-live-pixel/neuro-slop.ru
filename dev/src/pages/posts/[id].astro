@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 import { CATEGORIES, formatDate } from '../../lib/categories';
 
 export async function getStaticPaths() {
@@ -22,9 +23,10 @@ const cat = CATEGORIES[post.data.category];
         <p class="text-muted-foreground flex items-center gap-2 text-sm">
           <a
             href={`/category/${post.data.category}/`}
-            class="hover:text-foreground font-semibold transition-colors"
+            class="hover:text-foreground inline-flex items-center gap-1.5 font-semibold transition-colors"
           >
-            {cat.emoji} {cat.label}
+            <Icon name={cat.icon} class="size-4" />
+            {cat.label}
           </a>
           <span>·</span>
           <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
@@ -89,7 +91,8 @@ const cat = CATEGORIES[post.data.category];
                 size="lg"
                 class="rounded-full shadow-lg"
               >
-                🎮 Играть
+                <Icon name="gamepad-2" class="size-5" />
+                Играть
               </Button>
               <span class="text-sm font-medium text-white/75">откроется в новой вкладке</span>
             </div>

@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Icon } from '@/components/ui/icon';
 import { CATEGORIES, formatDate } from '../lib/categories';
 
 interface Props {
@@ -11,32 +12,49 @@ const cat = CATEGORIES[post.data.category];
 ---
 
 <a
-  class="glow-card group bg-card/60 border-border/60 hover:shadow-xl flex flex-col gap-3 rounded-2xl border p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
+  class="glow-card group border-border/60 relative flex min-h-[230px] flex-col justify-between gap-6 overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl md:min-h-[250px] md:p-8"
   href={`/posts/${post.id}/`}
 >
   {
-    post.data.cover && (
+    post.data.cover ? (
       <img
         src={post.data.cover}
         alt=""
         loading="lazy"
-        class="-mx-7 -mt-7 mb-1 aspect-[2/1] w-[calc(100%+3.5rem)] max-w-none rounded-t-2xl object-cover"
+        class="absolute inset-0 h-full w-full scale-[1.04] object-cover blur-[2px] transition-transform duration-700 group-hover:scale-[1.08]"
       />
+    ) : (
+      <div class="absolute inset-0" style={`background: ${cat.gradient}`}></div>
     )
   }
-  <p class="text-muted-foreground flex items-center justify-between gap-3 text-[13px]">
-    <span class="font-semibold">{cat.emoji} {cat.label}</span>
-    <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/25"></div>
+
+  <p class="relative flex items-center justify-between gap-3 text-[13px]">
+    <span
+      class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold text-white shadow-sm"
+      style={`background: ${cat.gradient}`}
+    >
+      <Icon name={cat.icon} class="size-3.5" />
+      {cat.label}
+    </span>
+    <time datetime={post.data.date.toISOString()} class="font-medium text-white/75">
+      {formatDate(post.data.date)}
+    </time>
   </p>
-  <h3 class="text-card-foreground text-[1.3rem] leading-tight font-semibold tracking-tight">
-    {post.data.title}
-  </h3>
-  <p class="text-muted-foreground text-[15px] leading-normal">
-    {post.data.description}
-  </p>
-  <span
-    class="text-primary mt-auto pt-2 text-sm font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-  >
-    Читать →
+
+  <span class="relative block">
+    <h3 class="text-[clamp(1.35rem,2.2vw,1.7rem)] leading-tight font-bold tracking-tight text-white">
+      {post.data.title}
+    </h3>
+    <span class="mt-2 flex items-end justify-between gap-6">
+      <span class="line-clamp-2 max-w-[52ch] text-[15px] leading-normal text-white/80">
+        {post.data.description}
+      </span>
+      <span
+        class="hidden shrink-0 text-sm font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:block"
+      >
+        Читать →
+      </span>
+    </span>
   </span>
 </a>

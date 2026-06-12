@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import { CATEGORIES } from '../../lib/categories';
+import { Icon } from '@/components/ui/icon';
 
 const posts = (
   await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft)
@@ -19,16 +20,17 @@ const posts = (
       {
         Object.entries(CATEGORIES).map(([slug, cat]) => (
           <a
-            class="bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 hover:text-foreground rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+            class="bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
             href={`/category/${slug}/`}
           >
-            {cat.emoji} {cat.label}
+            <Icon name={cat.icon} class="size-4" />
+            {cat.label}
           </a>
         ))
       }
     </div>
 
-    <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
       {posts.map((post) => <PostCard post={post} />)}
     </div>
   </main>

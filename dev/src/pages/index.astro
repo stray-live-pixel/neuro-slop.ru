@@ -4,13 +4,12 @@ import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
 import { CATEGORIES } from '../lib/categories';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 
 const posts = (
   await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft)
-).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
-const latest = posts.slice(0, 6);
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const news = posts.filter((post) => post.data.category === 'news').slice(0, 4);
 ---
 
 <Layout>
@@ -32,7 +31,7 @@ const latest = posts.slice(0, 6);
       </h1>
 
       <p class="text-muted-foreground mt-6 max-w-2xl text-[clamp(1.2rem,2.4vw,1.55rem)] leading-snug font-medium tracking-tight text-balance">
-        Эксперименты с нейросетями: статьи, промпты, наблюдения и сравнения моделей.
+        Игры, сгенерированные нейросетями, и новости из мира ИИ.
       </p>
 
       <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -43,33 +42,40 @@ const latest = posts.slice(0, 6);
       </div>
     </section>
 
-    <!-- Разделы -->
+    <!-- Новости -->
     <section class="mx-auto w-full max-w-[1440px] px-5 py-16 md:px-10">
-      <h2 class="mb-8 text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Разделы</h2>
-      <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-        {
-          Object.entries(CATEGORIES).map(([slug, cat]) => (
-            <a
-              class="glow-card bg-card/60 border-border/60 hover:shadow-xl flex flex-col gap-1.5 rounded-2xl border p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
-              href={`/category/${slug}/`}
-            >
-              <span class="mb-2 text-3xl">{cat.emoji}</span>
-              <h3 class="text-card-foreground text-xl font-semibold tracking-tight">{cat.label}</h3>
-              <p class="text-muted-foreground text-[15px]">{cat.description}</p>
-            </a>
-          ))
-        }
+      <div class="mb-8 flex items-baseline justify-between gap-4">
+        <h2 class="text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Новости</h2>
+        <a href="/category/news/" class="text-primary text-sm font-medium hover:underline">Все новости →</a>
+      </div>
+      <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
+        {news.map((post) => <PostCard post={post} />)}
       </div>
     </section>
 
-    <!-- Свежее -->
+    <!-- Разделы -->
     <section class="mx-auto w-full max-w-[1440px] px-5 py-16 md:px-10">
-      <div class="mb-8 flex items-baseline justify-between gap-4">
-        <h2 class="text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Свежее</h2>
-        <a href="/posts/" class="text-primary text-sm font-medium hover:underline">Все записи →</a>
-      </div>
-      <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-        {latest.map((post) => <PostCard post={post} />)}
+      <h2 class="mb-8 text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Разделы</h2>
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        {
+          Object.entries(CATEGORIES).map(([slug, cat]) => (
+            <a
+              class="glow-card bg-card/60 border-border/60 hover:shadow-xl group flex items-start gap-5 rounded-2xl border p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
+              href={`/category/${slug}/`}
+            >
+              <span
+                class="flex size-14 shrink-0 items-center justify-center rounded-2xl text-white shadow-md"
+                style={`background: ${cat.gradient}`}
+              >
+                <Icon name={cat.icon} class="size-7" />
+              </span>
+              <span class="flex flex-col gap-1.5">
+                <h3 class="text-card-foreground text-xl font-semibold tracking-tight">{cat.label}</h3>
+                <p class="text-muted-foreground text-[15px]">{cat.description}</p>
+              </span>
+            </a>
+          ))
+        }
       </div>
     </section>
 
@@ -77,7 +83,7 @@ const latest = posts.slice(0, 6);
     <section class="relative overflow-hidden px-5 py-28 text-center md:py-36">
       <p class="mx-auto max-w-[1100px] text-[clamp(1.75rem,4.5vw,3.5rem)] leading-[1.15] font-bold tracking-tight text-balance">
         Этот сайт — полигон. Здесь <span class="text-gradient">нейросети</span> пишут тексты,
-        рисуют картинки и собирают целые сайты.
+        рисуют картинки и собирают целые игры.
       </p>
       <p class="text-muted-foreground mx-auto mt-6 max-w-xl text-lg">
         Всё, что получается — удачное и не очень, — выкладывается сюда как есть.

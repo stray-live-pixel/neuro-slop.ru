@@ -1,38 +1,15 @@
 export const CATEGORIES = {
-  experiments: {
-    label: 'Эксперименты',
-    emoji: '🧪',
-    description: 'Пробую модели и инструменты в деле',
-  },
-  articles: {
-    label: 'Статьи',
-    emoji: '📚',
-    description: 'Разборы и переработанные материалы',
-  },
-  prompts: {
-    label: 'Промпты',
-    emoji: '✨',
-    description: 'Рабочие промпты и приёмы',
-  },
-  notes: {
-    label: 'Наблюдения',
-    emoji: '👀',
-    description: 'Заметки и советы из практики',
-  },
   news: {
     label: 'Новости',
-    emoji: '📰',
-    description: 'Что происходит в мире нейросетей',
-  },
-  comparisons: {
-    label: 'Сравнения',
-    emoji: '⚖️',
-    description: 'Модели лицом к лицу',
+    icon: 'newspaper',
+    description: 'Что происходит в мире нейросетей и на этом сайте',
+    gradient: 'linear-gradient(135deg, #0894ff, #c959dd)',
   },
   games: {
     label: 'Игры',
-    emoji: '🎮',
+    icon: 'gamepad-2',
     description: 'Игры, сгенерированные нейросетями, — играть прямо в браузере',
+    gradient: 'linear-gradient(135deg, #ff2e54, #ff9004)',
   },
 } as const;
 

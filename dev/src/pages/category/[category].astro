@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import { CATEGORIES, type CategorySlug } from '../../lib/categories';
+import { Icon } from '@/components/ui/icon';
 
 export async function getStaticPaths() {
   return Object.keys(CATEGORIES).map((category) => ({ params: { category } }));
@@ -21,13 +22,18 @@ const posts = (
 
 <Layout title={`${cat.label} — neuro-slop.ru`} description={cat.description}>
   <main class="mx-auto w-full max-w-[1440px] px-5 pt-16 md:px-10">
-    <p class="mb-3 text-5xl">{cat.emoji}</p>
+    <span
+      class="mb-5 flex size-16 items-center justify-center rounded-2xl text-white shadow-md"
+      style={`background: ${cat.gradient}`}
+    >
+      <Icon name={cat.icon} class="size-8" />
+    </span>
     <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[-0.03em]">{cat.label}</h1>
     <p class="text-muted-foreground mt-3 mb-12 max-w-2xl text-xl font-medium">{cat.description}</p>
 
     {
       posts.length > 0 ? (
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+        <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
           {posts.map((post) => (
             <PostCard post={post} />
           ))}
