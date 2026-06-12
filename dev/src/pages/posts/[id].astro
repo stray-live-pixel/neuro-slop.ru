@@ -14,9 +14,17 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const cat = CATEGORIES[post.data.category];
+
+// SVG-обложки соцсети не рендерят — для них остаётся дефолтная og.png
+const ogImage =
+  post.data.cover && !post.data.cover.endsWith('.svg') ? post.data.cover : undefined;
 ---
 
-<Layout title={`${post.data.title} — neuro-slop.ru`} description={post.data.description}>
+<Layout
+  title={`${post.data.title} — neuro-slop.ru`}
+  description={post.data.description}
+  image={ogImage}
+>
   <main class="mx-auto w-full max-w-[760px] px-5 pt-16 md:px-0">
     <article>
       <header class="mb-12">
