@@ -208,7 +208,9 @@
 }
 
 .text-gradient-animated {
-  animation: gradient-shift 9s ease-in-out infinite;
+  /* Широкий фон + долгий цикл — переливание едва заметное и без рывков */
+  background-size: 250% 250%;
+  animation: gradient-shift 16s ease-in-out infinite;
 }
 
 @keyframes gradient-shift {
