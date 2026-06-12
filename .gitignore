@@ -1,0 +1,18 @@
+# dependencies
+dev/node_modules/
+
+# build staging (итог копируется в корень)
+dev/dist/
+
+# generated types
+dev/.astro/
+
+# logs
+npm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS
+.DS_Store
