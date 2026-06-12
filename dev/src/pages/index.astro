@@ -8,7 +8,7 @@ import { Icon } from '@/components/ui/icon';
 const posts = (
   await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft)
 ).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const news = posts.filter((post) => post.data.category === 'news').slice(0, 4);
+const latest = posts.slice(0, 5);
 ---
 
 <Layout>
@@ -41,14 +41,14 @@ const news = posts.filter((post) => post.data.category === 'news').slice(0, 4);
       </a>
     </section>
 
-    <!-- Новости -->
+    <!-- Свежие записи -->
     <section class="mx-auto w-full max-w-[1440px] px-5 py-10 md:px-10">
       <div class="mb-8 flex items-baseline justify-between gap-4">
-        <h2 class="text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Новости</h2>
-        <a href="/category/news/" class="text-primary text-sm font-medium hover:underline">Все новости →</a>
+        <h2 class="text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Свежие записи</h2>
+        <a href="/posts/" class="text-primary text-sm font-medium hover:underline">Все записи →</a>
       </div>
       <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        {news.map((post) => <PostCard post={post} />)}
+        {latest.map((post) => <PostCard post={post} />)}
       </div>
     </section>
 
