@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
 import { CATEGORIES } from '../lib/categories';
+import { Button } from '@/components/ui/button';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -12,124 +13,73 @@ const latest = posts.slice(0, 6);
 
 <Layout>
   <main>
-    <section class="hero">
-      <p class="badge">Лаборатория ИИ-экспериментов</p>
-      <h1><span class="gradient">neuro‑slop</span>.ru</h1>
-      <p class="subtitle">
-        Эксперименты с нейросетями: статьи, промпты,<br />наблюдения и сравнения моделей.
+    <!-- Hero на весь экран -->
+    <section class="relative flex min-h-[82svh] flex-col items-center justify-center px-5 py-24 text-center">
+      <p
+        class="bg-card/60 border-border/60 text-muted-foreground mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
+      >
+        <span class="relative flex size-2">
+          <span class="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"></span>
+          <span class="bg-primary relative inline-flex size-2 rounded-full"></span>
+        </span>
+        Лаборатория ИИ-экспериментов
       </p>
-      <a class="button" href="/posts/">Смотреть записи</a>
+
+      <h1 class="text-[clamp(3.25rem,9vw,8rem)] leading-[0.98] font-bold tracking-[-0.035em] text-balance">
+        <span class="text-gradient text-gradient-animated">neuro‑slop</span><span>.ru</span>
+      </h1>
+
+      <p class="text-muted-foreground mt-6 max-w-2xl text-[clamp(1.2rem,2.4vw,1.55rem)] leading-snug font-medium tracking-tight text-balance">
+        Эксперименты с нейросетями: статьи, промпты, наблюдения и сравнения моделей.
+      </p>
+
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <Button href="/posts/" size="lg" class="rounded-full px-7 text-base">Смотреть записи</Button>
+        <Button href="/posts/privet/" size="lg" variant="ghost" class="rounded-full px-7 text-base">
+          О проекте
+        </Button>
+      </div>
     </section>
 
-    <section class="container">
-      <h2>Разделы</h2>
-      <div class="grid">
+    <!-- Разделы -->
+    <section class="mx-auto w-full max-w-[1440px] px-5 py-16 md:px-10">
+      <h2 class="mb-8 text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Разделы</h2>
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
         {
           Object.entries(CATEGORIES).map(([slug, cat]) => (
-            <a class="category-card" href={`/category/${slug}/`}>
-              <span class="emoji">{cat.emoji}</span>
-              <h3>{cat.label}</h3>
-              <p>{cat.description}</p>
+            <a
+              class="glow-card bg-card/60 border-border/60 hover:shadow-xl flex flex-col gap-1.5 rounded-2xl border p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
+              href={`/category/${slug}/`}
+            >
+              <span class="mb-2 text-3xl">{cat.emoji}</span>
+              <h3 class="text-card-foreground text-xl font-semibold tracking-tight">{cat.label}</h3>
+              <p class="text-muted-foreground text-[15px]">{cat.description}</p>
             </a>
           ))
         }
       </div>
     </section>
 
-    <section class="container">
-      <div class="section-head">
-        <h2>Свежее</h2>
-        <a href="/posts/">Все записи →</a>
+    <!-- Свежее -->
+    <section class="mx-auto w-full max-w-[1440px] px-5 py-16 md:px-10">
+      <div class="mb-8 flex items-baseline justify-between gap-4">
+        <h2 class="text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Свежее</h2>
+        <a href="/posts/" class="text-primary text-sm font-medium hover:underline">Все записи →</a>
       </div>
-      <div class="grid">
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
         {latest.map((post) => <PostCard post={post} />)}
       </div>
     </section>
+
+    <!-- Манифест на всю ширину -->
+    <section class="relative overflow-hidden px-5 py-28 text-center md:py-36">
+      <p class="mx-auto max-w-[1100px] text-[clamp(1.75rem,4.5vw,3.5rem)] leading-[1.15] font-bold tracking-tight text-balance">
+        Этот сайт — полигон. Здесь <span class="text-gradient">нейросети</span> пишут тексты,
+        рисуют картинки и собирают целые сайты.
+      </p>
+      <p class="text-muted-foreground mx-auto mt-6 max-w-xl text-lg">
+        Всё, что получается — удачное и не очень, — выкладывается сюда как есть.
+      </p>
+    </section>
   </main>
 </Layout>
-
-<style>
-  .hero {
-    text-align: center;
-    padding: 7rem 1.5rem 6rem;
-  }
-
-  .badge {
-    display: inline-block;
-    margin-bottom: 1.25rem;
-    padding: 6px 14px;
-    border-radius: var(--radius-pill);
-    background: var(--card-bg);
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  /* Градиент в духе Apple Intelligence */
-  .gradient {
-    background: linear-gradient(108deg, #0894ff 4%, #c959dd 51%, #ff2e54 78%, #ff9004 97%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-
-  .subtitle {
-    margin-top: 1rem;
-    font-size: clamp(1.25rem, 3vw, 1.6rem);
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    color: var(--text-secondary);
-    font-weight: 500;
-  }
-
-  .hero .button {
-    margin-top: 2rem;
-  }
-
-  section.container {
-    margin-bottom: 4rem;
-  }
-
-  section.container h2 {
-    margin-bottom: 1.5rem;
-  }
-
-  .section-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .category-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    padding: 1.75rem;
-    background: var(--card-bg);
-    border-radius: var(--radius-card);
-    color: var(--text);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-
-  .category-card:hover {
-    text-decoration: none;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  }
-
-  .category-card .emoji {
-    font-size: 1.75rem;
-  }
-
-  .category-card h3 {
-    font-size: 1.2rem;
-    letter-spacing: -0.01em;
-  }
-
-  .category-card p {
-    color: var(--text-secondary);
-    font-size: 15px;
-  }
-</style>

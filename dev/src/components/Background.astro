@@ -1,0 +1,50 @@
+---
+/* Фиксированный фон сайта: дрейфующие aurora-пятна в фирменных цветах,
+   едва заметная точечная сетка и свечение, следующее за курсором.
+   Всё отключается при prefers-reduced-motion (см. global.css). */
+---
+
+<div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+  <div class="aurora-blob aurora-blob-1"></div>
+  <div class="aurora-blob aurora-blob-2"></div>
+  <div class="aurora-blob aurora-blob-3"></div>
+  <div class="dot-grid"></div>
+  <div class="cursor-glow" data-cursor-glow></div>
+</div>
+
+<script>
+  const glow = document.querySelector<HTMLElement>('[data-cursor-glow]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (glow && !reduced && window.matchMedia('(pointer: fine)').matches) {
+    let targetX = 0;
+    let targetY = 0;
+    let x = 0;
+    let y = 0;
+    let raf = 0;
+
+    const tick = () => {
+      // Плавное «догоняющее» движение вместо жёсткой привязки к курсору
+      x += (targetX - x) * 0.06;
+      y += (targetY - y) * 0.06;
+      glow.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+
+      if (Math.abs(targetX - x) > 0.5 || Math.abs(targetY - y) > 0.5) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = 0;
+      }
+    };
+
+    window.addEventListener('pointermove', (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      glow.classList.add('is-active');
+      if (!raf) raf = requestAnimationFrame(tick);
+    });
+
+    document.documentElement.addEventListener('pointerleave', () => {
+      glow.classList.remove('is-active');
+    });
+  }
+</script>

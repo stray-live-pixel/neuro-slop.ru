@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import Background from '../components/Background.astro';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 interface Props {
   title?: string;
@@ -22,75 +24,60 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <title>{title}</title>
+    <script is:inline>
+      // Тема: localStorage → системная. Выполняется до отрисовки, чтобы не мигало.
+      (() => {
+        const stored = localStorage.getItem('theme');
+        const dark =
+          stored === 'dark' ||
+          (!stored && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+
+        window.__setTheme = (theme) => {
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+          localStorage.setItem('theme', theme);
+        };
+      })();
+    </script>
   </head>
-  <body>
-    <header>
-      <nav>
-        <a href="/" class="brand">neuro‑slop.ru</a>
-        <div class="links">
-          <a href="/posts/">Записи</a>
+  <body class="bg-background text-foreground flex min-h-svh flex-col overscroll-none antialiased">
+    <Background />
+
+    <header
+      class="bg-background/60 border-border/60 sticky top-0 z-50 border-b backdrop-blur-xl backdrop-saturate-150"
+    >
+      <nav
+        class="mx-auto flex h-14 w-full max-w-[1920px] items-center justify-between px-5 md:px-10 2xl:px-16"
+      >
+        <a
+          href="/"
+          class="text-foreground text-[15px] font-semibold tracking-tight transition-opacity hover:opacity-70"
+        >
+          <span class="text-gradient">neuro‑slop</span>.ru
+        </a>
+        <div class="flex items-center gap-2">
+          <a
+            href="/posts/"
+            class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-4 py-1.5 text-sm font-medium transition-colors"
+          >
+            Записи
+          </a>
+          <ThemeToggle class="rounded-full" />
         </div>
       </nav>
     </header>
 
-    <slot />
+    <div class="flex-1">
+      <slot />
+    </div>
 
-    <footer>
-      <p>© 2026 neuro-slop.ru · Сделано вместе с нейросетями</p>
+    <footer class="border-border/60 mt-24 border-t">
+      <div
+        class="text-muted-foreground mx-auto flex w-full max-w-[1920px] flex-col items-center justify-between gap-2 px-5 py-8 text-[13px] sm:flex-row md:px-10 2xl:px-16"
+      >
+        <p>© 2026 neuro-slop.ru</p>
+        <p>Сделано вместе с нейросетями</p>
+      </div>
     </footer>
   </body>
 </html>
-
-<style>
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: var(--nav-bg);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid var(--separator);
-  }
-
-  nav {
-    max-width: 980px;
-    margin: 0 auto;
-    height: var(--nav-height);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1.25rem;
-  }
-
-  .brand {
-    color: var(--text);
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-
-  .links {
-    display: flex;
-    gap: 1.5rem;
-  }
-
-  .links a {
-    color: var(--text);
-    font-size: 14px;
-  }
-
-  nav a:hover {
-    text-decoration: none;
-    opacity: 0.7;
-  }
-
-  footer {
-    max-width: 980px;
-    margin: 4rem auto 0;
-    padding: 1.5rem 1.25rem;
-    border-top: 1px solid var(--separator);
-    color: var(--text-secondary);
-    font-size: 12px;
-    text-align: center;
-  }
-</style>

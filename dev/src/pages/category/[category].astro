@@ -17,54 +17,27 @@ const posts = (
 ---
 
 <Layout title={`${cat.label} — neuro-slop.ru`} description={cat.description}>
-  <main class="container">
-    <p class="emoji">{cat.emoji}</p>
-    <h1>{cat.label}</h1>
-    <p class="lede">{cat.description}</p>
+  <main class="mx-auto w-full max-w-[1440px] px-5 pt-16 md:px-10">
+    <p class="mb-3 text-5xl">{cat.emoji}</p>
+    <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[-0.03em]">{cat.label}</h1>
+    <p class="text-muted-foreground mt-3 mb-12 max-w-2xl text-xl font-medium">{cat.description}</p>
 
     {
       posts.length > 0 ? (
-        <div class="grid">
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
           {posts.map((post) => (
             <PostCard post={post} />
           ))}
         </div>
       ) : (
-        <p class="empty">Здесь пока пусто — записи появятся позже.</p>
+        <div class="bg-card/60 border-border/60 rounded-2xl border px-8 py-16 text-center backdrop-blur-sm">
+          <p class="text-muted-foreground">Здесь пока пусто — записи появятся позже.</p>
+        </div>
       )
     }
 
-    <p class="back"><a href="/posts/">← Все записи</a></p>
+    <p class="mt-14">
+      <a href="/posts/" class="text-primary text-sm font-medium hover:underline">← Все записи</a>
+    </p>
   </main>
 </Layout>
-
-<style>
-  main {
-    padding-top: 4rem;
-  }
-
-  .emoji {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  h1 {
-    font-size: clamp(2.25rem, 5vw, 3.5rem);
-  }
-
-  .lede {
-    margin: 0.75rem 0 2.5rem;
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-  }
-
-  .empty {
-    color: var(--text-secondary);
-    padding: 3rem 0;
-  }
-
-  .back {
-    margin-top: 3rem;
-  }
-</style>

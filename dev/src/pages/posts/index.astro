@@ -10,51 +10,24 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
 ---
 
 <Layout title="Записи — neuro-slop.ru">
-  <main class="container">
-    <h1>Записи</h1>
-    <div class="chips">
+  <main class="mx-auto w-full max-w-[1440px] px-5 pt-16 md:px-10">
+    <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[-0.03em]">Записи</h1>
+
+    <div class="mt-7 mb-10 flex flex-wrap gap-2">
       {
         Object.entries(CATEGORIES).map(([slug, cat]) => (
-          <a class="chip" href={`/category/${slug}/`}>
+          <a
+            class="bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 hover:text-foreground rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+            href={`/category/${slug}/`}
+          >
             {cat.emoji} {cat.label}
           </a>
         ))
       }
     </div>
-    <div class="grid">
+
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
       {posts.map((post) => <PostCard post={post} />)}
     </div>
   </main>
 </Layout>
-
-<style>
-  main {
-    padding-top: 4rem;
-  }
-
-  h1 {
-    font-size: clamp(2.25rem, 5vw, 3.5rem);
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1.5rem 0 2.5rem;
-  }
-
-  .chip {
-    padding: 7px 14px;
-    border-radius: var(--radius-pill);
-    background: var(--card-bg);
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 500;
-    transition: opacity 0.2s ease;
-  }
-
-  .chip:hover {
-    text-decoration: none;
-    opacity: 0.7;
-  }
-</style>

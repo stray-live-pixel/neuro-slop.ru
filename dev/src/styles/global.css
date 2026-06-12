@@ -1,191 +1,438 @@
-/* Дизайн-токены в эстетике Apple (apple.com): системный шрифт SF,
-   светлая/тёмная тема через prefers-color-scheme. */
-:root {
-  --bg: #ffffff;
-  --bg-secondary: #f5f5f7;
-  --text: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --accent: #0071e3;
-  --accent-hover: #0077ed;
-  --link: #0066cc;
-  --nav-bg: rgba(251, 251, 253, 0.8);
-  --card-bg: #f5f5f7;
-  --separator: rgba(0, 0, 0, 0.16);
+@import "tailwindcss";
 
-  --radius-card: 18px;
-  --radius-pill: 980px;
-  --nav-height: 48px;
+@custom-variant dark (&:is(.dark *));
+
+/* ===== Дизайн-токены neuro-slop.ru =====
+   Яркий минимализм: нейтральные поверхности с лёгким фиолетовым подтоном,
+   один электрический акцент и фирменный нейро-градиент.
+   Тёмная тема — через класс .dark на <html> (переключатель в шапке). */
+
+:root {
+  --background: oklch(0.995 0.002 285);
+  --foreground: oklch(0.17 0.015 285);
+  --card: oklch(0.985 0.004 285);
+  --card-foreground: oklch(0.17 0.015 285);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.17 0.015 285);
+  --primary: oklch(0.54 0.24 285);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.955 0.006 285);
+  --secondary-foreground: oklch(0.25 0.02 285);
+  --muted: oklch(0.955 0.006 285);
+  --muted-foreground: oklch(0.5 0.015 285);
+  --accent: oklch(0.94 0.01 285);
+  --accent-foreground: oklch(0.25 0.02 285);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.91 0.008 285);
+  --input: oklch(0.91 0.008 285);
+  --ring: oklch(0.54 0.24 285);
+  --chart-1: oklch(0.81 0.1 252);
+  --chart-2: oklch(0.62 0.19 260);
+  --chart-3: oklch(0.55 0.22 263);
+  --chart-4: oklch(0.49 0.22 264);
+  --chart-5: oklch(0.42 0.18 266);
+  --sidebar: oklch(0.985 0.004 285);
+  --sidebar-foreground: oklch(0.17 0.015 285);
+  --sidebar-primary: oklch(0.54 0.24 285);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.955 0.006 285);
+  --sidebar-accent-foreground: oklch(0.25 0.02 285);
+  --sidebar-border: oklch(0.91 0.008 285);
+  --sidebar-ring: oklch(0.54 0.24 285);
+  --radius: 1rem;
+  --shadow-2xs: 0 1px 3px 0px hsl(260 30% 10% / 0.04);
+  --shadow-xs: 0 1px 3px 0px hsl(260 30% 10% / 0.04);
+  --shadow-sm:
+    0 1px 3px 0px hsl(260 30% 10% / 0.07), 0 1px 2px -1px hsl(260 30% 10% / 0.07);
+  --shadow: 0 1px 3px 0px hsl(260 30% 10% / 0.07), 0 1px 2px -1px hsl(260 30% 10% / 0.07);
+  --shadow-md:
+    0 2px 6px -1px hsl(260 30% 10% / 0.08), 0 4px 12px -2px hsl(260 30% 10% / 0.08);
+  --shadow-lg:
+    0 4px 12px -2px hsl(260 30% 10% / 0.1), 0 12px 32px -4px hsl(260 30% 10% / 0.12);
+  --shadow-xl:
+    0 8px 24px -4px hsl(260 30% 10% / 0.12), 0 24px 56px -8px hsl(260 30% 10% / 0.16);
+  --shadow-2xl: 0 24px 64px -12px hsl(260 30% 10% / 0.24);
+
+  /* Фирменный нейро-градиент */
+  --gradient-brand: linear-gradient(108deg, #0894ff 4%, #c959dd 51%, #ff2e54 78%, #ff9004 97%);
+
+  /* Цвета aurora-фона */
+  --aurora-1: #0894ff;
+  --aurora-2: #c959dd;
+  --aurora-3: #ff2e54;
+  --aurora-4: #ff9004;
+  --aurora-opacity: 0.16;
+  --cursor-glow-opacity: 0.07;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #000000;
-    --bg-secondary: #161617;
-    --text: #f5f5f7;
-    --text-secondary: #86868b;
-    --accent: #0071e3;
-    --accent-hover: #0077ed;
-    --link: #2997ff;
-    --nav-bg: rgba(22, 22, 23, 0.8);
-    --card-bg: #1d1d1f;
-    --separator: rgba(255, 255, 255, 0.24);
+.dark {
+  --background: oklch(0.145 0.018 285);
+  --foreground: oklch(0.96 0.005 285);
+  --card: oklch(0.185 0.02 285);
+  --card-foreground: oklch(0.96 0.005 285);
+  --popover: oklch(0.21 0.02 285);
+  --popover-foreground: oklch(0.96 0.005 285);
+  --primary: oklch(0.72 0.17 290);
+  --primary-foreground: oklch(0.13 0.02 285);
+  --secondary: oklch(0.23 0.02 285);
+  --secondary-foreground: oklch(0.96 0.005 285);
+  --muted: oklch(0.23 0.02 285);
+  --muted-foreground: oklch(0.68 0.015 285);
+  --accent: oklch(0.27 0.025 285);
+  --accent-foreground: oklch(0.96 0.005 285);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.96 0.005 285);
+  --border: oklch(0.27 0.02 285);
+  --input: oklch(0.3 0.02 285);
+  --ring: oklch(0.72 0.17 290);
+  --chart-1: oklch(0.81 0.1 252);
+  --chart-2: oklch(0.62 0.19 260);
+  --chart-3: oklch(0.55 0.22 263);
+  --chart-4: oklch(0.49 0.22 264);
+  --chart-5: oklch(0.42 0.18 266);
+  --sidebar: oklch(0.185 0.02 285);
+  --sidebar-foreground: oklch(0.96 0.005 285);
+  --sidebar-primary: oklch(0.72 0.17 290);
+  --sidebar-primary-foreground: oklch(0.13 0.02 285);
+  --sidebar-accent: oklch(0.23 0.02 285);
+  --sidebar-accent-foreground: oklch(0.96 0.005 285);
+  --sidebar-border: oklch(0.27 0.02 285);
+  --sidebar-ring: oklch(0.72 0.17 290);
+  --radius: 1rem;
+  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.2);
+  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.2);
+  --shadow-sm:
+    0 1px 3px 0px hsl(0 0% 0% / 0.3), 0 1px 2px -1px hsl(0 0% 0% / 0.3);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.3), 0 1px 2px -1px hsl(0 0% 0% / 0.3);
+  --shadow-md:
+    0 2px 6px -1px hsl(0 0% 0% / 0.35), 0 4px 12px -2px hsl(0 0% 0% / 0.35);
+  --shadow-lg:
+    0 4px 12px -2px hsl(0 0% 0% / 0.4), 0 12px 32px -4px hsl(0 0% 0% / 0.45);
+  --shadow-xl:
+    0 8px 24px -4px hsl(0 0% 0% / 0.45), 0 24px 56px -8px hsl(0 0% 0% / 0.5);
+  --shadow-2xl: 0 24px 64px -12px hsl(0 0% 0% / 0.6);
+
+  --aurora-opacity: 0.14;
+  --cursor-glow-opacity: 0.12;
+}
+
+@theme inline {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans scroll-smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-size: 17px;
+    line-height: 1.5;
+    letter-spacing: -0.014em;
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 25%, transparent);
   }
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* ===== Фирменные утилиты ===== */
+
+/* Градиентный текст */
+.text-gradient {
+  background: var(--gradient-brand);
+  background-size: 160% 160%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
-html {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
+.text-gradient-animated {
+  animation: gradient-shift 9s ease-in-out infinite;
 }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
-    'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
-  font-size: 17px;
-  line-height: 1.47;
-  letter-spacing: -0.022em;
-  background: var(--bg);
-  color: var(--text);
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
-h1,
-h2,
-h3 {
-  font-weight: 600;
-  margin: 0;
+/* Карточка с градиентной обводкой при наведении */
+.glow-card {
+  position: relative;
 }
 
-h1 {
-  font-size: clamp(2.5rem, 7vw, 4.5rem);
-  line-height: 1.05;
-  letter-spacing: -0.015em;
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--gradient-brand);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
 }
 
-h2 {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+.glow-card:hover::before {
+  opacity: 0.9;
 }
 
-p {
-  margin: 0;
+/* ===== Aurora-фон ===== */
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: var(--aurora-opacity);
+  will-change: transform;
 }
 
-a {
-  color: var(--link);
-  text-decoration: none;
+.aurora-blob-1 {
+  width: 55vw;
+  height: 55vw;
+  max-width: 1100px;
+  max-height: 1100px;
+  background: radial-gradient(circle at center, var(--aurora-1), transparent 65%);
+  top: -20%;
+  left: -10%;
+  animation: aurora-drift-1 70s ease-in-out infinite;
 }
 
-a:hover {
-  text-decoration: underline;
+.aurora-blob-2 {
+  width: 45vw;
+  height: 45vw;
+  max-width: 900px;
+  max-height: 900px;
+  background: radial-gradient(circle at center, var(--aurora-2), transparent 65%);
+  top: -10%;
+  right: -12%;
+  animation: aurora-drift-2 85s ease-in-out infinite;
 }
 
-/* Кнопка-пилюля как на apple.com */
-.button {
-  display: inline-block;
-  padding: 12px 22px;
-  border-radius: var(--radius-pill);
-  background: var(--accent);
-  color: #fff;
-  font-size: 17px;
-  line-height: 1.18;
-  transition: background 0.2s ease;
+.aurora-blob-3 {
+  width: 40vw;
+  height: 40vw;
+  max-width: 800px;
+  max-height: 800px;
+  background: radial-gradient(circle at center, var(--aurora-4), transparent 65%);
+  bottom: -25%;
+  left: 30%;
+  animation: aurora-drift-3 95s ease-in-out infinite;
 }
 
-.button:hover {
-  background: var(--accent-hover);
-  text-decoration: none;
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(8vw, 6vh) scale(1.15); }
+  66% { transform: translate(-4vw, 10vh) scale(0.95); }
 }
 
-.card {
-  background: var(--card-bg);
-  border-radius: var(--radius-card);
-  padding: 2rem;
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40% { transform: translate(-10vw, 8vh) scale(1.1); }
+  70% { transform: translate(4vw, -4vh) scale(0.9); }
 }
 
-/* Контейнер и сетка карточек */
-.container {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 0 1.25rem;
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-8vw, -10vh) scale(1.2); }
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+/* Точечная сетка поверх aurora — едва заметная текстура */
+.dot-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    color-mix(in oklch, var(--foreground) 7%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 30%, transparent 75%);
 }
 
-/* Типографика markdown-контента записей */
+/* Свечение, следующее за курсором */
+.cursor-glow {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, var(--aurora-2), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  will-change: transform;
+  margin: -350px 0 0 -350px;
+}
+
+.cursor-glow.is-active {
+  opacity: var(--cursor-glow-opacity);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob,
+  .text-gradient-animated {
+    animation: none;
+  }
+
+  .cursor-glow {
+    display: none;
+  }
+}
+
+/* ===== Типографика markdown-контента (.prose) ===== */
+
 .prose {
-  max-width: 680px;
-  margin: 0 auto;
   font-size: 17px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
-.prose p {
-  margin: 0 0 1.25rem;
+.prose > * + * {
+  margin-top: 1.25rem;
 }
 
 .prose h2 {
-  margin: 2.5rem 0 1rem;
+  margin-top: 2.75rem;
+  font-size: 1.75rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .prose h3 {
+  margin-top: 2.25rem;
   font-size: 1.3rem;
-  margin: 2rem 0 0.75rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 
 .prose ul,
 .prose ol {
-  margin: 0 0 1.25rem;
   padding-left: 1.5rem;
 }
 
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
 .prose li {
-  margin-bottom: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.prose li::marker {
+  color: var(--muted-foreground);
+}
+
+.prose a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in oklch, var(--primary) 40%, transparent);
+  transition: text-decoration-color 0.2s ease;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--primary);
+}
+
+.prose strong {
+  font-weight: 650;
 }
 
 .prose img {
   max-width: 100%;
   height: auto;
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
 }
 
 .prose blockquote {
-  margin: 0 0 1.25rem;
   padding: 0.25rem 0 0.25rem 1.25rem;
-  border-left: 3px solid var(--separator);
-  color: var(--text-secondary);
-}
-
-.prose blockquote p:last-child {
-  margin-bottom: 0;
+  border-left: 3px solid;
+  border-image: var(--gradient-brand) 1;
+  color: var(--muted-foreground);
 }
 
 .prose code {
-  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.88em;
-  background: var(--card-bg);
-  padding: 0.15em 0.45em;
-  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--muted);
+  padding: 0.16em 0.45em;
+  border-radius: 7px;
 }
 
 .prose pre {
-  margin: 0 0 1.25rem;
-  padding: 1.25rem;
-  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
   overflow-x: auto;
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .prose pre code {
@@ -196,26 +443,36 @@ a:hover {
 
 .prose table {
   width: 100%;
-  margin: 0 0 1.25rem;
   border-collapse: collapse;
   font-size: 15px;
 }
 
 .prose th,
 .prose td {
-  padding: 0.6rem 0.75rem;
+  padding: 0.65rem 0.85rem;
   text-align: left;
-  border-bottom: 1px solid var(--separator);
+  border-bottom: 1px solid var(--border);
 }
 
 .prose th {
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--muted-foreground);
   font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .prose hr {
-  margin: 2.5rem auto;
+  margin: 2.75rem auto;
   border: none;
-  border-top: 1px solid var(--separator);
+  border-top: 1px solid var(--border);
+}
+
+/* Переключение темы подсветки кода Shiki вместе с темой сайта */
+.dark .astro-code,
+.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
 }
