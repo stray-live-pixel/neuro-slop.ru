@@ -4,21 +4,53 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout>
   <main>
-    <h1>neuro-slop.ru</h1>
-    <p>Скоро здесь что-то будет.</p>
+    <section class="hero">
+      <p class="badge">Скоро запуск</p>
+      <h1><span class="gradient">neuro‑slop</span>.ru</h1>
+      <p class="subtitle">Скоро здесь что-то будет.</p>
+    </section>
   </main>
 </Layout>
 
 <style>
   main {
+    min-height: calc(100vh - var(--nav-height) - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero {
     text-align: center;
-    padding: 2rem;
+    padding: 4rem 1.5rem;
   }
-  h1 {
-    font-size: 2.5rem;
-    margin: 0 0 0.5rem;
+
+  .badge {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
   }
-  p {
-    color: #999;
+
+  /* Градиент в духе Apple Intelligence */
+  .gradient {
+    background: linear-gradient(108deg, #0894ff 4%, #c959dd 51%, #ff2e54 78%, #ff9004 97%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .subtitle {
+    margin-top: 1rem;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--text-secondary);
+    font-weight: 500;
   }
 </style>
