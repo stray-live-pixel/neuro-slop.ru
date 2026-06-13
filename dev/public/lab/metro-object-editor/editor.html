@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Редактор объектов — Зомби в метро (dev-инструмент)</title>
+<style>
+  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000;
+    font-family:"Courier New",monospace;user-select:none;-webkit-user-select:none;}
+  #c{display:block;width:100vw;height:100vh;cursor:crosshair;}
+
+  .ui{position:fixed;color:#cfd8e3;font-size:13px;}
+  .plate{background:rgba(6,10,16,.88);border:1px solid #2c3644;border-radius:6px;}
+
+  /* верхняя панель */
+  #topbar{top:10px;left:230px;right:12px;display:flex;align-items:center;gap:8px;padding:8px 10px;flex-wrap:wrap;}
+  #topbar button,#panel button{font-family:inherit;font-size:13px;color:#cfd8e3;background:#1b2430;
+    border:1px solid #3a4654;border-radius:4px;padding:5px 12px;cursor:pointer;}
+  #topbar button:hover,#panel button:hover{background:#27384c;}
+  #topbar button.sel,#panel button.sel{background:#3d2b10;border-color:#a8843a;color:#ffd24a;}
+  #objName{font-family:inherit;font-size:13px;color:#ffd24a;background:#10161e;border:1px solid #3a4654;
+    border-radius:4px;padding:5px 8px;width:150px;}
+  #status{margin-left:auto;color:#8fa0b4;}
+
+  /* левая панель — палитра */
+  #panel{top:10px;left:12px;bottom:36px;width:206px;padding:10px;overflow-y:auto;}
+  .ptitle{color:#9fe3ff;letter-spacing:3px;font-size:12px;margin:10px 0 6px;}
+  .ptitle:first-child{margin-top:0;}
+  .row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer;border:1px solid transparent;}
+  .row:hover{background:#1b2430;}
+  .row.sel{background:#3d2b10;border-color:#a8843a;color:#ffd24a;}
+  .chip{display:inline-block;width:16px;height:16px;border-radius:3px;border:1px solid rgba(255,255,255,.25);flex:none;}
+  #toolErase{width:100%;margin-top:10px;}
+
+  /* нижняя строка-подсказка */
+  #helpbar{left:12px;right:12px;bottom:8px;padding:5px 10px;color:#7d8b9c;font-size:12px;text-align:center;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="startScreen" style="display:none"></div>
+
+<div class="ui plate" id="topbar">
+  <input id="objName" value="объект" title="Имя объекта (имя файла при сохранении)">
+  <button id="saveBtn" title="Скачать объект файлом JSON">Сохранить</button>
+  <button id="openBtn" title="Открыть объект (.json) или карту map.json — из карты подхватится объект её библиотеки">Открыть</button>
+  <button id="newBtn" title="Очистить сцену">Очистить</button>
+  <input type="file" id="fileInput" accept=".json,application/json" hidden>
+  <span id="status"></span>
+</div>
+
+<div class="ui plate" id="panel">
+  <div class="ptitle">БЛОКИ</div>
+  <div id="blockPal"></div>
+  <div class="ptitle">ОБЪЕКТЫ</div>
+  <div id="propPal"></div>
+  <button id="toolErase" title="X — переключить">✕ Ластик</button>
+</div>
+
+<div class="ui plate" id="helpbar">
+  ЛКМ — поставить (зажать и вести — рисовать) · ПКМ-клик — удалить · ПКМ-драг — вращать камеру ·
+  Shift+ПКМ / СКМ — панорама · колесо — зум · WASD — двигать вид · R — повернуть объект · X — ластик · Ctrl+Z — отмена
+</div>
+
+<script src="editor.js" defer></script>
+</body>
+</html>
