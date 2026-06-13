@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Зомби в метро — 3D хоррор-шутер</title>
+<style>
+  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000;
+    font-family:"Courier New",monospace;user-select:none;-webkit-user-select:none;}
+  #c{display:block;width:100vw;height:100vh;cursor:crosshair;}
+
+  /* ---------- HUD ----------
+     Текст не должен зависеть от яркости сцены (днём небо светлое):
+     у блоков полупрозрачная тёмная подложка + усиленная тень текста. */
+  #hud{position:fixed;inset:0;pointer-events:none;color:#cfd8e3;}
+  .hud-box{position:absolute;text-shadow:0 0 6px #000,0 2px 3px #000,0 0 2px #000;}
+  .plate{background:rgba(4,8,14,.55);padding:7px 12px;border-radius:6px;}
+  #topleft{top:12px;left:14px;font-size:15px;line-height:1.5;}
+  #score{font-size:26px;color:#ffd24a;font-weight:bold;}
+  #rank{color:#9fe3ff;font-size:15px;}
+  #kills{color:#b9c4d0;}
+  #clock{color:#9fb4d8;letter-spacing:1px;}
+  #hpwrap{left:14px;bottom:16px;width:280px;}
+  #hpbarbg{width:260px;height:16px;background:rgba(10,14,20,.75);border:1px solid #3a4654;border-radius:3px;overflow:hidden;}
+  #hpbar{height:100%;width:100%;background:linear-gradient(90deg,#7a1d1d,#c93434);transition:width .15s;}
+  #hptext{font-size:13px;margin-top:3px;color:#e8aaaa;}
+  #ammo{right:14px;bottom:16px;font-size:34px;color:#dfe7f0;text-align:right;font-weight:bold;}
+  #ammo small{font-size:15px;color:#9db0c4;font-weight:normal;display:block;}
+  #ammo.low{color:#ff5544;}
+  #money{color:#ffd24a;}
+  #wpn{right:14px;bottom:96px;font-size:13px;color:#9db0c4;letter-spacing:2px;text-transform:uppercase;text-align:right;}
+  #hint{right:14px;top:12px;font-size:12px;color:#8a98a8;text-align:right;line-height:1.6;}
+
+  /* торговец: подсказка и магазин */
+  #interact{left:50%;top:60%;transform:translateX(-50%);font-size:17px;color:#ffd24a;letter-spacing:1px;animation:blink 1.4s infinite;background:rgba(4,8,14,.55);padding:6px 14px;border-radius:6px;}
+  #shop{right:40px;top:50%;transform:translateY(-50%);width:340px;background:rgba(5,9,15,.93);
+    border:1px solid #6a5520;border-radius:5px;padding:16px 20px;font-size:15px;color:#cfd8e3;}
+  #shop .stitle{font-size:19px;color:#ffd24a;letter-spacing:4px;margin-bottom:12px;text-align:center;}
+  #shop .srow{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid rgba(90,100,120,.2);}
+  #shop .srow.poor{color:#5d6b7c;}
+  #shop .sprice{color:#ffd24a;white-space:nowrap;}
+  #shop .srow.poor .sprice{color:#7a6a3a;}
+  #shop .smoney{margin-top:12px;color:#ffd24a;text-align:right;}
+  #shop .sclose{margin-top:6px;font-size:12px;color:#5d6b7c;text-align:center;}
+
+  /* прицел */
+  #cross{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);}
+  /* HP зомби под прицелом */
+  #zhp{position:absolute;left:50%;top:50%;transform:translate(-50%,24px);width:68px;height:7px;
+    background:rgba(10,14,20,.7);border:1px solid #3a4654;border-radius:2px;overflow:hidden;}
+  #zhpbar{height:100%;width:100%;background:linear-gradient(90deg,#7a1d1d,#c93434);}
+  #cross::before,#cross::after{content:"";position:absolute;background:#cfe3ff;box-shadow:0 0 4px #000;}
+  #cross::before{left:50%;top:0;width:2px;height:100%;transform:translateX(-50%);}
+  #cross::after{top:50%;left:0;height:2px;width:100%;transform:translateY(-50%);}
+  #cross.hit::before,#cross.hit::after{background:#ff5040;}
+
+  /* всплывающие надписи */
+  #popups{position:absolute;left:50%;top:58%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .popup{font-size:20px;font-weight:bold;text-shadow:0 0 8px #000;animation:popfly 1.4s ease-out forwards;}
+  @keyframes popfly{0%{opacity:0;transform:translateY(14px);}15%{opacity:1;}100%{opacity:0;transform:translateY(-46px);}}
+
+  /* баннер нового ранга */
+  #rankBanner{position:absolute;left:50%;top:26%;transform:translate(-50%,-50%) scale(.6);opacity:0;text-align:center;}
+  #rankBanner.show{animation:rankpop 3s ease-out forwards;}
+  #rankBanner .t1{font-size:18px;letter-spacing:6px;color:#9fe3ff;}
+  #rankBanner .t2{font-size:42px;font-weight:bold;color:#ffd24a;text-shadow:0 0 18px #c98400,0 2px 4px #000;}
+  @keyframes rankpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.6);}10%{opacity:1;transform:translate(-50%,-50%) scale(1.05);}16%{transform:translate(-50%,-50%) scale(1);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-50%) scale(1);}}
+
+  /* кровь и виньетка */
+  #dmg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,rgba(160,0,0,.85) 100%);opacity:0;}
+  #vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 52%,rgba(0,0,0,.8) 100%);}
+
+  /* ---------- экраны ---------- */
+  .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(2,4,8,.88);color:#cfd8e3;z-index:10;text-align:center;cursor:pointer;}
+  .screen h1{font-size:46px;color:#ff3b2f;letter-spacing:4px;margin:0 0 6px 0;text-shadow:0 0 24px #7a0000,0 3px 0 #200;}
+  .screen h2{font-size:16px;color:#7d8b9c;font-weight:normal;letter-spacing:3px;margin:0 0 30px 0;}
+  .screen .ctrl{font-size:14px;line-height:2;color:#9aa8b8;margin-bottom:34px;}
+  .screen .ctrl b{color:#dfe7f0;display:inline-block;min-width:120px;text-align:right;margin-right:12px;}
+  .blink{font-size:20px;color:#ffd24a;animation:blink 1.2s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+  #gameOver h1{color:#c92020;}
+  #goStats{font-size:18px;line-height:2;margin-bottom:30px;color:#cfd8e3;}
+  #goStats .big{font-size:34px;color:#ffd24a;}
+  #restartBtn{pointer-events:auto;cursor:pointer;font-family:inherit;font-size:20px;padding:12px 44px;background:#3a0d0d;
+    color:#ffd9d0;border:2px solid #8a2a20;border-radius:4px;letter-spacing:2px;}
+  #restartBtn:hover{background:#5a1515;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div class="hud-box plate" id="topleft">
+    <div id="score">0</div>
+    <div id="rank">Безбилетник</div>
+    <div id="kills">Убито: 0</div>
+    <div id="money">Жетоны: 0</div>
+    <div id="clock">🌙 19:00</div>
+  </div>
+  <div class="hud-box plate" id="hint">[WASD] движение &nbsp; [SHIFT] бег<br>[SPACE] прыжок &nbsp; [R] перезарядка<br>[1-3] оружие &nbsp; [F] фонарик &nbsp; [E] торговец</div>
+  <div class="hud-box plate" id="hpwrap">
+    <div id="hpbarbg"><div id="hpbar"></div></div>
+    <div id="hptext">HP 100 / 100</div>
+  </div>
+  <div class="hud-box plate" id="wpn">Автомат</div>
+  <div class="hud-box plate" id="ammo">30 <small>запас 120</small></div>
+  <div class="hud-box hidden" id="interact">[E] Торговец</div>
+  <div class="hud-box hidden" id="shop">
+    <div class="stitle">ТОРГОВЕЦ</div>
+    <div id="shopList"></div>
+    <div class="smoney">Жетоны: <span id="shopMoney">0</span></div>
+    <div class="sclose">[1-4] купить &middot; [E] закрыть</div>
+  </div>
+  <div id="cross"></div>
+  <div id="zhp" class="hidden"><div id="zhpbar"></div></div>
+  <div id="popups"></div>
+  <div id="rankBanner"><div class="t1">НОВЫЙ РАНГ</div><div class="t2"></div></div>
+  <div id="dmg"></div>
+  <div id="vig"></div>
+</div>
+
+<div class="screen" id="startScreen">
+  <h1>ЗОМБИ В МЕТРО</h1>
+  <h2>ПОСЛЕДНЯЯ СТАНЦИЯ &middot; ВЫХОДА НЕТ</h2>
+  <div class="ctrl">
+    <div><b>WASD</b>движение</div>
+    <div><b>Мышь</b>обзор</div>
+    <div><b>ЛКМ (зажать)</b>автоматический огонь</div>
+    <div><b>SHIFT</b>бег</div>
+    <div><b>SPACE</b>прыжок</div>
+    <div><b>R</b>перезарядка</div>
+    <div><b>1&middot;2&middot;3</b>смена оружия</div>
+    <div><b>F</b>фонарик</div>
+    <div><b>E</b>торговец (в убежищах)</div>
+    <div style="margin-top:14px;color:#6e7c8c">Подбирай светящиеся ящики патронов и бинты.<br>За убитых зомби дают жетоны — трать их у торговцев<br>в убежищах на патроны, оружие и аптечки.<br>В городе сменяются день и ночь — ночь длиннее и темнее.</div>
+  </div>
+  <div class="blink">— КЛИКНИ, ЧТОБЫ НАЧАТЬ —</div>
+</div>
+
+<div class="screen hidden" id="pauseScreen">
+  <h1 style="color:#9fe3ff;">ПАУЗА</h1>
+  <div class="blink">— КЛИКНИ, ЧТОБЫ ПРОДОЛЖИТЬ —</div>
+</div>
+
+<div class="screen hidden" id="gameOver">
+  <h1>ТЫ МЁРТВ</h1>
+  <h2>СТАНЦИЯ ПОГЛОТИЛА ЕЩЁ ОДНОГО</h2>
+  <div id="goStats"></div>
+  <button id="restartBtn">ЗАНОВО</button>
+</div>
+
+<script src="game.js" defer></script>
+</body>
+</html>
