@@ -20,7 +20,7 @@ const linkLabel = ytId ? 'Смотреть на YouTube' : 'Открыть ви�
   href={url}
   target="_blank"
   rel="noopener"
-  class="group border-border/60 relative block overflow-hidden rounded-3xl border"
+  class="group border-border/60 relative block aspect-video overflow-hidden rounded-3xl border"
   aria-label={linkLabel}
 >
   {
@@ -53,7 +53,7 @@ const linkLabel = ytId ? 'Смотреть на YouTube' : 'Открыть ви�
     </span>
   </span>
 
-  <div class="relative flex min-h-[220px] items-end p-6 md:min-h-[300px] md:p-8">
+  <div class="absolute inset-0 flex items-end p-6 md:p-8">
     <div class="max-w-[80%]">
       {title && <p class="text-lg leading-snug font-semibold text-white md:text-xl">{title}</p>}
       {meta && <p class="mt-1.5 text-sm font-medium text-white/75">{meta}</p>}
