@@ -1,7 +1,7 @@
 ---
 title: 'Промпт: разбор видео для раздела «Расшифровки»'
 description: 'Промпт для ИИ-агента: читает расшифровку видео и отдаёт готовый index.md для раздела «Расшифровки» — с оценками, инсайтами, советами, блок-схемой и тестом.'
-date: 2026-06-14
+date: 2026-06-14T03:24:14+03:00
 category: prompts
 cover: /images/covers/prompt-razbor-video.svg
 ---
@@ -39,7 +39,7 @@ dev/src/content/transcripts/{слаг}/index.md
 title: '...'
 description: '...'
 tldr: '...'
-date: <сегодняшняя дата ГГГГ-ММ-ДД>
+date: <сегодняшние дата и время в ISO, напр. 2026-06-14T18:30:00+03:00 — для сортировки свежих первыми>
 cover: 'https://i.ytimg.com/vi/<id видео>/maxresdefault.jpg'
 video:
   url: '{url}'

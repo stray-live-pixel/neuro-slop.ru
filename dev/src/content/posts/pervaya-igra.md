@@ -1,7 +1,7 @@
 ---
 title: 'Название игры'
 description: 'Короткое описание: что за игра, в чём суть и как играть.'
-date: 2026-06-13
+date: 2026-06-13T01:16:08+03:00
 category: games
 model: 'Claude Fable 5'
 timeSpent: '2 часа'

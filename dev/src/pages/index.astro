@@ -16,7 +16,7 @@ const latest = [
   ...transcripts.map((entry) => ({ type: 'transcript' as const, date: entry.data.date, entry })),
 ]
   .sort((a, b) => b.date.valueOf() - a.date.valueOf())
-  .slice(0, 5);
+  .slice(0, 6);
 ---
 
 <Layout>
