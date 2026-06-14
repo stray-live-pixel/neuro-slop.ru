@@ -34,7 +34,7 @@ description: Создать интерактивную статью-«расши
 | `tldr` | Ровно 2 коротких предложения — суть с ходу | да |
 | `date` | Дата публикации `YYYY-MM-DD` | да |
 | `cover` | Обложка: путь в `dev/public/...` или URL превью YouTube | желательно |
-| `video` | `{ url, title, channel, duration, platform }` | да |
+| `video` | `{ url, title, channel, duration, published?, platform }` — `published` (`YYYY-MM-DD`) это дата публикации видео из `meta.json`/«Дата публикации видео» анализа; показывается на карточке | да |
 | `sourceAnalysis` | Ссылка на исходный анализ (для воспроизводимости) | нет |
 | `ratings[]` | Оценки `1–5` по рубрикам `{ label, value, note? }` | да (≥1) |
 | `tags[]` | Слаги из `dev/src/lib/tags.ts` | да (≥1) |
