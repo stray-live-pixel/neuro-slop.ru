@@ -1,0 +1,46 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface Story {
+  role: string;
+  pain: string;
+  want: string;
+  gain: string;
+}
+interface Props {
+  stories: Story[];
+}
+const { stories } = Astro.props;
+---
+
+<section>
+  <SectionHeading
+    icon="users"
+    title="Сценарии применения"
+    hint="Как разные люди применяют это на практике"
+  />
+
+  <div class="grid gap-4 md:grid-cols-2">
+    {
+      stories.map((s) => (
+        <div class="glow-card border-border/60 bg-card/60 flex flex-col gap-2.5 rounded-2xl border p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          <p class="text-primary text-[13px] font-semibold tracking-wide uppercase">
+            Я как {s.role}
+          </p>
+          <p class="text-[15px] leading-relaxed">
+            <span class="text-muted-foreground font-semibold">Проблема: </span>
+            {s.pain}
+          </p>
+          <p class="text-[15px] leading-relaxed">
+            <span class="text-muted-foreground font-semibold">Хочу: </span>
+            {s.want}
+          </p>
+          <p class="text-[15px] leading-relaxed">
+            <span class="text-muted-foreground font-semibold">Поможет: </span>
+            {s.gain}
+          </p>
+        </div>
+      ))
+    }
+  </div>
+</section>

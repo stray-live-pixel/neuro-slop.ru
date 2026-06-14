@@ -37,6 +37,11 @@ const transcripts = defineCollection({
     date: z.coerce.date(),
     cover: z.string().optional(),
 
+    // Объяснение сути простым языком — для неподготовленного читателя
+    plain: z.string().optional(),
+    // Объяснение «на пальцах», как для ребёнка
+    forKids: z.string().optional(),
+
     // Источник
     video: z.object({
       url: z.string(),
@@ -69,10 +74,23 @@ const transcripts = defineCollection({
       .max(5)
       .optional(),
 
-    // До 5 практических советов для саморазвития
+    // До 10 практических советов для саморазвития
     tips: z
       .array(z.object({ title: z.string(), text: z.string() }))
-      .max(5)
+      .max(10)
+      .optional(),
+
+    // Человеческие сценарии применения (user stories): до 10, с разных ролей
+    userStories: z
+      .array(
+        z.object({
+          role: z.string(), // «учитель», «предприниматель», «врач»…
+          pain: z.string(), // боль/проблема
+          want: z.string(), // чего хочет
+          gain: z.string(), // как материал статьи помогает
+        })
+      )
+      .max(10)
       .optional(),
 
     // Логическая блок-схема повествования видео
@@ -101,6 +119,11 @@ const transcripts = defineCollection({
           wrongText: z.string(),
         })
       )
+      .optional(),
+
+    // Словарь терминов простым языком (показывается под cut в конце статьи)
+    glossary: z
+      .array(z.object({ term: z.string(), definition: z.string() }))
       .optional(),
 
     // Похожие статьи — id (слаги) других расшифровок

@@ -4,14 +4,18 @@ import Layout from '../../layouts/Layout.astro';
 import { Icon } from '@/components/ui/icon';
 import { formatDate, TRANSCRIPTS_SECTION } from '../../lib/categories';
 import Tldr from '../../components/transcript/Tldr.astro';
+import PlainSpeak from '../../components/transcript/PlainSpeak.astro';
 import Ratings from '../../components/transcript/Ratings.astro';
 import VideoEmbed from '../../components/transcript/VideoEmbed.astro';
 import TagChips from '../../components/transcript/TagChips.astro';
 import Insights from '../../components/transcript/Insights.astro';
 import Tips from '../../components/transcript/Tips.astro';
+import UserStories from '../../components/transcript/UserStories.astro';
 import Flowchart from '../../components/transcript/Flowchart.astro';
 import Plan from '../../components/transcript/Plan.astro';
 import Quiz from '../../components/transcript/Quiz.astro';
+import Glossary from '../../components/transcript/Glossary.astro';
+import Collapsible from '../../components/transcript/Collapsible.astro';
 import RelatedArticles from '../../components/transcript/RelatedArticles.astro';
 import SectionHeading from '../../components/transcript/SectionHeading.astro';
 
@@ -56,7 +60,17 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
             {TRANSCRIPTS_SECTION.label}
           </a>
           <span>·</span>
-          <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+          <span>
+            Статья: <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+          </span>
+          {d.video.published && (
+            <>
+              <span>·</span>
+              <span>
+                Видео: <time datetime={d.video.published.toISOString()}>{formatDate(d.video.published)}</time>
+              </span>
+            </>
+          )}
           {d.video.duration && (
             <>
               <span>·</span>
@@ -86,21 +100,31 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
 
         <Tldr text={d.tldr} />
 
+        {(d.plain || d.forKids) && <PlainSpeak plain={d.plain} forKids={d.forKids} />}
+
         <Ratings ratings={d.ratings} />
 
         {d.insights && d.insights.length > 0 && <Insights insights={d.insights} />}
 
         {d.tips && d.tips.length > 0 && <Tips tips={d.tips} />}
 
+        {d.userStories && d.userStories.length > 0 && <UserStories stories={d.userStories} />}
+
         {d.flowchart && d.flowchart.length > 0 && <Flowchart nodes={d.flowchart} />}
 
         {
           hasBody && (
             <section>
-              <SectionHeading icon="scroll-text" title="Подробный разбор" />
-              <div class="prose">
-                <Content />
-              </div>
+              <SectionHeading
+                icon="scroll-text"
+                title="Подробный разбор"
+                hint="Полный разбор — разверни, если нужно глубже"
+              />
+              <Collapsible label="Развернуть подробный разбор" openLabel="Свернуть подробный разбор">
+                <div class="prose">
+                  <Content />
+                </div>
+              </Collapsible>
             </section>
           )
         }
@@ -108,6 +132,8 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
         {d.plan && d.plan.length > 0 && <Plan steps={d.plan} storageKey={post.id} />}
 
         {d.quiz && d.quiz.length > 0 && <Quiz quiz={d.quiz} />}
+
+        {d.glossary && d.glossary.length > 0 && <Glossary terms={d.glossary} />}
 
         <RelatedArticles items={related} />
       </div>

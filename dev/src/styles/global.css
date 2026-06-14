@@ -183,6 +183,15 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Сворачиваемые блоки (cut): убираем нативный треугольник у summary */
+  details > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+
   body {
     @apply bg-background text-foreground font-sans;
     font-size: 17px;

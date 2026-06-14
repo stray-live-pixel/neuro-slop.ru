@@ -1,0 +1,47 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { Icon } from '@/components/ui/icon';
+
+interface Term {
+  term: string;
+  definition: string;
+}
+interface Props {
+  terms: Term[];
+}
+const { terms } = Astro.props;
+
+// Склонение «термин»
+const n = terms.length;
+const word =
+  n % 10 === 1 && n % 100 !== 11
+    ? 'термин'
+    : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)
+      ? 'термина'
+      : 'терминов';
+---
+
+<section>
+  <SectionHeading icon="book-marked" title="Словарь терминов" hint="Понять незнакомое простым языком" />
+
+  <details
+    class="ns-collapsible group border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-6"
+  >
+    <summary class="text-primary flex select-none items-center gap-2 text-[15px] font-semibold">
+      <Icon name="chevron-down" class="size-4 transition-transform duration-300 group-open:rotate-180" />
+      <span class="group-open:hidden">Показать {n} {word}</span>
+      <span class="hidden group-open:inline">Свернуть словарь</span>
+    </summary>
+
+    <dl class="mt-4 space-y-3">
+      {
+        terms.map((t) => (
+          <div class="border-border/50 border-t pt-3 first:border-t-0 first:pt-0">
+            <dt class="text-[15px] font-semibold">{t.term}</dt>
+            <dd class="text-muted-foreground mt-1 text-[15px] leading-relaxed">{t.definition}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </details>
+</section>

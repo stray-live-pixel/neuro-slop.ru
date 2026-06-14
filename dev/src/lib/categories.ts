@@ -52,11 +52,21 @@ export function formatDate(date: Date): string {
   }).format(date);
 }
 
-// Цвет оценки: 5 — золото, 4 — зелёный, 3 — жёлтый, 2/1/0 — красный
+// Оценка 5 — особая: красим фирменным градиентом темы
+export function isTopRating(value: number): boolean {
+  return value >= 5;
+}
+
+// Сплошной цвет оценки по порогам (без округления):
+// ≥5 — золото (на деле для 5 берём градиент), ≥4 — зелёный, ≥3 — жёлтый, иначе красный
 export function ratingColor(value: number): string {
-  const v = Math.round(value);
-  if (v >= 5) return '#f0b100'; // золото
-  if (v === 4) return '#22c55e'; // зелёный
-  if (v === 3) return '#facc15'; // жёлтый
+  if (value >= 5) return '#f0b100'; // золото (фолбэк, если градиент не применить)
+  if (value >= 4) return '#22c55e'; // зелёный
+  if (value >= 3) return '#facc15'; // жёлтый
   return '#ef4444'; // красный
+}
+
+// CSS-фон шкалы оценки: для 5 — фирменный градиент, иначе сплошной цвет
+export function ratingFill(value: number): string {
+  return isTopRating(value) ? 'var(--gradient-brand)' : ratingColor(value);
 }

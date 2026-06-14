@@ -1,0 +1,37 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { Icon } from '@/components/ui/icon';
+
+interface Props {
+  plain?: string;
+  forKids?: string;
+}
+const { plain, forKids } = Astro.props;
+---
+
+<section>
+  <SectionHeading icon="book-open" title="Объясни проще" hint="Суть без жаргона" />
+
+  <div class="grid gap-4 md:grid-cols-2">
+    {
+      plain && (
+        <div class="glow-card border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-6">
+          <p class="text-primary mb-2.5 flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
+            <Icon name="book-open" class="size-4" /> Простыми словами
+          </p>
+          <p class="text-[15px] leading-relaxed">{plain}</p>
+        </div>
+      )
+    }
+    {
+      forKids && (
+        <div class="glow-card border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-6">
+          <p class="text-primary mb-2.5 flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
+            <Icon name="baby" class="size-4" /> Как ребёнку
+          </p>
+          <p class="text-[15px] leading-relaxed">{forKids}</p>
+        </div>
+      )
+    }
+  </div>
+</section>

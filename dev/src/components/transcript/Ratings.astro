@@ -1,6 +1,6 @@
 ---
 import SectionHeading from './SectionHeading.astro';
-import { ratingColor } from '../../lib/categories';
+import { ratingColor, ratingFill, isTopRating } from '../../lib/categories';
 
 interface Rating {
   label: string;
@@ -14,6 +14,7 @@ const { ratings } = Astro.props;
 
 const avg = ratings.reduce((s, r) => s + r.value, 0) / ratings.length;
 const avgPct = (avg / 5) * 100;
+const avgTop = isTopRating(avg);
 const avgColor = ratingColor(avg);
 ---
 
@@ -25,8 +26,11 @@ const avgColor = ratingColor(avg);
   >
     <!-- Средняя оценка -->
     <div class="flex flex-col items-center justify-center">
-      <div class="rating-ring relative grid place-items-center" style={`--pct:${avgPct}; --ring-color:${avgColor}`}>
-        <span class="relative text-4xl font-bold tracking-tight" style={`color:${avgColor}`}>
+      <div class="rating-ring relative grid place-items-center" style={`--pct:${avgPct}; --ring-fill:${ratingFill(avg)}`}>
+        <span
+          class:list={['relative text-4xl font-bold tracking-tight', avgTop && 'text-gradient']}
+          style={avgTop ? undefined : `color:${avgColor}`}
+        >
           {avg.toFixed(1)}
         </span>
       </div>
@@ -42,14 +46,17 @@ const avgColor = ratingColor(avg);
           <div>
             <div class="flex items-baseline justify-between gap-3">
               <span class="text-[15px] font-medium">{r.label}</span>
-              <span class="text-sm font-semibold tabular-nums" style={`color:${ratingColor(r.value)}`}>
+              <span
+                class:list={['text-sm font-semibold tabular-nums', isTopRating(r.value) && 'text-gradient']}
+                style={isTopRating(r.value) ? undefined : `color:${ratingColor(r.value)}`}
+              >
                 {r.value.toFixed(1)}
               </span>
             </div>
             <div class="bg-muted mt-1.5 h-2.5 overflow-hidden rounded-full">
               <div
                 class="rating-bar h-full rounded-full"
-                style={`--val:${(r.value / 5) * 100}%; background: ${ratingColor(r.value)}`}
+                style={`--val:${(r.value / 5) * 100}%; background: ${ratingFill(r.value)}`}
               />
             </div>
             {r.note && <p class="text-muted-foreground mt-1.5 text-[13px] leading-snug">{r.note}</p>}
@@ -65,11 +72,14 @@ const avgColor = ratingColor(avg);
     width: 116px;
     height: 116px;
     border-radius: 50%;
-    background: conic-gradient(
-      from -90deg,
-      var(--ring-color, var(--primary)) calc(var(--pct) * 1%),
-      color-mix(in oklch, var(--muted-foreground) 22%, transparent) 0
-    );
+    /* Верхний слой — трек на незаполненной дуге; нижний — заливка (цвет ИЛИ градиент) */
+    background:
+      conic-gradient(
+        from -90deg,
+        transparent calc(var(--pct) * 1%),
+        color-mix(in oklch, var(--muted-foreground) 22%, transparent) 0
+      ),
+      var(--ring-fill, var(--primary));
     animation: ring-fill 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }
   .rating-ring::before {

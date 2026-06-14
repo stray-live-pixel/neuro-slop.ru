@@ -1,0 +1,29 @@
+---
+import { Icon } from '@/components/ui/icon';
+
+interface Props {
+  // Подпись в свёрнутом состоянии
+  label?: string;
+  // Подпись в развёрнутом состоянии
+  openLabel?: string;
+  // Раскрыт ли блок по умолчанию
+  open?: boolean;
+}
+const { label = 'Развернуть', openLabel = 'Свернуть', open = false } = Astro.props;
+---
+
+<details
+  class="ns-collapsible group border-border/60 bg-card/40 rounded-2xl border backdrop-blur-sm"
+  open={open}
+>
+  <summary
+    class="text-primary flex select-none items-center gap-2 px-5 py-4 text-[15px] font-semibold md:px-6"
+  >
+    <Icon name="chevron-down" class="size-4 transition-transform duration-300 group-open:rotate-180" />
+    <span class="group-open:hidden">{label}</span>
+    <span class="hidden group-open:inline">{openLabel}</span>
+  </summary>
+  <div class="px-5 pb-5 md:px-6 md:pb-6">
+    <slot />
+  </div>
+</details>
