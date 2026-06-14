@@ -6,6 +6,7 @@ date: 2026-06-14T03:13:00+03:00
 cover: https://i.ytimg.com/vi/zjkBMFhNj_g/maxresdefault.jpg
 video:
   url: https://www.youtube.com/watch?v=zjkBMFhNj_g
+  published: 2023-11-22
   title: '[1hr Talk] Intro to Large Language Models'
   channel: Andrej Karpathy
   duration: '1 ч 00 мин'

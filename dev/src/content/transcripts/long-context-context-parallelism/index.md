@@ -6,6 +6,7 @@ date: 2026-06-14T22:00:00+03:00
 cover: https://i.ytimg.com/vi/TUnPNY4E2fw/maxresdefault.jpg
 video:
   url: https://www.youtube.com/watch?v=TUnPNY4E2fw
+  published: 2026-06-08
   title: 'Road to 5 Million Tokens: Breaking Barriers in Long Context Training — Max Ryabinin'
   channel: 'Together AI · Max Ryabinin'
   platform: youtube

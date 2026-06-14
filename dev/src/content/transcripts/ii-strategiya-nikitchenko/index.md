@@ -6,6 +6,7 @@ date: 2026-06-14T13:05:00+03:00
 cover: https://i.ytimg.com/vi/Ct9XvY8shbQ/maxresdefault.jpg
 video:
   url: https://www.youtube.com/watch?v=Ct9XvY8shbQ
+  published: 2026-06-09
   title: 'Почему топовые AI-модели бесполезны для вашего бизнеса? Анна Никитченко'
   channel: 'Экшен План · Николай Хлебинский'
   duration: '~23 мин'

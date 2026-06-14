@@ -43,6 +43,7 @@ const transcripts = defineCollection({
       title: z.string().optional(), // исходное название видео
       channel: z.string().optional(),
       duration: z.string().optional(), // напр. «1 ч 02 мин»
+      published: z.coerce.date().optional(), // дата публикации видео
       platform: z.enum(['youtube', 'other']).default('youtube'),
     }),
     // Ссылка на готовый анализ из соседнего проекта (для воспроизводимости)

@@ -6,6 +6,7 @@ date: 2026-06-14T21:25:00+03:00
 cover: https://i.ytimg.com/vi/TNwJ1LMiENk/maxresdefault.jpg
 video:
   url: https://www.youtube.com/watch?v=TNwJ1LMiENk
+  published: 2026-06-10
   title: 'Stop Making Models Bigger, Make Them Behave — Kobie Crawford'
   channel: 'Snorkel AI · Kobie Crawford'
   duration: '~21 мин'

@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { Icon } from '@/components/ui/icon';
-import { formatDate, TRANSCRIPTS_SECTION } from '../lib/categories';
+import { formatDate, ratingColor, TRANSCRIPTS_SECTION } from '../lib/categories';
 import { tagLabel } from '../lib/tags';
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 const { entry } = Astro.props;
 const d = entry.data;
 const avg = d.ratings.reduce((s, r) => s + r.value, 0) / d.ratings.length;
+const avgColor = ratingColor(avg);
 const tags = d.tags.slice(0, 3);
 ---
 
@@ -41,7 +42,8 @@ const tags = d.tags.slice(0, 3);
       Расшифровка
     </span>
     <span
-      class="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 font-semibold text-white backdrop-blur-sm"
+      class="inline-flex items-center gap-1 rounded-full bg-black/35 px-2.5 py-1 font-semibold backdrop-blur-sm"
+      style={`color:${avgColor}`}
     >
       <Icon name="star" class="size-3.5" />
       {avg.toFixed(1)}
@@ -63,9 +65,16 @@ const tags = d.tags.slice(0, 3);
           </span>
         ))
       }
-      <time datetime={d.date.toISOString()} class="ml-auto text-[13px] font-medium text-white/65">
-        {formatDate(d.date)}
-      </time>
+      <span class="ml-auto flex flex-col items-end gap-0.5 text-[12px] leading-tight font-medium text-white/65">
+        {d.video.published && (
+          <span>
+            Видео: <time datetime={d.video.published.toISOString()}>{formatDate(d.video.published)}</time>
+          </span>
+        )}
+        <span>
+          Статья: <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+        </span>
+      </span>
     </span>
   </span>
 </a>

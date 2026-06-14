@@ -51,3 +51,12 @@ export function formatDate(date: Date): string {
     year: 'numeric',
   }).format(date);
 }
+
+// Цвет оценки: 5 — золото, 4 — зелёный, 3 — жёлтый, 2/1/0 — красный
+export function ratingColor(value: number): string {
+  const v = Math.round(value);
+  if (v >= 5) return '#f0b100'; // золото
+  if (v === 4) return '#22c55e'; // зелёный
+  if (v === 3) return '#facc15'; // жёлтый
+  return '#ef4444'; // красный
+}

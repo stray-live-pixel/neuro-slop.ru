@@ -6,6 +6,7 @@ date: 2026-06-14T03:18:00+03:00
 cover: https://i.ytimg.com/vi/MB9XpqNN1ZA/maxresdefault.jpg
 video:
   url: https://www.youtube.com/watch?v=MB9XpqNN1ZA
+  published: 2026-06-09
   title: 'Эксперт по ИИ: 90% не готовы к тому, что УЖЕ началось. Как остаться нужным в эпоху нейросетей?'
   channel: 'Андрей Комиссаров · Рычаг для роста'
   duration: '1 ч 27 мин'

@@ -6,6 +6,7 @@ date: 2026-06-14T21:40:00+03:00
 cover: https://i.ytimg.com/vi/UM6sFg_jdlE/maxresdefault.jpg
 video:
   url: https://www.youtube.com/watch?v=UM6sFg_jdlE
+  published: 2026-06-09
   title: 'RAG is dead, right? — Kuba Rogut'
   channel: 'TurboPuffer · Kuba Rogut'
   duration: '~11 мин'

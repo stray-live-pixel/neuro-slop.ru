@@ -6,6 +6,7 @@ date: 2026-06-14T20:10:00+03:00
 cover: https://i.ytimg.com/vi/gRFhacXrP1s/maxresdefault.jpg
 video:
   url: https://www.youtube.com/watch?v=gRFhacXrP1s
+  published: 2026-06-14
   title: 'Diffusion Gemma First Look Demo — A BIG Step for Local AI Models'
   channel: 'Bijan Bowen'
   duration: '~22 мин'
