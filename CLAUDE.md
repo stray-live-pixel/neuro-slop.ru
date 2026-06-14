@@ -1,6 +1,15 @@
-# neuro-slop.ru
+# neuro-slop.ru — инструкции для Claude и Codex
 
 Сайт-лаборатория экспериментов с нейросетями: игры, сгенерированные нейросетями, новости и промпты. Статика на Astro. Исходники — в `dev/`, собранный сайт лежит в корне репозитория и раздаётся GitHub Pages из ветки `main`.
+
+## Точки входа для ассистентов
+
+- `CLAUDE.md` — основной файл инструкций для Claude.
+- `AGENTS.md` — точка входа для Codex; это символическая ссылка на `CLAUDE.md`.
+- `.claude/skills` и `.claude/agents` — основной источник скиллов и агентов.
+- `.codex/skills` и `.codex/agents` — символические ссылки на соответствующие `.claude/*` директории.
+
+Не дублируй инструкции между Claude и Codex: редактируй общий источник (`CLAUDE.md` или файлы в `.claude/*`), а symlink-точки входа оставляй ссылками. Если в старом тексте встречаются Claude-названия инструментов (`Read`, `Write`, `Edit`, `Bash`, `WebFetch`, `WebSearch`, `Agent`), в Codex используй ближайший доступный эквивалент: чтение/правку файлов, shell, web-поиск и subagent/multi-agent, если он доступен.
 
 ## Два репозитория: публичный и приватный
 
@@ -18,7 +27,7 @@
 - **Отдельные сгенерированные сайты и игры** — кладутся целиком в `dev/public/lab/<имя>/` (минимум `index.html`, рядом js/ассеты) и попадают на `neuro-slop.ru/lab/<имя>/`.
 - **Записи-игры** (`category: games`) — обычная запись с доп. полями фронтматтера: `model` (название модели), `timeSpent` (время разработки), `gameUrl` (ссылка на игру, обычно `/lab/<имя>/`), `cover` (обложка, обычно `/lab/<имя>/cover.<ext>`). При наличии `gameUrl` страница записи показывает метаданные (модель · версия от `date` · время) и баннер с обложкой и кнопкой «Играть» (открывает игру в новой вкладке).
 - Карточка записи — `dev/src/components/PostCard.astro`: горизонтальная, `cover` растянут фоном с лёгким blur и тёмным градиентом, текст поверх — белый. Обложки не-игровых записей кладутся в `dev/public/images/covers/`. Типографика markdown — класс `.prose` в `global.css`.
-- **Расшифровки** (`/transcripts/`) — отдельная коллекция `transcripts` (не `posts`), интерактивные разборы видео. Каждая статья = папка `dev/src/content/transcripts/<slug>/` с `index.md` (структура + тело-разбор) и опциональным `transcript.md` (полная расшифровка, не публикуется — коллекция грузит только `index.md`). Богатый фронтматтер: `tldr`, `video`, `ratings[]`, `tags[]`, `insights[]`, `tips[]`, `flowchart[]`, `plan[]`, `quiz[]`, `related[]` (см. Zod-схему в `content.config.ts`). Раздел описан в `TRANSCRIPTS_SECTION`/`SECTIONS` в `categories.ts`; теги — каталог `dev/src/lib/tags.ts`. Интерактивные блоки — `dev/src/components/transcript/`, страницы — `dev/src/pages/transcripts/`. Живое оглавление с фильтром по тегам генерируется само на `/transcripts/`. Как собирать такую статью — скилл `.claude/skills/transcript-article/` и агенты `video-analyst` / `transcript-builder`.
+- **Расшифровки** (`/transcripts/`) — отдельная коллекция `transcripts` (не `posts`), интерактивные разборы видео. Каждая статья = папка `dev/src/content/transcripts/<slug>/` с `index.md` (структура + тело-разбор) и опциональным `transcript.md` (полная расшифровка, не публикуется — коллекция грузит только `index.md`). Богатый фронтматтер: `tldr`, `video`, `ratings[]`, `tags[]`, `insights[]`, `tips[]`, `flowchart[]`, `plan[]`, `quiz[]`, `related[]` (см. Zod-схему в `content.config.ts`). Раздел описан в `TRANSCRIPTS_SECTION`/`SECTIONS` в `categories.ts`; теги — каталог `dev/src/lib/tags.ts`. Интерактивные блоки — `dev/src/components/transcript/`, страницы — `dev/src/pages/transcripts/`. Живое оглавление с фильтром по тегам генерируется само на `/transcripts/`. Как собирать такую статью — скилл `.claude/skills/transcript-article/` (в Codex тот же путь доступен как `.codex/skills/transcript-article/`) и агенты `video-analyst` / `transcript-builder` из `.claude/agents` или `.codex/agents`.
 
 ## Рабочий цикл
 

@@ -9,14 +9,20 @@ model: opus
 готовый анализ видео (от пользователя или от агента `video-analyst`). На выходе — рабочая
 статья в общей стилистике сайта, прошедшая сборку.
 
+## Совместимость Claude/Codex
+Этот prompt является общим источником для `.claude/agents/transcript-builder.md` и
+`.codex/agents/transcript-builder.md`. В Claude применяются поля `tools`/`model` из
+frontmatter. В Codex используй этот файл как ролевую инструкцию и подставляй доступные
+эквиваленты инструментов: чтение файлов, правку, shell и web-поиск.
+
 ## Перед началом
 Прочитай скилл и спеку — это источник истины:
-- `.claude/skills/transcript-article/SKILL.md`
-- `.claude/skills/transcript-article/references/article-spec.md`
+- `.claude/skills/transcript-article/SKILL.md` или `.codex/skills/transcript-article/SKILL.md`
+- `.claude/skills/transcript-article/references/article-spec.md` или `.codex/skills/transcript-article/references/article-spec.md`
 - Эталон: `dev/src/content/transcripts/karpathy-llm/index.md` (копируй его структуру).
 
 ## Процесс
-1. **Прочитай анализ** (`Read`/`WebFetch`). Если он сырой/неполный — попроси запустить
+1. **Прочитай анализ** файловым или веб-инструментом. Если он сырой/неполный — попроси запустить
    `video-analyst` или дособери недостающее сам по расшифровке и доп. исследованием.
 2. **Слаг** — латиницей, кратко, по сути (напр. `karpathy-llm`).
 3. **Теги** — открой `dev/src/lib/tags.ts`, переиспользуй существующие слаги; новые
@@ -42,7 +48,7 @@ model: opus
    UserStories, Flowchart, Plan, Quiz, Glossary, Collapsible, RelatedArticles, TagChips) —
    менять их обычно не нужно, статья управляется данными фронтматтера.
 
-## Дизайн-рамки (см. CLAUDE.md)
+## Дизайн-рамки (см. CLAUDE.md/AGENTS.md)
 - Стиль «яркий минимализм»: воздух, крупная типографика, токены вместо сырых цветов.
 - Нейро-градиент — точечно (TLDR, рейтинги, кнопка play); не перегружай.
 - Тёмная/светлая темы работают автоматически на токенах — новых сырых цветов не вводи.
