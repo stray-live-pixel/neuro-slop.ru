@@ -21,13 +21,13 @@ const cat = CATEGORIES[post.data.category];
         src={post.data.cover}
         alt=""
         loading="lazy"
-        class="absolute inset-0 h-full w-full scale-[1.06] object-cover blur-[6px] transition-transform duration-700 group-hover:scale-[1.1]"
+        class="absolute inset-0 h-full w-full scale-[1.06] object-cover blur-[8px] transition-transform duration-700 group-hover:scale-[1.1]"
       />
     ) : (
       <div class="absolute inset-0" style={`background: ${cat.gradient}`}></div>
     )
   }
-  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/25"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/30"></div>
 
   <p class="relative flex items-center justify-between gap-3 text-[13px]">
     <span
@@ -47,7 +47,7 @@ const cat = CATEGORIES[post.data.category];
       {post.data.title}
     </h3>
     <span class="mt-2 flex items-end justify-between gap-6">
-      <span class="line-clamp-2 max-w-[52ch] text-[15px] leading-normal text-white/80">
+      <span class="line-clamp-3 max-w-[52ch] text-[15px] leading-normal text-white/80">
         {post.data.description}
       </span>
       <span
