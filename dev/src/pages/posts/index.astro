@@ -25,7 +25,8 @@ const entries = [
       {
         SECTIONS.map((section) => (
           <a
-            class="bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+            class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+            style={`background: ${section.gradient}`}
             href={section.href}
           >
             <Icon name={section.icon} class="size-4" />
