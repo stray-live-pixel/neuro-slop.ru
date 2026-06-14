@@ -12,7 +12,7 @@ const cat = CATEGORIES[post.data.category];
 ---
 
 <a
-  class="glow-card group border-border/60 relative flex aspect-[21/9] flex-col justify-between gap-6 overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl md:p-8"
+  class="glow-card group border-border/60 relative flex aspect-[16/9] flex-col justify-between gap-6 overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:aspect-[21/9] md:p-8"
   href={`/posts/${post.id}/`}
 >
   {
@@ -46,7 +46,7 @@ const cat = CATEGORIES[post.data.category];
     <h3 class="line-clamp-2 text-[clamp(1.35rem,2.2vw,1.7rem)] leading-tight font-bold tracking-tight text-white">
       {post.data.title}
     </h3>
-    <span class="mt-2 flex items-end justify-between gap-6">
+    <span class="mt-2 flex items-end justify-between gap-6 max-sm:hidden">
       <span class="line-clamp-3 max-w-[52ch] text-[15px] leading-normal text-white/80">
         {post.data.description}
       </span>
