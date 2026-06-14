@@ -78,10 +78,6 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
       </header>
 
       <div class="space-y-16">
-        <Tldr text={d.tldr} />
-
-        <Ratings ratings={d.ratings} />
-
         <VideoEmbed
           url={d.video.url}
           title={d.video.title}
@@ -89,6 +85,10 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
           duration={d.video.duration}
           cover={d.cover}
         />
+
+        <Tldr text={d.tldr} />
+
+        <Ratings ratings={d.ratings} />
 
         {d.insights && d.insights.length > 0 && <Insights insights={d.insights} />}
 

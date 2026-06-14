@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff9004"/>
+      <stop offset="52%" stop-color="#c959dd"/>
+      <stop offset="100%" stop-color="#0894ff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="28%" cy="24%" r="62%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#bg)"/>
+  <rect width="1200" height="600" fill="url(#glow)"/>
+
+  <!-- Видео слева -->
+  <g>
+    <rect x="150" y="200" width="280" height="200" rx="22" fill="#000" fill-opacity="0.32"/>
+    <rect x="150" y="200" width="280" height="200" rx="22" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="2"/>
+    <circle cx="290" cy="300" r="46" fill="#fff" fill-opacity="0.92"/>
+    <path d="M278 278 L318 300 L278 322 Z" fill="#c959dd"/>
+  </g>
+
+  <!-- Стрелка превращения -->
+  <g fill="#fff" fill-opacity="0.9">
+    <rect x="470" y="292" width="120" height="16" rx="8"/>
+    <path d="M588 280 L626 300 L588 320 Z"/>
+  </g>
+
+  <!-- Структурированная статья справа -->
+  <g>
+    <rect x="680" y="150" width="370" height="300" rx="24" fill="#000" fill-opacity="0.35"/>
+    <rect x="680" y="150" width="370" height="300" rx="24" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="2"/>
+    <!-- Заголовок + звёзды-оценки -->
+    <rect x="716" y="190" width="220" height="20" rx="10" fill="#fff" fill-opacity="0.85"/>
+    <g fill="#fff" fill-opacity="0.95">
+      <path d="M716 232 l6 12 13 2 -9.5 9 2 13 -11.5 -6 -11.5 6 2 -13 -9.5 -9 13 -2 Z"/>
+      <path d="M760 232 l6 12 13 2 -9.5 9 2 13 -11.5 -6 -11.5 6 2 -13 -9.5 -9 13 -2 Z"/>
+      <path d="M804 232 l6 12 13 2 -9.5 9 2 13 -11.5 -6 -11.5 6 2 -13 -9.5 -9 13 -2 Z"/>
+      <path d="M848 232 l6 12 13 2 -9.5 9 2 13 -11.5 -6 -11.5 6 2 -13 -9.5 -9 13 -2 Z" fill-opacity="0.4"/>
+    </g>
+    <!-- Шкалы / строки разбора -->
+    <rect x="716" y="296" width="298" height="14" rx="7" fill="#fff" fill-opacity="0.5"/>
+    <rect x="716" y="324" width="262" height="14" rx="7" fill="#fff" fill-opacity="0.5"/>
+    <rect x="716" y="352" width="288" height="14" rx="7" fill="#fff" fill-opacity="0.5"/>
+    <!-- Чек-пункты плана -->
+    <circle cx="724" cy="392" r="9" fill="#fff" fill-opacity="0.9"/>
+    <path d="M719 392 l4 4 7 -8" fill="none" stroke="#c959dd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="744" y="385" width="200" height="14" rx="7" fill="#fff" fill-opacity="0.5"/>
+    <circle cx="724" cy="420" r="9" fill="#fff" fill-opacity="0.9"/>
+    <path d="M719 420 l4 4 7 -8" fill="none" stroke="#c959dd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="744" y="413" width="160" height="14" rx="7" fill="#fff" fill-opacity="0.5"/>
+  </g>
+</svg>

@@ -13,76 +13,50 @@ const { url, title, channel, duration, cover } = Astro.props;
 const ytId = url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/)?.[1];
 const poster = cover ?? (ytId ? `https://i.ytimg.com/vi/${ytId}/maxresdefault.jpg` : undefined);
 const meta = [channel, duration].filter(Boolean).join(' · ');
+const linkLabel = ytId ? 'Смотреть на YouTube' : 'Открыть видео';
 ---
 
-<section
-  class="yt-facade group border-border/60 relative overflow-hidden rounded-3xl border"
-  data-yt={ytId}
-  data-url={url}
+<a
+  href={url}
+  target="_blank"
+  rel="noopener"
+  class="group border-border/60 relative block overflow-hidden rounded-3xl border"
+  aria-label={linkLabel}
 >
   {
     poster ? (
       <img
         src={poster}
-        alt={title ?? 'Превью видео'}
-        class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+        alt=""
+        class="absolute inset-0 h-full w-full scale-[1.4] object-cover blur-2xl transition-transform duration-700 group-hover:scale-[1.45]"
         onerror={ytId ? `this.onerror=null;this.src='https://i.ytimg.com/vi/${ytId}/hqdefault.jpg'` : undefined}
       />
     ) : (
       <div class="absolute inset-0" style="background: var(--gradient-brand)" />
     )
   }
-  <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/40"></div>
 
-  <button
-    type="button"
-    class="yt-play absolute inset-0 flex items-center justify-center"
-    aria-label="Смотреть видео"
+  <span
+    class="absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-1.5 text-[13px] font-medium text-white/90 backdrop-blur-sm transition-colors group-hover:bg-black/65"
   >
+    {linkLabel}
+    <Icon name="arrow-up-right" class="size-3.5" />
+  </span>
+
+  <span class="absolute inset-0 flex items-center justify-center">
     <span
       class="flex size-20 items-center justify-center rounded-full text-white shadow-xl transition-transform duration-300 group-hover:scale-110"
       style="background: var(--gradient-brand)"
     >
       <Icon name="play" class="size-9 translate-x-0.5" />
     </span>
-  </button>
+  </span>
 
-  <div class="pointer-events-none relative flex min-h-[230px] items-end p-6 md:min-h-[340px] md:p-8">
+  <div class="relative flex min-h-[220px] items-end p-6 md:min-h-[300px] md:p-8">
     <div class="max-w-[80%]">
       {title && <p class="text-lg leading-snug font-semibold text-white md:text-xl">{title}</p>}
       {meta && <p class="mt-1.5 text-sm font-medium text-white/75">{meta}</p>}
     </div>
   </div>
-
-  <a
-    href={url}
-    target="_blank"
-    rel="noopener"
-    class="absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-1.5 text-[13px] font-medium text-white/90 backdrop-blur-sm transition-colors hover:bg-black/65"
-  >
-    Открыть
-    <Icon name="arrow-up-right" class="size-3.5" />
-  </a>
-</section>
-
-<script>
-  document.querySelectorAll<HTMLElement>('.yt-facade').forEach((el) => {
-    const btn = el.querySelector<HTMLButtonElement>('.yt-play');
-    const id = el.dataset.yt;
-    const url = el.dataset.url!;
-    btn?.addEventListener('click', () => {
-      if (!id) {
-        window.open(url, '_blank', 'noopener');
-        return;
-      }
-      const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
-      iframe.title = 'Видео';
-      iframe.allow =
-        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-      iframe.allowFullscreen = true;
-      iframe.className = 'absolute inset-0 h-full w-full';
-      el.replaceChildren(iframe);
-    });
-  });
-</script>
+</a>

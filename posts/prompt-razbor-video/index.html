@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="ru"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Промпт для ИИ-агента: читает расшифровку видео и отдаёт готовый index.md для раздела «Расшифровки» — с оценками, инсайтами, советами, блок-схемой и тестом."><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://neuro-slop.ru/posts/prompt-razbor-video/"><meta property="og:title" content="Промпт: разбор видео для раздела «Расшифровки» — Neuro Slop"><meta property="og:description" content="Промпт для ИИ-агента: читает расшифровку видео и отдаёт готовый index.md для раздела «Расшифровки» — с оценками, инсайтами, советами, блок-схемой и тестом."><meta property="og:type" content="website"><meta property="og:url" content="https://neuro-slop.ru/posts/prompt-razbor-video/"><meta property="og:site_name" content="neuro-slop.ru"><meta property="og:locale" content="ru_RU"><meta property="og:image" content="https://neuro-slop.ru/images/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Промпт: разбор видео для раздела «Расшифровки» — Neuro Slop"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Промпт: разбор видео для раздела «Расшифровки» — Neuro Slop"><meta name="twitter:description" content="Промпт для ИИ-агента: читает расшифровку видео и отдаёт готовый index.md для раздела «Расшифровки» — с оценками, инсайтами, советами, блок-схемой и тестом."><meta name="twitter:image" content="https://neuro-slop.ru/images/og.png"><title>Промпт: разбор видео для раздела «Расшифровки» — Neuro Slop</title><script>
+      // Тема: localStorage → системная. Выполняется до отрисовки, чтобы не мигало.
+      (() => {
+        const stored = localStorage.getItem('theme');
+        const dark =
+          stored === 'dark' ||
+          (!stored && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+
+        window.__setTheme = (theme) => {
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+          localStorage.setItem('theme', theme);
+        };
+      })();
+    </script><!-- Yandex.Metrika counter --><script type="text/javascript">
+      (function(m,e,t,r,i,k,a){
+          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109813401', 'ym');
+
+      ym(109813401, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script><noscript><div><img src="https://mc.yandex.ru/watch/109813401" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter --><link rel="stylesheet" href="/_astro/_category_.xaJkJoTv.css"></head> <body class="bg-background text-foreground flex min-h-svh flex-col overscroll-none antialiased"> <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true"> <div class="aurora-blob aurora-blob-1"></div> <div class="aurora-blob aurora-blob-2"></div> <div class="aurora-blob aurora-blob-3"></div> <div class="dot-grid"></div> <div class="cursor-glow" data-cursor-glow></div> </div> <script type="module">const i=document.querySelector("[data-cursor-glow]"),c=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(i&&!c&&window.matchMedia("(pointer: fine)").matches){let n=0,r=0,e=0,t=0,a=0;const s=()=>{e+=(n-e)*.06,t+=(r-t)*.06,i.style.transform=`translate3d(${e}px, ${t}px, 0)`,Math.abs(n-e)>.5||Math.abs(r-t)>.5?a=requestAnimationFrame(s):a=0};window.addEventListener("pointermove",o=>{n=o.clientX,r=o.clientY,i.classList.add("is-active"),a||(a=requestAnimationFrame(s))}),document.documentElement.addEventListener("pointerleave",()=>{i.classList.remove("is-active")})}</script> <header class="bg-background/60 border-border/60 sticky top-0 z-50 border-b backdrop-blur-xl backdrop-saturate-150"> <nav class="mx-auto flex h-14 w-full max-w-[1920px] items-center justify-between px-5 md:px-10 2xl:px-16"> <a href="/" class="text-foreground text-[15px] font-semibold tracking-tight transition-opacity hover:opacity-70"> <span class="text-gradient text-gradient-animated">neuro‑slop.ru</span> </a> <div class="flex items-center gap-1 sm:gap-2"> <a href="/posts/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Записи
+</a> <a href="/transcripts/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Расшифровки
+</a> <button data-slot="button" class="group/button focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 [&#38;_svg]:pointer-events-none [&#38;_svg]:shrink-0 [&#38;_svg:not([class*='size-'])]:size-4 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 size-8 in-data-[slot=button-group]:rounded-md relative rounded-full" data-theme-toggle="true" aria-label="Toggle theme">  <svg class="dark:hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" />
+</svg> <svg class="hidden dark:block" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+</svg> <span class="sr-only">Toggle theme</span>  </button> <script>
+  if (!window.__themeToggleHandlersInitialized) {
+    window.__themeToggleHandlersInitialized = true
+
+    const syncThemeToggles = () => {
+      const isDark = document.documentElement.classList.contains("dark")
+
+      document.querySelectorAll("[data-theme-toggle]").forEach((toggle) => {
+        if (!(toggle instanceof HTMLButtonElement)) return
+
+        toggle.setAttribute("aria-pressed", isDark ? "true" : "false")
+        toggle.setAttribute("data-state", isDark ? "on" : "off")
+
+        if (isDark) {
+          toggle.setAttribute("data-pressed", "")
+        } else {
+          toggle.removeAttribute("data-pressed")
+        }
+      })
+    }
+
+    syncThemeToggles()
+
+    const observer = new MutationObserver(syncThemeToggles)
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
+    document.addEventListener("click", (event) => {
+      const target = event.target
+
+      if (!(target instanceof Element)) return
+
+      const toggle = target.closest("[data-theme-toggle]")
+
+      if (!(toggle instanceof HTMLButtonElement)) return
+      if (toggle.disabled) return
+
+      const isDark = document.documentElement.classList.contains("dark")
+      const nextTheme = isDark ? "light" : "dark"
+
+      if (typeof window.__setTheme === "function") {
+        window.__setTheme(nextTheme)
+        return
+      }
+
+      document.documentElement.classList[
+        nextTheme === "dark" ? "add" : "remove"
+      ]("dark")
+    })
+  }
+</script> </div> </nav> </header> <div class="flex-1">  <main class="mx-auto w-full max-w-[760px] px-5 pt-16 md:px-0"> <article> <header class="mb-12"> <p class="text-muted-foreground flex items-center gap-2 text-sm"> <a href="/category/prompts/" class="hover:text-foreground inline-flex items-center gap-1.5 font-semibold transition-colors"> <svg class="size-4" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
+  <path d="M20 2v4" />
+  <path d="M22 4h-4" />
+  <circle cx="4" cy="20" r="2" />
+</svg> Промпты </a> <span>·</span> <time datetime="2026-06-14T00:00:00.000Z">14 июня 2026 г.</time> </p> <h1 class="mt-4 text-[clamp(2.25rem,5.5vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance"> Промпт: разбор видео для раздела «Расшифровки» </h1> <p class="text-muted-foreground mt-5 text-xl leading-relaxed font-medium"> Промпт для ИИ-агента: читает расшифровку видео и отдаёт готовый index.md для раздела «Расшифровки» — с оценками, инсайтами, советами, блок-схемой и тестом. </p>  <div class="from-border mt-10 h-px w-full bg-gradient-to-r to-transparent"></div> </header>  <div class="prose"> <p>Статьи в раздел «Расшифровки» собираются из видео в два шага: сначала ИИ-агент по полной расшифровке делает глубокий разбор, потом этот разбор превращается в интерактивную статью. Этот промпт закрывает оба шага сразу — на выходе готовый <code>index.md</code>, который остаётся положить в папку статьи и собрать сайт. Задача промпта — не пересказать видео, а выжать из него максимум пользы и помочь закрепить материал: оценки полезности, инсайты, применимые советы, логику аргументации, план внедрения и тест на понимание.</p>
+<h2 id="промпт">Промпт</h2>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Ты — аналитик видеоконтента. Сделай из видео глубокий разбор для раздела</span></span>
+<span class="line"><span>«Расшифровки» моего сайта об ИИ-экспериментах. Цель — выжать максимум пользы</span></span>
+<span class="line"><span>и помочь закрепить материал: не пересказ, а инструмент, к которому</span></span>
+<span class="line"><span>возвращаются. Беспощадно режь воду.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Входные данные:</span></span>
+<span class="line"><span>- Полная расшифровка видео: {вставь расшифровку или, если она в этом</span></span>
+<span class="line"><span>  репозитории, прочитай файл целиком}</span></span>
+<span class="line"><span>- Ссылка на видео: {url}</span></span>
+<span class="line"><span>- Канал / автор: {канал}</span></span>
+<span class="line"><span>- Длительность: {чч:мм:сс}</span></span>
+<span class="line"><span>- Слаг статьи (латиницей, кратко по сути): {слаг}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Сначала изучи расшифровку целиком. Если для точности или актуальности на</span></span>
+<span class="line"><span>текущий момент нужно — перепроверь факты во внешних источниках. Не выдумывай</span></span>
+<span class="line"><span>факты, цифры и инсайты: сомневаешься — проверь или не пиши.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Результат — ОДИН fenced-блок с полным содержимым markdown-файла, я скопирую</span></span>
+<span class="line"><span>его как есть. Строкой перед блоком укажи путь:</span></span>
+<span class="line"><span>dev/src/content/transcripts/{слаг}/index.md</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Формат файла (структуру и порядок полей не менять; все строковые значения —</span></span>
+<span class="line"><span>в одинарных кавычках, внутренние одинарные кавычки удваивать: '' ):</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span>title: '...'</span></span>
+<span class="line"><span>description: '...'</span></span>
+<span class="line"><span>tldr: '...'</span></span>
+<span class="line"><span>date: &#x3C;сегодняшняя дата ГГГГ-ММ-ДД></span></span>
+<span class="line"><span>cover: 'https://i.ytimg.com/vi/&#x3C;id видео>/maxresdefault.jpg'</span></span>
+<span class="line"><span>video:</span></span>
+<span class="line"><span>  url: '{url}'</span></span>
+<span class="line"><span>  title: '&#x3C;исходное название видео>'</span></span>
+<span class="line"><span>  channel: '{канал}'</span></span>
+<span class="line"><span>  duration: '&#x3C;напр. 1 ч 27 мин>'</span></span>
+<span class="line"><span>  platform: youtube</span></span>
+<span class="line"><span>tags:</span></span>
+<span class="line"><span>  - &#x3C;slug-из-каталога></span></span>
+<span class="line"><span>ratings:</span></span>
+<span class="line"><span>  - label: 'Актуальность информации'</span></span>
+<span class="line"><span>    value: &#x3C;1..5, можно дробь></span></span>
+<span class="line"><span>    note: '&#x3C;одна фраза, почему такая оценка>'</span></span>
+<span class="line"><span>  - label: 'Содержательность'</span></span>
+<span class="line"><span>    value: &#x3C;1..5></span></span>
+<span class="line"><span>    note: '...'</span></span>
+<span class="line"><span>  - label: 'Инновационность идей'</span></span>
+<span class="line"><span>    value: &#x3C;1..5></span></span>
+<span class="line"><span>    note: '...'</span></span>
+<span class="line"><span>  # по желанию — 4-я рубрика (Применимость, Доступность изложения, Достоверность…)</span></span>
+<span class="line"><span>insights:</span></span>
+<span class="line"><span>  - title: '&#x3C;крючок-инсайт>'</span></span>
+<span class="line"><span>    text: '&#x3C;раскрытие: что переворачивает взгляд на тему>'</span></span>
+<span class="line"><span>  # до 5</span></span>
+<span class="line"><span>tips:</span></span>
+<span class="line"><span>  - title: '&#x3C;императив-совет>'</span></span>
+<span class="line"><span>    text: '&#x3C;как и зачем применить>'</span></span>
+<span class="line"><span>  # до 5</span></span>
+<span class="line"><span>flowchart:</span></span>
+<span class="line"><span>  - title: '&#x3C;шаг логики>'</span></span>
+<span class="line"><span>    type: premise   # premise | argument | example | conclusion</span></span>
+<span class="line"><span>    detail: '&#x3C;что происходит на этом шаге>'</span></span>
+<span class="line"><span>  # 5–8 узлов логики аргументации (НЕ таймкоды)</span></span>
+<span class="line"><span>plan:</span></span>
+<span class="line"><span>  - step: '&#x3C;шаг внедрения>'</span></span>
+<span class="line"><span>    detail: '&#x3C;как именно начать>'</span></span>
+<span class="line"><span>  # последним шагом можно добавить «как понять, что сработало»</span></span>
+<span class="line"><span>quiz:</span></span>
+<span class="line"><span>  - question: '...'</span></span>
+<span class="line"><span>    options:</span></span>
+<span class="line"><span>      - '&#x3C;вариант 1>'</span></span>
+<span class="line"><span>      - '&#x3C;вариант 2>'</span></span>
+<span class="line"><span>      - '&#x3C;вариант 3>'</span></span>
+<span class="line"><span>      - '&#x3C;вариант 4>'</span></span>
+<span class="line"><span>    answer: &#x3C;индекс правильного варианта, считая с 0></span></span>
+<span class="line"><span>    correctText: '&#x3C;подтверждение и усиление мысли>'</span></span>
+<span class="line"><span>    wrongText: '&#x3C;мягкая поправка и подсказка верного направления>'</span></span>
+<span class="line"><span>  # РОВНО 5 вопросов</span></span>
+<span class="line"><span>draft: true</span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Стоит ли смотреть целиком</span></span>
+<span class="line"><span>&#x3C;2–5 абзацев необязательного подробного разбора с подзаголовками ##.</span></span>
+<span class="line"><span>Если добавить нечего сверх блоков выше — оставь тело пустым.></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Требования к содержимому:</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>1. title — осмысленный, полезный, ёмкий. НЕ кликбейт и НЕ дословное</span></span>
+<span class="line"><span>   название видео: отрази главную ценность.</span></span>
+<span class="line"><span>2. description — 1–2 предложения: подзаголовок и meta-описание.</span></span>
+<span class="line"><span>3. tldr — РОВНО 2 коротких предложения: суть + главный поворот.</span></span>
+<span class="line"><span>   Без «в этом видео автор рассказывает».</span></span>
+<span class="line"><span>4. ratings — оценки 1–5 (можно дробные) с короткой note у каждой. Базовые</span></span>
+<span class="line"><span>   рубрики: актуальность, содержательность (меньше воды — выше),</span></span>
+<span class="line"><span>   инновационность; 4-я — по желанию, если осмысленна.</span></span>
+<span class="line"><span>5. tags — 1–4 тега ТОЛЬКО из каталога ниже. Если ничего не подходит —</span></span>
+<span class="line"><span>   заведи новый короткий латинский слаг и отдельной строкой ПЕРЕД блоком</span></span>
+<span class="line"><span>   напиши, что его нужно добавить в dev/src/lib/tags.ts.</span></span>
+<span class="line"><span>6. insights — до 5: то, что переворачивает отношение к теме или раскрывает</span></span>
+<span class="line"><span>   неочевидное. Лучше 2 настоящих, чем 5 натянутых.</span></span>
+<span class="line"><span>7. tips — до 5: конкретные применимые действия для саморазвития, без</span></span>
+<span class="line"><span>   банальностей.</span></span>
+<span class="line"><span>8. flowchart — логика аргументации видео (5–8 узлов), типы</span></span>
+<span class="line"><span>   premise/argument/example/conclusion; в detail — суть шага.</span></span>
+<span class="line"><span>9. plan — пошаговый выполнимый план внедрения (если в видео есть</span></span>
+<span class="line"><span>   рекомендации): глаголы действия, от простого к сложному, реальные сроки.</span></span>
+<span class="line"><span>10. quiz — РОВНО 5 вопросов на понимание (не на память мелочей): один</span></span>
+<span class="line"><span>    правильный вариант (answer — индекс с 0), остальные правдоподобны;</span></span>
+<span class="line"><span>    correctText закрепляет, wrongText мягко поправляет.</span></span>
+<span class="line"><span>11. cover — превью YouTube по id видео; если есть своя обложка — укажи путь</span></span>
+<span class="line"><span>    /images/covers/{слаг}.&#x3C;ext> и приложи файл.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Каталог тегов (переиспользуй слаги):</span></span>
+<span class="line"><span>ai, programming, economics, business, startups, finance, career,</span></span>
+<span class="line"><span>productivity, education, science, psychology, philosophy, health, design,</span></span>
+<span class="line"><span>marketing, future, entertainment.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Чего не делать: не лить воду, не продавать, не выдумывать факты, не</span></span>
+<span class="line"><span>кликбейтить заголовок, не пересказывать видео целиком — выжимай пользу.</span></span></code></pre>
+<h2 id="как-пользоваться">Как пользоваться</h2>
+<ol>
+<li>Вставь промпт в сессию агента там, где лежит расшифровка видео (или вставь расшифровку прямо в промпт), подставив <code>url</code>, канал, длительность и слаг.</li>
+<li>Агент вернёт один markdown-файл — содержимое <code>index.md</code>. Создай папку <code>dev/src/content/transcripts/{слаг}/</code> и положи файл туда как <code>index.md</code>.</li>
+<li>Обложку проверь: ссылка <code>maxresdefault.jpg</code> есть не у всех видео — если превью не грузится, поставь <code>hqdefault.jpg</code> или положи свою картинку в <code>dev/public/images/covers/{слаг}.svg</code>.</li>
+<li>Глянь черновик в <code>npm run dev</code>, убери <code>draft: true</code> — и <code>npm run build</code>. Статья сама попадёт в живое оглавление <code>/transcripts/</code>, в свежее на главной и подтянет похожие по тегам.</li>
+</ol>
+<p>Не хочешь возиться руками — просто пришли мне путь к готовому файлу или к разбору, и я доведу: подберу обложку и теги, проставлю связи и соберу сайт.</p> </div> <p class="mt-14"> <a href="/posts/" class="text-primary text-sm font-medium hover:underline">← Все записи</a> </p> </article> </main>  </div> <footer class="border-border/60 mt-16 border-t"> <div class="text-muted-foreground mx-auto flex w-full max-w-[1920px] flex-col items-center justify-between gap-2 px-5 py-8 text-[13px] sm:flex-row md:px-10 2xl:px-16"> <p>© 2026 neuro-slop.ru</p> <p>Сделано вместе с нейросетями</p> </div> </footer> </body> </html>
