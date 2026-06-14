@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import TranscriptCard from '../../components/TranscriptCard.astro';
+import { TRANSCRIPTS_SECTION } from '../../lib/categories';
+import { tagLabel } from '../../lib/tags';
+import { Icon } from '@/components/ui/icon';
+
+const entries = (
+  await getCollection('transcripts', ({ data }) => import.meta.env.DEV || !data.draft)
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Уникальные теги для фильтра — по убыванию частоты
+const counts = new Map<string, number>();
+for (const e of entries) for (const t of e.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([slug]) => slug);
+---
+
+<Layout title={`${TRANSCRIPTS_SECTION.label} — Neuro Slop`} description={TRANSCRIPTS_SECTION.description}>
+  <main class="mx-auto w-full max-w-[1440px] px-5 pt-16 md:px-10">
+    <span
+      class="mb-5 flex size-16 items-center justify-center rounded-2xl text-white shadow-md"
+      style={`background: ${TRANSCRIPTS_SECTION.gradient}`}
+    >
+      <Icon name={TRANSCRIPTS_SECTION.icon} class="size-8" />
+    </span>
+    <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[-0.03em]">
+      {TRANSCRIPTS_SECTION.label}
+    </h1>
+    <p class="text-muted-foreground mt-3 max-w-2xl text-xl font-medium">
+      {TRANSCRIPTS_SECTION.description}
+    </p>
+
+    {
+      entries.length > 0 ? (
+        <>
+          {tags.length > 0 && (
+            <div class="mt-8 mb-10 flex flex-wrap gap-2" data-tag-filter>
+              <button
+                type="button"
+                class="tag-chip is-active bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+                data-tag="*"
+              >
+                Все
+              </button>
+              {tags.map((t) => (
+                <button
+                  type="button"
+                  class="tag-chip bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+                  data-tag={t}
+                >
+                  <Icon name="tag" class="size-3.5 opacity-60" />
+                  {tagLabel(t)}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div class="grid grid-cols-1 gap-5 xl:grid-cols-2" data-grid>
+            {entries.map((entry) => (
+              <TranscriptCard entry={entry} />
+            ))}
+          </div>
+
+          <p class="text-muted-foreground mt-10 hidden text-center" data-empty>
+            По этому тегу пока ничего нет.
+          </p>
+        </>
+      ) : (
+        <div class="bg-card/60 border-border/60 mt-10 rounded-2xl border px-8 py-16 text-center backdrop-blur-sm">
+          <p class="text-muted-foreground">Здесь пока пусто — разборы появятся позже.</p>
+        </div>
+      )
+    }
+
+    <p class="mt-14">
+      <a href="/posts/" class="text-primary text-sm font-medium hover:underline">← Все записи</a>
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const filter = document.querySelector<HTMLElement>('[data-tag-filter]');
+  if (filter) {
+    const chips = Array.from(filter.querySelectorAll<HTMLButtonElement>('.tag-chip'));
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-grid] [data-tags]'));
+    const empty = document.querySelector<HTMLElement>('[data-empty]');
+
+    function apply(tag: string) {
+      let shown = 0;
+      cards.forEach((card) => {
+        const has = tag === '*' || (card.dataset.tags ?? '').split(' ').includes(tag);
+        card.classList.toggle('hidden', !has);
+        if (has) shown += 1;
+      });
+      chips.forEach((c) => c.classList.toggle('is-active', c.dataset.tag === tag));
+      empty?.classList.toggle('hidden', shown > 0);
+    }
+
+    chips.forEach((c) =>
+      c.addEventListener('click', () => {
+        const tag = c.dataset.tag!;
+        apply(tag);
+        const url = new URL(location.href);
+        if (tag === '*') url.searchParams.delete('tag');
+        else url.searchParams.set('tag', tag);
+        history.replaceState(null, '', url);
+      })
+    );
+
+    const initial = new URLSearchParams(location.search).get('tag');
+    if (initial && chips.some((c) => c.dataset.tag === initial)) apply(initial);
+  }
+</script>
+
+<style>
+  .tag-chip.is-active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+</style>

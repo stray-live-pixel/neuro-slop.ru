@@ -1,0 +1,210 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface Question {
+  question: string;
+  options: string[];
+  answer: number;
+  correctText: string;
+  wrongText: string;
+}
+interface Props {
+  quiz: Question[];
+}
+const { quiz } = Astro.props;
+---
+
+<section data-quiz>
+  <SectionHeading
+    icon="circle-help"
+    title="Проверь себя"
+    hint="5 вопросов, чтобы материал закрепился"
+  />
+
+  <div class="border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-7">
+    <div
+      class="text-muted-foreground mb-5 flex items-center justify-between gap-3 text-sm font-medium"
+    >
+      <span>Отвечено: <span data-answered>0</span> / {quiz.length}</span>
+      <span>Верно: <span data-score class="text-foreground font-semibold">0</span></span>
+    </div>
+
+    <ol class="space-y-7">
+      {
+        quiz.map((q, qi) => (
+          <li class="quiz-q" data-answer={q.answer}>
+            <p class="text-[16px] leading-snug font-semibold">
+              <span class="text-muted-foreground">{qi + 1}.</span> {q.question}
+            </p>
+            <div class="mt-3 grid gap-2">
+              {q.options.map((opt, oi) => (
+                <button
+                  type="button"
+                  class="quiz-opt border-border/70 hover:border-primary/60 hover:bg-accent/60 flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-[15px] transition-colors"
+                  data-index={oi}
+                >
+                  <span class="quiz-marker border-border text-muted-foreground flex size-6 shrink-0 items-center justify-center rounded-full border text-[13px] font-semibold">
+                    {String.fromCharCode(65 + oi)}
+                  </span>
+                  <span class="flex-1">{opt}</span>
+                </button>
+              ))}
+            </div>
+            <p
+              class="quiz-feedback mt-3 hidden rounded-xl px-4 py-3 text-[14px] leading-relaxed"
+              data-correct={q.correctText}
+              data-wrong={q.wrongText}
+            />
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="quiz-result mt-7 hidden rounded-2xl border p-6 text-center">
+      <p class="text-3xl font-bold tracking-tight">
+        <span data-final>0</span> / {quiz.length}
+      </p>
+      <p class="quiz-result-msg text-muted-foreground mt-2 text-[15px]"></p>
+      <button
+        type="button"
+        class="quiz-retry text-primary mt-4 text-sm font-medium hover:underline"
+      >
+        Пройти заново
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initQuiz(root: HTMLElement) {
+    const questions = Array.from(root.querySelectorAll<HTMLElement>('.quiz-q'));
+    const answeredEl = root.querySelector<HTMLElement>('[data-answered]')!;
+    const scoreEl = root.querySelector<HTMLElement>('[data-score]')!;
+    const resultBox = root.querySelector<HTMLElement>('.quiz-result')!;
+    const finalEl = root.querySelector<HTMLElement>('[data-final]')!;
+    const msgEl = root.querySelector<HTMLElement>('.quiz-result-msg')!;
+    const retryBtn = root.querySelector<HTMLButtonElement>('.quiz-retry')!;
+    const total = questions.length;
+
+    let answered = 0;
+    let score = 0;
+
+    function tiers(s: number, t: number): string {
+      const ratio = s / t;
+      if (ratio === 1) return 'Идеально! Материал усвоен на отлично.';
+      if (ratio >= 0.6) return 'Хороший результат — основное ты ухватил.';
+      if (ratio >= 0.3) return 'Неплохо для старта. Стоит пробежаться по статье ещё раз.';
+      return 'Самое время перечитать разбор — и попробовать снова.';
+    }
+
+    function reset() {
+      answered = 0;
+      score = 0;
+      answeredEl.textContent = '0';
+      scoreEl.textContent = '0';
+      resultBox.classList.add('hidden');
+      resultBox.classList.remove('quiz-pass', 'quiz-fail');
+      questions.forEach((q) => {
+        q.dataset.done = '';
+        const fb = q.querySelector<HTMLElement>('.quiz-feedback')!;
+        fb.classList.add('hidden');
+        fb.classList.remove('quiz-fb-ok', 'quiz-fb-bad');
+        q.querySelectorAll<HTMLButtonElement>('.quiz-opt').forEach((b) => {
+          b.disabled = false;
+          b.classList.remove('quiz-ok', 'quiz-bad', 'quiz-muted');
+        });
+      });
+    }
+
+    questions.forEach((q) => {
+      const correct = Number(q.dataset.answer);
+      const opts = Array.from(q.querySelectorAll<HTMLButtonElement>('.quiz-opt'));
+      const fb = q.querySelector<HTMLElement>('.quiz-feedback')!;
+
+      opts.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (q.dataset.done) return;
+          q.dataset.done = '1';
+          const chosen = Number(btn.dataset.index);
+          const isRight = chosen === correct;
+
+          opts.forEach((b, i) => {
+            b.disabled = true;
+            if (i === correct) b.classList.add('quiz-ok');
+            else if (i === chosen) b.classList.add('quiz-bad');
+            else b.classList.add('quiz-muted');
+          });
+
+          fb.textContent = isRight
+            ? fb.dataset.correct ?? ''
+            : fb.dataset.wrong ?? '';
+          fb.classList.remove('hidden');
+          fb.classList.add(isRight ? 'quiz-fb-ok' : 'quiz-fb-bad');
+
+          answered += 1;
+          if (isRight) score += 1;
+          answeredEl.textContent = String(answered);
+          scoreEl.textContent = String(score);
+
+          if (answered === total) {
+            finalEl.textContent = String(score);
+            msgEl.textContent = tiers(score, total);
+            resultBox.classList.remove('hidden');
+            resultBox.classList.add(score / total >= 0.6 ? 'quiz-pass' : 'quiz-fail');
+          }
+        });
+      });
+    });
+
+    retryBtn.addEventListener('click', reset);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-quiz]').forEach(initQuiz);
+</script>
+
+<style>
+  .quiz-opt.quiz-ok {
+    border-color: color-mix(in oklch, oklch(0.6 0.17 150) 60%, var(--border));
+    background: color-mix(in oklch, oklch(0.6 0.17 150) 14%, transparent);
+  }
+  .quiz-opt.quiz-ok .quiz-marker {
+    background: oklch(0.6 0.17 150);
+    border-color: oklch(0.6 0.17 150);
+    color: white;
+  }
+  .quiz-opt.quiz-bad {
+    border-color: color-mix(in oklch, var(--destructive) 60%, var(--border));
+    background: color-mix(in oklch, var(--destructive) 12%, transparent);
+  }
+  .quiz-opt.quiz-bad .quiz-marker {
+    background: var(--destructive);
+    border-color: var(--destructive);
+    color: white;
+  }
+  .quiz-opt.quiz-muted {
+    opacity: 0.55;
+  }
+  .quiz-opt:disabled {
+    cursor: default;
+  }
+  .quiz-feedback.quiz-fb-ok {
+    background: color-mix(in oklch, oklch(0.6 0.17 150) 12%, transparent);
+    color: color-mix(in oklch, oklch(0.45 0.15 150) 90%, var(--foreground));
+  }
+  .quiz-feedback.quiz-fb-bad {
+    background: color-mix(in oklch, var(--destructive) 10%, transparent);
+    color: color-mix(in oklch, var(--destructive) 85%, var(--foreground));
+  }
+  .quiz-result.quiz-pass {
+    border-color: color-mix(in oklch, oklch(0.6 0.17 150) 50%, var(--border));
+  }
+  .quiz-result.quiz-fail {
+    border-color: color-mix(in oklch, var(--destructive) 45%, var(--border));
+  }
+  :global(.dark) .quiz-feedback.quiz-fb-ok {
+    color: oklch(0.8 0.15 150);
+  }
+  :global(.dark) .quiz-feedback.quiz-fb-bad {
+    color: oklch(0.8 0.12 22);
+  }
+</style>

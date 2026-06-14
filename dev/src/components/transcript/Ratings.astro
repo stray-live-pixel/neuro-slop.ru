@@ -1,0 +1,103 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface Rating {
+  label: string;
+  value: number;
+  note?: string;
+}
+interface Props {
+  ratings: Rating[];
+}
+const { ratings } = Astro.props;
+
+const avg = ratings.reduce((s, r) => s + r.value, 0) / ratings.length;
+const avgPct = (avg / 5) * 100;
+---
+
+<section>
+  <SectionHeading icon="star" title="Оценка видео" hint="Чем выше — тем больше пользы на минуту" />
+
+  <div
+    class="border-border/60 bg-card/60 grid gap-8 rounded-2xl border p-6 backdrop-blur-sm md:grid-cols-[160px_1fr] md:p-8"
+  >
+    <!-- Средняя оценка -->
+    <div class="flex flex-col items-center justify-center">
+      <div class="rating-ring relative grid place-items-center" style={`--pct:${avgPct}`}>
+        <span class="relative text-4xl font-bold tracking-tight">{avg.toFixed(1)}</span>
+      </div>
+      <p class="text-muted-foreground mt-3 text-xs font-semibold tracking-wide uppercase">
+        средняя из 5
+      </p>
+    </div>
+
+    <!-- Рубрики -->
+    <div class="space-y-4">
+      {
+        ratings.map((r) => (
+          <div>
+            <div class="flex items-baseline justify-between gap-3">
+              <span class="text-[15px] font-medium">{r.label}</span>
+              <span class="text-muted-foreground text-sm font-semibold tabular-nums">
+                {r.value.toFixed(1)}
+              </span>
+            </div>
+            <div class="bg-muted mt-1.5 h-2.5 overflow-hidden rounded-full">
+              <div
+                class="rating-bar h-full rounded-full"
+                style={`--val:${(r.value / 5) * 100}%; background: var(--gradient-brand)`}
+              />
+            </div>
+            {r.note && <p class="text-muted-foreground mt-1.5 text-[13px] leading-snug">{r.note}</p>}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .rating-ring {
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from -90deg,
+      var(--primary) calc(var(--pct) * 1%),
+      color-mix(in oklch, var(--muted-foreground) 22%, transparent) 0
+    );
+    animation: ring-fill 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .rating-ring::before {
+    content: '';
+    position: absolute;
+    inset: 9px;
+    border-radius: 50%;
+    background: var(--card);
+  }
+  @property --pct {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+  }
+  @keyframes ring-fill {
+    from {
+      --pct: 0;
+    }
+  }
+  .rating-bar {
+    width: var(--val);
+    animation: grow-bar 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  @keyframes grow-bar {
+    from {
+      width: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rating-ring,
+    .rating-bar {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,133 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { Icon } from '@/components/ui/icon';
+import { formatDate, TRANSCRIPTS_SECTION } from '../../lib/categories';
+import Tldr from '../../components/transcript/Tldr.astro';
+import Ratings from '../../components/transcript/Ratings.astro';
+import VideoEmbed from '../../components/transcript/VideoEmbed.astro';
+import TagChips from '../../components/transcript/TagChips.astro';
+import Insights from '../../components/transcript/Insights.astro';
+import Tips from '../../components/transcript/Tips.astro';
+import Flowchart from '../../components/transcript/Flowchart.astro';
+import Plan from '../../components/transcript/Plan.astro';
+import Quiz from '../../components/transcript/Quiz.astro';
+import RelatedArticles from '../../components/transcript/RelatedArticles.astro';
+import SectionHeading from '../../components/transcript/SectionHeading.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('transcripts', ({ data }) => import.meta.env.DEV || !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const d = post.data;
+const { Content } = await render(post);
+const hasBody = (post.body ?? '').trim().length > 0;
+
+// Похожие: сперва указанные явно, потом — по совпадению тегов
+const all = await getCollection('transcripts', ({ data }) => import.meta.env.DEV || !data.draft);
+const byId = new Map(all.map((e) => [e.id, e]));
+const explicit = (d.related ?? []).map((id) => byId.get(id)).filter((e) => e && e.id !== post.id);
+const explicitIds = new Set(explicit.map((e) => e!.id));
+const suggestions = all
+  .filter((e) => e.id !== post.id && !explicitIds.has(e.id))
+  .map((e) => ({ e, overlap: e.data.tags.filter((t) => d.tags.includes(t)).length }))
+  .filter((x) => x.overlap > 0)
+  .sort((a, b) => b.overlap - a.overlap || b.e.data.date.valueOf() - a.e.data.date.valueOf())
+  .map((x) => x.e);
+const related = [...explicit, ...suggestions]
+  .slice(0, 4)
+  .map((e) => ({ href: `/transcripts/${e!.id}/`, title: e!.data.title, tldr: e!.data.tldr }));
+
+const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
+---
+
+<Layout title={`${d.title} — Neuro Slop`} description={d.description} image={ogImage}>
+  <main class="mx-auto w-full max-w-[860px] px-5 pt-16 md:px-6">
+    <article>
+      <header class="mb-12">
+        <p class="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
+          <a
+            href="/transcripts/"
+            class="hover:text-foreground inline-flex items-center gap-1.5 font-semibold transition-colors"
+          >
+            <Icon name={TRANSCRIPTS_SECTION.icon} class="size-4" />
+            {TRANSCRIPTS_SECTION.label}
+          </a>
+          <span>·</span>
+          <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+          {d.video.duration && (
+            <>
+              <span>·</span>
+              <span>{d.video.duration}</span>
+            </>
+          )}
+        </p>
+
+        <h1 class="mt-4 text-[clamp(2.1rem,5vw,3.25rem)] leading-[1.06] font-bold tracking-[-0.03em] text-balance">
+          {d.title}
+        </h1>
+        <p class="text-muted-foreground mt-5 text-xl leading-relaxed font-medium">{d.description}</p>
+
+        <div class="mt-6">
+          <TagChips tags={d.tags} variant="link" />
+        </div>
+
+        <div class="from-border mt-10 h-px w-full bg-gradient-to-r to-transparent"></div>
+      </header>
+
+      <div class="space-y-16">
+        <Tldr text={d.tldr} />
+
+        <Ratings ratings={d.ratings} />
+
+        <VideoEmbed
+          url={d.video.url}
+          title={d.video.title}
+          channel={d.video.channel}
+          duration={d.video.duration}
+          cover={d.cover}
+        />
+
+        {d.insights && d.insights.length > 0 && <Insights insights={d.insights} />}
+
+        {d.tips && d.tips.length > 0 && <Tips tips={d.tips} />}
+
+        {d.flowchart && d.flowchart.length > 0 && <Flowchart nodes={d.flowchart} />}
+
+        {
+          hasBody && (
+            <section>
+              <SectionHeading icon="scroll-text" title="Подробный разбор" />
+              <div class="prose">
+                <Content />
+              </div>
+            </section>
+          )
+        }
+
+        {d.plan && d.plan.length > 0 && <Plan steps={d.plan} storageKey={post.id} />}
+
+        {d.quiz && d.quiz.length > 0 && <Quiz quiz={d.quiz} />}
+
+        <RelatedArticles items={related} />
+      </div>
+
+      <div class="border-border/60 mt-16 flex flex-wrap items-center justify-between gap-4 border-t pt-8">
+        <a href="/transcripts/" class="text-primary text-sm font-medium hover:underline">
+          ← Все расшифровки
+        </a>
+        <a
+          href={d.video.url}
+          target="_blank"
+          rel="noopener"
+          class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
+        >
+          Смотреть видео-источник
+          <Icon name="arrow-up-right" class="size-4" />
+        </a>
+      </div>
+    </article>
+  </main>
+</Layout>

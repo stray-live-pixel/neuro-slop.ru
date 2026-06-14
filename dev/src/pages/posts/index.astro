@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
-import { CATEGORIES } from '../../lib/categories';
+import { SECTIONS } from '../../lib/categories';
 import { Icon } from '@/components/ui/icon';
 
 const posts = (
@@ -18,13 +18,13 @@ const posts = (
 
     <div class="mt-7 mb-10 flex flex-wrap gap-2">
       {
-        Object.entries(CATEGORIES).map(([slug, cat]) => (
+        SECTIONS.map((section) => (
           <a
             class="bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
-            href={`/category/${slug}/`}
+            href={section.href}
           >
-            <Icon name={cat.icon} class="size-4" />
-            {cat.label}
+            <Icon name={section.icon} class="size-4" />
+            {section.label}
           </a>
         ))
       }

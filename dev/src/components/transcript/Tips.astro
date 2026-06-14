@@ -1,0 +1,32 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface Tip {
+  title: string;
+  text: string;
+}
+interface Props {
+  tips: Tip[];
+}
+const { tips } = Astro.props;
+---
+
+<section>
+  <SectionHeading icon="sprout" title="Полезные советы" hint="Что можно применить уже сегодня" />
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    {
+      tips.map((t, i) => (
+        <div class="glow-card group border-border/60 bg-card/60 relative flex gap-4 rounded-2xl border p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          <span class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-full text-[15px] font-bold tabular-nums">
+            {i + 1}
+          </span>
+          <div>
+            <h3 class="text-[16px] leading-snug font-semibold">{t.title}</h3>
+            <p class="text-muted-foreground mt-1.5 text-[15px] leading-relaxed">{t.text}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,56 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { Icon } from '@/components/ui/icon';
+
+interface Insight {
+  title: string;
+  text: string;
+}
+interface Props {
+  insights: Insight[];
+}
+const { insights } = Astro.props;
+---
+
+<section>
+  <SectionHeading
+    icon="lightbulb"
+    title="Инсайты"
+    hint="Нажми, чтобы раскрыть — то, что меняет взгляд на тему"
+  />
+
+  <div class="space-y-3">
+    {
+      insights.map((it, i) => (
+        <details class="insight-card group border-border/60 bg-card/60 relative overflow-hidden rounded-2xl border backdrop-blur-sm transition-colors">
+          <span
+            class="absolute inset-y-0 left-0 w-1 opacity-70"
+            style="background: var(--gradient-brand)"
+          />
+          <summary class="flex cursor-pointer list-none items-center gap-4 p-5 pl-6 select-none">
+            <span class="text-gradient shrink-0 text-2xl font-bold tabular-nums">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span class="flex-1 text-[17px] leading-snug font-semibold">{it.title}</span>
+            <Icon
+              name="chevron-down"
+              class="text-muted-foreground size-5 shrink-0 transition-transform duration-300 group-open:rotate-180"
+            />
+          </summary>
+          <p class="text-muted-foreground border-border/50 mx-0 mt-0 border-t px-6 py-4 pl-[4.25rem] leading-relaxed">
+            {it.text}
+          </p>
+        </details>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .insight-card summary::-webkit-details-marker {
+    display: none;
+  }
+  .insight-card:hover {
+    border-color: color-mix(in oklch, var(--primary) 35%, var(--border));
+  }
+</style>

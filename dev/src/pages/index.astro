@@ -2,13 +2,21 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
-import { CATEGORIES } from '../lib/categories';
+import TranscriptCard from '../components/TranscriptCard.astro';
+import { SECTIONS } from '../lib/categories';
 import { Icon } from '@/components/ui/icon';
 
-const posts = (
-  await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft)
-).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const latest = posts.slice(0, 5);
+const visible = ({ data }: { data: { draft: boolean } }) => import.meta.env.DEV || !data.draft;
+const posts = await getCollection('posts', visible);
+const transcripts = await getCollection('transcripts', visible);
+
+// Свежие записи — последние из всех разделов сразу
+const latest = [
+  ...posts.map((entry) => ({ type: 'post' as const, date: entry.data.date, entry })),
+  ...transcripts.map((entry) => ({ type: 'transcript' as const, date: entry.data.date, entry })),
+]
+  .sort((a, b) => b.date.valueOf() - a.date.valueOf())
+  .slice(0, 5);
 ---
 
 <Layout>
@@ -48,7 +56,15 @@ const latest = posts.slice(0, 5);
         <a href="/posts/" class="text-primary text-sm font-medium hover:underline">Все записи →</a>
       </div>
       <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        {latest.map((post) => <PostCard post={post} />)}
+        {
+          latest.map((item) =>
+            item.type === 'post' ? (
+              <PostCard post={item.entry} />
+            ) : (
+              <TranscriptCard entry={item.entry} />
+            )
+          )
+        }
       </div>
     </section>
 
@@ -57,20 +73,22 @@ const latest = posts.slice(0, 5);
       <h2 class="mb-8 text-[clamp(1.9rem,3.5vw,2.75rem)] font-bold tracking-tight">Разделы</h2>
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {
-          Object.entries(CATEGORIES).map(([slug, cat]) => (
+          SECTIONS.map((section) => (
             <a
               class="glow-card bg-card/60 border-border/60 hover:shadow-xl group flex items-start gap-5 rounded-2xl border p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
-              href={`/category/${slug}/`}
+              href={section.href}
             >
               <span
                 class="flex size-14 shrink-0 items-center justify-center rounded-2xl text-white shadow-md"
-                style={`background: ${cat.gradient}`}
+                style={`background: ${section.gradient}`}
               >
-                <Icon name={cat.icon} class="size-7" />
+                <Icon name={section.icon} class="size-7" />
               </span>
               <span class="flex flex-col gap-1.5">
-                <h3 class="text-card-foreground text-xl font-semibold tracking-tight">{cat.label}</h3>
-                <p class="text-muted-foreground text-[15px]">{cat.description}</p>
+                <h3 class="text-card-foreground text-xl font-semibold tracking-tight">
+                  {section.label}
+                </h3>
+                <p class="text-muted-foreground text-[15px]">{section.description}</p>
               </span>
             </a>
           ))

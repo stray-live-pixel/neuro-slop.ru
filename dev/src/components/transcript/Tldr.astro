@@ -1,0 +1,18 @@
+---
+import { Icon } from '@/components/ui/icon';
+
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+
+<section
+  class="relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-6 pl-7 backdrop-blur-sm md:p-7 md:pl-8"
+>
+  <span class="absolute inset-y-0 left-0 w-1.5" style="background: var(--gradient-brand)"></span>
+  <p class="text-muted-foreground mb-2.5 flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
+    <Icon name="zap" class="size-4" /> Коротко
+  </p>
+  <p class="text-lg leading-relaxed font-medium text-balance md:text-xl">{text}</p>
+</section>
