@@ -17,7 +17,7 @@ const { items } = Astro.props;
 {
   items.length > 0 && (
     <section>
-      <SectionHeading icon="scroll-text" title="Похожие расшифровки" />
+      <SectionHeading icon="scroll-text" title="Похожие разборы" />
       <div class="grid gap-4 sm:grid-cols-2">
         {items.map((it) => (
           <a
@@ -29,7 +29,7 @@ const { items } = Astro.props;
               style={`background: ${TRANSCRIPTS_SECTION.gradient}`}
             >
               <Icon name="scroll-text" class="size-3" />
-              Расшифровка
+              Разбор
             </span>
             <h3 class="text-[16px] leading-snug font-semibold tracking-tight">{it.title}</h3>
             <p class="text-muted-foreground line-clamp-2 text-[14px] leading-relaxed">{it.tldr}</p>

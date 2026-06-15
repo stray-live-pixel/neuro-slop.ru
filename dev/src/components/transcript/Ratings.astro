@@ -9,8 +9,9 @@ interface Rating {
 }
 interface Props {
   ratings: Rating[];
+  title?: string;
 }
-const { ratings } = Astro.props;
+const { ratings, title = 'Оценка материала' } = Astro.props;
 
 const avg = ratings.reduce((s, r) => s + r.value, 0) / ratings.length;
 const avgPct = (avg / 5) * 100;
@@ -19,7 +20,7 @@ const avgColor = ratingColor(avg);
 ---
 
 <section>
-  <SectionHeading icon="star" title="Оценка видео" hint="Чем выше — тем больше пользы на минуту" />
+  <SectionHeading icon="star" title={title} hint="Чем выше — тем больше пользы на минуту" />
 
   <div
     class="border-border/60 bg-card/60 grid gap-8 rounded-2xl border p-6 backdrop-blur-sm md:grid-cols-[160px_1fr] md:p-8"

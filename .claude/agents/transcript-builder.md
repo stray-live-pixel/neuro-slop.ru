@@ -31,12 +31,19 @@ frontmatter. В Codex используй этот файл как ролевую
    для YouTube подойдёт `https://i.ytimg.com/vi/<id>/maxresdefault.jpg`.
 5. **Создай** `dev/src/content/transcripts/<slug>/index.md` строго по Zod-схеме
    (`dev/src/content.config.ts`). Все обязательные поля: `title, description, tldr, date,
-   video, ratings(≥1), tags(≥1)`. Желательные блоки пользы (заполняй, если в анализе
+   video, ratings(≥1), tags(≥1)`. **Источник не обязан быть видео** — это может быть
+   подкаст, статья или сводный анализ. Проставь `video.kind`
+   (`video`/`podcast`/`article`/`analysis`/`other`) — от него зависят все подписи
+   (CTA, заголовки, дата, бейдж); логика в `dev/src/lib/source.ts`. YouTube → можно не
+   задавать (выведется `video`); для не-видео ставь явно. Желательные блоки пользы (заполняй, если в анализе
    есть материал): `plain` и `forKids` (объяснение сути простым языком и «как ребёнку»),
-   `tips` (до 10), `userStories` (до 10 — сценарии «Я как роль → боль → хочу → поможет»),
-   `quiz` (до 10–15), `glossary` (словарь спецтерминов под cut). Не натягивай: если
-   честного материала мало — делай меньше или опусти блок. Тело markdown — необязательный
-   «Подробный разбор» (на странице прячется под cut автоматически).
+   `chapters` (тайм-коды-главы под видео), `quotes` (до 8 дословных цитат), `tips` (до 10),
+   `userStories` (до 10 — сценарии «Я как роль → боль → хочу → поможет»), `quiz` (до 10–15),
+   `glossary` (словарь спецтерминов под cut). **Тайм-коды**: если в анализе есть секунды,
+   проставь `chapters[].t`, `quotes[].t`, `insights[].t`, `flowchart[].t` и
+   `video.durationSeconds` — клик по тайм-коду проигрывает видео с этого момента прямо на
+   странице. Не натягивай: если честного материала мало — делай меньше или опусти блок.
+   Тело markdown — необязательный «Подробный разбор» (на странице прячется под cut).
 6. **Полную расшифровку** (если прислали) положи рядом как `transcript.md` —
    не публикуется, коллекция грузит только `index.md`.
 7. **Связи** — проставь `related` (слаги других расшифровок) или положись на авто-подбор
@@ -44,9 +51,11 @@ frontmatter. В Codex используй этот файл как ролевую
 8. **Иконки** — если используешь новую lucide-иконку, добавь её в глоб
    `dev/src/components/ui/icon/icon.astro`, иначе она не отрендерится.
 9. **Сборка** — `cd dev && npm run build`. Почини ошибки. Доступные компоненты лежат в
-   `dev/src/components/transcript/` (Tldr, PlainSpeak, Ratings, VideoEmbed, Insights, Tips,
-   UserStories, Flowchart, Plan, Quiz, Glossary, Collapsible, RelatedArticles, TagChips) —
-   менять их обычно не нужно, статья управляется данными фронтматтера.
+   `dev/src/components/transcript/` (Tldr, PlainSpeak, Ratings, VideoEmbed, Chapters,
+   Insights, Quotes, Tips, UserStories, Flowchart, Plan, Quiz, Glossary, Collapsible,
+   RelatedArticles, TagChips, Timecode, TranscriptNav) — менять их обычно не нужно, статья
+   управляется данными фронтматтера. Навигация (прогресс-бар + оглавление) и встроенный
+   плеер с перемоткой по тайм-кодам подключаются автоматически.
 
 ## Дизайн-рамки (см. CLAUDE.md/AGENTS.md)
 - Стиль «яркий минимализм»: воздух, крупная типографика, токены вместо сырых цветов.

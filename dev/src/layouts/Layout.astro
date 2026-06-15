@@ -7,13 +7,20 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  jsonLd?: object | object[];
 }
 
 const {
   title = 'Neuro Slop — эксперименты с нейросетями',
   description = 'Личная лаборатория экспериментов с нейросетями: игры, новости и промпты.',
   image = '/images/og.png',
+  jsonLd,
 } = Astro.props;
+
+// Структурированная разметка schema.org (JSON-LD). Экранируем "</" для безопасной вставки.
+const jsonLdBlocks = (jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []).map((obj) =>
+  JSON.stringify(obj).replace(/</g, '\\u003c')
+);
 
 // Абсолютные URL для соцсетей и Телеграма (Astro.site задан в astro.config.mjs)
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
@@ -42,6 +49,7 @@ const imageUrl = new URL(image, Astro.site);
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
+    {jsonLdBlocks.map((json) => <script type="application/ld+json" set:html={json} />)}
     <title>{title}</title>
     <script is:inline>
       // Тема: localStorage → системная. Выполняется до отрисовки, чтобы не мигало.
@@ -99,7 +107,7 @@ const imageUrl = new URL(image, Astro.site);
             href="/transcripts/"
             class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4"
           >
-            Расшифровки
+            Разборы
           </a>
           <ThemeToggle class="rounded-full" />
         </div>

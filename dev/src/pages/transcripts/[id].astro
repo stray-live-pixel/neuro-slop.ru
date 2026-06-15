@@ -3,12 +3,16 @@ import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import { Icon } from '@/components/ui/icon';
 import { formatDate, TRANSCRIPTS_SECTION } from '../../lib/categories';
+import { youtubeId, isoDuration } from '../../lib/video';
+import { sourceLabels } from '../../lib/source';
 import Tldr from '../../components/transcript/Tldr.astro';
 import PlainSpeak from '../../components/transcript/PlainSpeak.astro';
 import Ratings from '../../components/transcript/Ratings.astro';
 import VideoEmbed from '../../components/transcript/VideoEmbed.astro';
+import Chapters from '../../components/transcript/Chapters.astro';
 import TagChips from '../../components/transcript/TagChips.astro';
 import Insights from '../../components/transcript/Insights.astro';
+import Quotes from '../../components/transcript/Quotes.astro';
 import Tips from '../../components/transcript/Tips.astro';
 import UserStories from '../../components/transcript/UserStories.astro';
 import Flowchart from '../../components/transcript/Flowchart.astro';
@@ -18,6 +22,7 @@ import Glossary from '../../components/transcript/Glossary.astro';
 import Collapsible from '../../components/transcript/Collapsible.astro';
 import RelatedArticles from '../../components/transcript/RelatedArticles.astro';
 import SectionHeading from '../../components/transcript/SectionHeading.astro';
+import TranscriptNav from '../../components/transcript/TranscriptNav.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('transcripts', ({ data }) => import.meta.env.DEV || !data.draft);
@@ -45,9 +50,85 @@ const related = [...explicit, ...suggestions]
   .map((e) => ({ href: `/transcripts/${e!.id}/`, title: e!.data.title, tldr: e!.data.tldr }));
 
 const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
+
+// Универсальные подписи источника (видео/подкаст/статья/разбор) — см. lib/source.ts
+const src = sourceLabels(d.video);
+
+const hasPlain = Boolean(d.plain || d.forKids);
+const hasInsights = Boolean(d.insights?.length);
+const hasQuotes = Boolean(d.quotes?.length);
+const hasTips = Boolean(d.tips?.length);
+const hasStories = Boolean(d.userStories?.length);
+const hasFlow = Boolean(d.flowchart?.length);
+const hasPlan = Boolean(d.plan?.length);
+const hasQuiz = Boolean(d.quiz?.length);
+const hasGlossary = Boolean(d.glossary?.length);
+
+// Оглавление — только присутствующие секции
+const toc = [
+  { id: 'tldr', label: 'Коротко', on: true },
+  { id: 'plain', label: 'Простыми словами', on: hasPlain },
+  { id: 'ratings', label: 'Оценки', on: true },
+  { id: 'insights', label: 'Инсайты', on: hasInsights },
+  { id: 'quotes', label: 'Цитаты', on: hasQuotes },
+  { id: 'tips', label: 'Советы', on: hasTips },
+  { id: 'stories', label: 'Сценарии', on: hasStories },
+  { id: 'flow', label: 'Логика', on: hasFlow },
+  { id: 'body', label: 'Разбор', on: hasBody },
+  { id: 'plan', label: 'План', on: hasPlan },
+  { id: 'quiz', label: 'Тест', on: hasQuiz },
+  { id: 'glossary', label: 'Словарь', on: hasGlossary },
+].filter((s) => s.on).map(({ id, label }) => ({ id, label }));
+
+// Структурированная разметка schema.org
+const ytId = youtubeId(d.video.url);
+const abs = (p?: string) => (p ? new URL(p, Astro.site).toString() : undefined);
+const thumb =
+  abs(ogImage) ?? (ytId ? `https://i.ytimg.com/vi/${ytId}/maxresdefault.jpg` : undefined);
+const pageUrl = new URL(`/transcripts/${post.id}/`, Astro.site).toString();
+
+const videoLd = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: d.video.title || d.title,
+  description: d.description,
+  thumbnailUrl: thumb,
+  uploadDate: d.video.published?.toISOString(),
+  duration: d.video.durationSeconds ? isoDuration(d.video.durationSeconds) : undefined,
+  contentUrl: d.video.url,
+  embedUrl: ytId ? `https://www.youtube.com/embed/${ytId}` : undefined,
+};
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: d.title,
+  description: d.description,
+  datePublished: d.date.toISOString(),
+  image: thumb ? [thumb] : undefined,
+  inLanguage: 'ru',
+  author: { '@type': 'Organization', name: 'neuro-slop.ru' },
+  publisher: { '@type': 'Organization', name: 'neuro-slop.ru' },
+  mainEntityOfPage: pageUrl,
+};
+const faqLd = hasQuiz
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: d.quiz!.map((q) => ({
+        '@type': 'Question',
+        name: q.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${q.options[q.answer]}. ${q.correctText}`,
+        },
+      })),
+    }
+  : null;
+const jsonLd = [videoLd, articleLd, faqLd].filter(Boolean);
 ---
 
-<Layout title={`${d.title} — Neuro Slop`} description={d.description} image={ogImage}>
+<Layout title={`${d.title} — Neuro Slop`} description={d.description} image={ogImage} jsonLd={jsonLd}>
+  <TranscriptNav items={toc} />
   <main class="mx-auto w-full max-w-[860px] px-5 pt-16 md:px-6">
     <article>
       <header class="mb-12">
@@ -67,7 +148,7 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
             <>
               <span>·</span>
               <span>
-                Видео: <time datetime={d.video.published.toISOString()}>{formatDate(d.video.published)}</time>
+                {src.dateLabel}: <time datetime={d.video.published.toISOString()}>{formatDate(d.video.published)}</time>
               </span>
             </>
           )}
@@ -90,31 +171,79 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
       </header>
 
       <div class="space-y-16">
-        <VideoEmbed
-          url={d.video.url}
-          title={d.video.title}
-          channel={d.video.channel}
-          duration={d.video.duration}
-          cover={d.cover}
-        />
+        <div>
+          <VideoEmbed
+            url={d.video.url}
+            title={d.video.title}
+            channel={d.video.channel}
+            duration={d.video.duration}
+            cover={d.cover}
+            playLabel={src.play}
+            playAria={src.playAria}
+            icon={src.icon}
+          />
+          {d.chapters && d.chapters.length > 0 && <Chapters chapters={d.chapters} url={d.video.url} label={src.chaptersLabel} />}
+        </div>
 
-        <Tldr text={d.tldr} />
+        <div id="tldr" class="scroll-mt-24">
+          <Tldr text={d.tldr} />
+        </div>
 
-        {(d.plain || d.forKids) && <PlainSpeak plain={d.plain} forKids={d.forKids} />}
+        {
+          hasPlain && (
+            <div id="plain" class="scroll-mt-24">
+              <PlainSpeak plain={d.plain} forKids={d.forKids} />
+            </div>
+          )
+        }
 
-        <Ratings ratings={d.ratings} />
+        <div id="ratings" class="scroll-mt-24">
+          <Ratings ratings={d.ratings} title={src.ratingsTitle} />
+        </div>
 
-        {d.insights && d.insights.length > 0 && <Insights insights={d.insights} />}
+        {
+          hasInsights && (
+            <div id="insights" class="scroll-mt-24">
+              <Insights insights={d.insights!} url={d.video.url} />
+            </div>
+          )
+        }
 
-        {d.tips && d.tips.length > 0 && <Tips tips={d.tips} />}
+        {
+          hasQuotes && (
+            <div id="quotes" class="scroll-mt-24">
+              <Quotes quotes={d.quotes!} url={d.video.url} hint={src.quotesHint} />
+            </div>
+          )
+        }
 
-        {d.userStories && d.userStories.length > 0 && <UserStories stories={d.userStories} />}
+        {
+          hasTips && (
+            <div id="tips" class="scroll-mt-24">
+              <Tips tips={d.tips!} />
+            </div>
+          )
+        }
 
-        {d.flowchart && d.flowchart.length > 0 && <Flowchart nodes={d.flowchart} />}
+        {
+          hasStories && (
+            <div id="stories" class="scroll-mt-24">
+              <UserStories stories={d.userStories!} />
+            </div>
+          )
+        }
+
+        {
+          hasFlow && (
+            <div id="flow" class="scroll-mt-24">
+              <Flowchart nodes={d.flowchart!} url={d.video.url} hint={src.flowchartHint} />
+            </div>
+          )
+        }
 
         {
           hasBody && (
-            <section>
+            <section id="body" class="scroll-mt-24">
               <SectionHeading
                 icon="scroll-text"
                 title="Подробный разбор"
@@ -129,18 +258,36 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
           )
         }
 
-        {d.plan && d.plan.length > 0 && <Plan steps={d.plan} storageKey={post.id} />}
+        {
+          hasPlan && (
+            <div id="plan" class="scroll-mt-24">
+              <Plan steps={d.plan!} storageKey={post.id} />
+            </div>
+          )
+        }
 
-        {d.quiz && d.quiz.length > 0 && <Quiz quiz={d.quiz} />}
+        {
+          hasQuiz && (
+            <div id="quiz" class="scroll-mt-24">
+              <Quiz quiz={d.quiz!} />
+            </div>
+          )
+        }
 
-        {d.glossary && d.glossary.length > 0 && <Glossary terms={d.glossary} />}
+        {
+          hasGlossary && (
+            <div id="glossary" class="scroll-mt-24">
+              <Glossary terms={d.glossary!} />
+            </div>
+          )
+        }
 
         <RelatedArticles items={related} />
       </div>
 
       <div class="border-border/60 mt-16 flex flex-wrap items-center justify-between gap-4 border-t pt-8">
         <a href="/transcripts/" class="text-primary text-sm font-medium hover:underline">
-          ← Все расшифровки
+          ← Все разборы
         </a>
         <a
           href={d.video.url}
@@ -148,7 +295,7 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
           rel="noopener"
           class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
         >
-          Смотреть видео-источник
+          {src.sourceLink}
           <Icon name="arrow-up-right" class="size-4" />
         </a>
       </div>

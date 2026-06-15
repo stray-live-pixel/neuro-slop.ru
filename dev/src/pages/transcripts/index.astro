@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import TranscriptCard from '../../components/TranscriptCard.astro';
 import { TRANSCRIPTS_SECTION } from '../../lib/categories';
 import { tagLabel } from '../../lib/tags';
+import { SOURCE_KINDS, kindBadge, resolveKind } from '../../lib/source';
 import { Icon } from '@/components/ui/icon';
 
 const entries = (
@@ -14,6 +15,10 @@ const entries = (
 const counts = new Map<string, number>();
 for (const e of entries) for (const t of e.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
 const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([slug]) => slug);
+
+// Типы источников, реально встречающиеся в разборах — для фильтра по типу
+const presentKinds = new Set(entries.map((e) => resolveKind(e.data.video)));
+const kinds = SOURCE_KINDS.filter((k) => presentKinds.has(k)).map(kindBadge);
 ---
 
 <Layout title={`${TRANSCRIPTS_SECTION.label} — Neuro Slop`} description={TRANSCRIPTS_SECTION.description}>
@@ -34,25 +39,51 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([slug]) => s
     {
       entries.length > 0 ? (
         <>
-          {tags.length > 0 && (
-            <div class="mt-8 mb-10 flex flex-wrap gap-2" data-tag-filter>
-              <button
-                type="button"
-                class="tag-chip is-active bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
-                data-tag="*"
-              >
-                Все
-              </button>
-              {tags.map((t) => (
-                <button
-                  type="button"
-                  class="tag-chip bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
-                  data-tag={t}
-                >
-                  <Icon name="tag" class="size-3.5 opacity-60" />
-                  {tagLabel(t)}
-                </button>
-              ))}
+          {(kinds.length > 1 || tags.length > 0) && (
+            <div class="mt-8 mb-10 space-y-3">
+              {kinds.length > 1 && (
+                <div class="flex flex-wrap gap-2" data-kind-filter>
+                  <button
+                    type="button"
+                    class="tag-chip is-active bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+                    data-kind="*"
+                  >
+                    Все типы
+                  </button>
+                  {kinds.map((k) => (
+                    <button
+                      type="button"
+                      class="tag-chip bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+                      data-kind={k.kind}
+                    >
+                      <Icon name={k.icon} class="size-3.5 opacity-70" />
+                      {k.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {tags.length > 0 && (
+                <div class="flex flex-wrap gap-2" data-tag-filter>
+                  <button
+                    type="button"
+                    class="tag-chip is-active bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+                    data-tag="*"
+                  >
+                    Все
+                  </button>
+                  {tags.map((t) => (
+                    <button
+                      type="button"
+                      class="tag-chip bg-card/60 border-border/60 text-foreground/90 hover:border-primary/50 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm transition-colors"
+                      data-tag={t}
+                    >
+                      <Icon name="tag" class="size-3.5 opacity-60" />
+                      {tagLabel(t)}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -63,7 +94,7 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([slug]) => s
           </div>
 
           <p class="text-muted-foreground mt-10 hidden text-center" data-empty>
-            По этому тегу пока ничего нет.
+            Под этот фильтр пока ничего нет.
           </p>
         </>
       ) : (
@@ -80,36 +111,67 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([slug]) => s
 </Layout>
 
 <script>
-  const filter = document.querySelector<HTMLElement>('[data-tag-filter]');
-  if (filter) {
-    const chips = Array.from(filter.querySelectorAll<HTMLButtonElement>('.tag-chip'));
-    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-grid] [data-tags]'));
-    const empty = document.querySelector<HTMLElement>('[data-empty]');
+  const tagBox = document.querySelector<HTMLElement>('[data-tag-filter]');
+  const kindBox = document.querySelector<HTMLElement>('[data-kind-filter]');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-grid] [data-tags]'));
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
 
-    function apply(tag: string) {
+  if (tagBox || kindBox) {
+    let activeTag = '*';
+    let activeKind = '*';
+
+    function apply() {
       let shown = 0;
       cards.forEach((card) => {
-        const has = tag === '*' || (card.dataset.tags ?? '').split(' ').includes(tag);
+        const tagOk = activeTag === '*' || (card.dataset.tags ?? '').split(' ').includes(activeTag);
+        const kindOk = activeKind === '*' || card.dataset.kind === activeKind;
+        const has = tagOk && kindOk;
         card.classList.toggle('hidden', !has);
         if (has) shown += 1;
       });
-      chips.forEach((c) => c.classList.toggle('is-active', c.dataset.tag === tag));
       empty?.classList.toggle('hidden', shown > 0);
     }
 
-    chips.forEach((c) =>
-      c.addEventListener('click', () => {
-        const tag = c.dataset.tag!;
-        apply(tag);
-        const url = new URL(location.href);
-        if (tag === '*') url.searchParams.delete('tag');
-        else url.searchParams.set('tag', tag);
-        history.replaceState(null, '', url);
-      })
-    );
+    function syncUrl() {
+      const url = new URL(location.href);
+      activeTag === '*' ? url.searchParams.delete('tag') : url.searchParams.set('tag', activeTag);
+      activeKind === '*' ? url.searchParams.delete('kind') : url.searchParams.set('kind', activeKind);
+      history.replaceState(null, '', url);
+    }
 
-    const initial = new URLSearchParams(location.search).get('tag');
-    if (initial && chips.some((c) => c.dataset.tag === initial)) apply(initial);
+    // Группа фильтра: подсветка активного чипа + обновление выбранного значения
+    function wire(box: HTMLElement | null, attr: 'tag' | 'kind', set: (v: string) => void) {
+      if (!box) return null;
+      const chips = Array.from(box.querySelectorAll<HTMLButtonElement>('.tag-chip'));
+      chips.forEach((c) =>
+        c.addEventListener('click', () => {
+          const v = c.dataset[attr]!;
+          chips.forEach((x) => x.classList.toggle('is-active', x === c));
+          set(v);
+          apply();
+          syncUrl();
+        })
+      );
+      return chips;
+    }
+
+    const tagChips = wire(tagBox, 'tag', (v) => (activeTag = v));
+    const kindChips = wire(kindBox, 'kind', (v) => (activeKind = v));
+
+    // Восстановление состояния из URL (?tag=…&kind=…)
+    const params = new URLSearchParams(location.search);
+    const initTag = params.get('tag');
+    const initKind = params.get('kind');
+    const pick = (chips: HTMLButtonElement[] | null, attr: 'tag' | 'kind', val: string | null) => {
+      if (!chips || !val) return false;
+      const chip = chips.find((c) => c.dataset[attr] === val);
+      if (!chip) return false;
+      chips.forEach((x) => x.classList.toggle('is-active', x === chip));
+      return true;
+    };
+    if (pick(tagChips, 'tag', initTag)) activeTag = initTag!;
+    if (pick(kindChips, 'kind', initKind)) activeKind = initKind!;
+    if (activeTag !== '*' || activeKind !== '*') apply();
   }
 </script>
 

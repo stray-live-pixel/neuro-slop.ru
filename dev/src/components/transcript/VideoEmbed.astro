@@ -1,5 +1,6 @@
 ---
 import { Icon } from '@/components/ui/icon';
+import { youtubeId } from '../../lib/video';
 
 interface Props {
   url: string;
@@ -7,56 +8,146 @@ interface Props {
   channel?: string;
   duration?: string;
   cover?: string;
+  /** CTA-подпись источника: «Слушать подкаст», «Читать статью»… (см. lib/source.ts) */
+  playLabel?: string;
+  /** aria-label кнопки воспроизведения/перехода. */
+  playAria?: string;
+  /** Иконка в кружке поверх баннера. */
+  icon?: string;
 }
-const { url, title, channel, duration, cover } = Astro.props;
+const {
+  url,
+  title,
+  channel,
+  duration,
+  cover,
+  playLabel = 'Открыть источник',
+  playAria = 'Открыть источник',
+  icon = 'play',
+} = Astro.props;
 
-const ytId = url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/)?.[1];
+const ytId = youtubeId(url);
 const poster = cover ?? (ytId ? `https://i.ytimg.com/vi/${ytId}/maxresdefault.jpg` : undefined);
 const meta = [channel, duration].filter(Boolean).join(' · ');
-const linkLabel = ytId ? 'Смотреть на YouTube' : 'Открыть видео';
+// Встроенный плеер только для YouTube — клики по тайм-кодам перематывают его на странице.
+const embedBase = ytId ? `https://www.youtube-nocookie.com/embed/${ytId}` : undefined;
 ---
 
-<a
-  href={url}
-  target="_blank"
-  rel="noopener"
-  class="group border-border/60 relative block aspect-video overflow-hidden rounded-3xl border"
-  aria-label={linkLabel}
->
-  {
-    poster ? (
-      <img
-        src={poster}
-        alt=""
-        class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-        onerror={ytId ? `this.onerror=null;this.src='https://i.ytimg.com/vi/${ytId}/hqdefault.jpg'` : undefined}
-      />
-    ) : (
-      <div class="absolute inset-0" style="background: var(--gradient-brand)" />
-    )
-  }
-  <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10"></div>
-
-  <span
-    class="absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-1.5 text-[13px] font-medium text-white/90 backdrop-blur-sm transition-colors group-hover:bg-black/65"
-  >
-    {linkLabel}
-    <Icon name="arrow-up-right" class="size-3.5" />
-  </span>
-
-  <span class="absolute inset-0 flex items-center justify-center">
-    <span
-      class="flex size-20 items-center justify-center rounded-full text-white shadow-xl transition-transform duration-300 group-hover:scale-110"
-      style="background: var(--gradient-brand)"
+{
+  embedBase ? (
+    <div
+      data-video-embed
+      data-embed-base={embedBase}
+      class="border-border/60 relative aspect-video overflow-hidden rounded-3xl border"
     >
-      <Icon name="play" class="size-9 translate-x-0.5" />
-    </span>
-  </span>
-
-  <div class="absolute inset-0 flex items-end p-6 max-sm:hidden md:p-8">
-    <div class="max-w-[80%]">
-      {title && <p class="text-lg leading-snug font-semibold text-white md:text-xl">{title}</p>}
-      {meta && <p class="mt-1.5 text-sm font-medium text-white/75">{meta}</p>}
+      <button
+        type="button"
+        data-video-facade
+        class="group absolute inset-0 block h-full w-full cursor-pointer"
+        aria-label={playAria}
+      >
+        <img
+          src={poster}
+          alt=""
+          class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          onerror={`this.onerror=null;this.src='https://i.ytimg.com/vi/${ytId}/hqdefault.jpg'`}
+        />
+        <span class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" />
+        <span class="absolute inset-0 flex items-center justify-center">
+          <span
+            class="flex size-20 items-center justify-center rounded-full text-white shadow-xl transition-transform duration-300 group-hover:scale-110"
+            style="background: var(--gradient-brand)"
+          >
+            <Icon name={icon} class="size-9 translate-x-0.5" />
+          </span>
+        </span>
+        <span class="absolute inset-0 flex items-end p-6 max-sm:hidden md:p-8">
+          <span class="block max-w-[80%]">
+            {title && <span class="block text-lg leading-snug font-semibold text-white md:text-xl">{title}</span>}
+            {meta && <span class="mt-1.5 block text-sm font-medium text-white/75">{meta}</span>}
+          </span>
+        </span>
+      </button>
     </div>
-  </div>
-</a>
+  ) : (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener"
+      class="group border-border/60 relative block aspect-video overflow-hidden rounded-3xl border"
+      aria-label={playAria}
+    >
+      {poster ? (
+        <img
+          src={poster}
+          alt=""
+          class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+        />
+      ) : (
+        <div class="absolute inset-0" style="background: var(--gradient-brand)" />
+      )}
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" />
+      <span class="absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-1.5 text-[13px] font-medium text-white/90 backdrop-blur-sm transition-colors group-hover:bg-black/65">
+        {playLabel}
+        <Icon name="arrow-up-right" class="size-3.5" />
+      </span>
+      <span class="absolute inset-0 flex items-center justify-center">
+        <span
+          class="flex size-20 items-center justify-center rounded-full text-white shadow-xl transition-transform duration-300 group-hover:scale-110"
+          style="background: var(--gradient-brand)"
+        >
+          <Icon name="play" class="size-9 translate-x-0.5" />
+        </span>
+      </span>
+      <div class="absolute inset-0 flex items-end p-6 max-sm:hidden md:p-8">
+        <div class="max-w-[80%]">
+          {title && <p class="text-lg leading-snug font-semibold text-white md:text-xl">{title}</p>}
+          {meta && <p class="mt-1.5 text-sm font-medium text-white/75">{meta}</p>}
+        </div>
+      </div>
+    </a>
+  )
+}
+
+<script>
+  function initEmbed(root: HTMLElement) {
+    const base = root.dataset.embedBase;
+    if (!base) return;
+    let iframe: HTMLIFrameElement | null = null;
+
+    function loadAt(seconds: number, scroll: boolean) {
+      const start = Math.max(0, Math.floor(seconds));
+      const src = `${base}?start=${start}&autoplay=1&rel=0&modestbranding=1`;
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.className = 'absolute inset-0 h-full w-full';
+        iframe.allow =
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allowFullscreen = true;
+        iframe.setAttribute('title', 'Видео');
+        root.innerHTML = '';
+        root.appendChild(iframe);
+      }
+      if (iframe.src !== src) iframe.src = src;
+      if (scroll) {
+        const top = root.getBoundingClientRect().top + window.scrollY - 80;
+        if (Math.abs(root.getBoundingClientRect().top - 80) > 8)
+          window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }
+
+    root.querySelector<HTMLElement>('[data-video-facade]')?.addEventListener('click', () => loadAt(0, false));
+
+    // Клик по любому тайм-коду на странице — перемотка встроенного плеера сюда.
+    document.addEventListener('click', (e) => {
+      const chip = (e.target as HTMLElement)?.closest<HTMLElement>('[data-seek]');
+      if (!chip) return;
+      const t = Number(chip.dataset.seek);
+      if (!Number.isFinite(t)) return;
+      e.preventDefault();
+      loadAt(t, true);
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-video-embed]').forEach(initEmbed);
+</script>

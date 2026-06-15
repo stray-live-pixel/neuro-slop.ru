@@ -12,6 +12,7 @@ video:
   title: 'Graphify — open-source граф знаний для AI-ассистентов (GitHub)'
   channel: 'Синтез 6 обзоров: Никита Велс, Renato Dinis, Chase AI, Jack Roberts, Charlie Automates'
   platform: other
+  kind: analysis
 tags: [ai, programming, productivity]
 ratings:
   - label: Актуальность информации

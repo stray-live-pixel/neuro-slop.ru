@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import { Icon } from '@/components/ui/icon';
 import { formatDate, ratingColor, TRANSCRIPTS_SECTION } from '../lib/categories';
 import { tagLabel } from '../lib/tags';
+import { kindBadge, resolveKind, sourceLabels } from '../lib/source';
 
 interface Props {
   entry: CollectionEntry<'transcripts'>;
@@ -12,12 +13,16 @@ const d = entry.data;
 const avg = d.ratings.reduce((s, r) => s + r.value, 0) / d.ratings.length;
 const avgColor = ratingColor(avg);
 const tags = d.tags.slice(0, 3);
+const kind = resolveKind(d.video);
+const badge = kindBadge(kind);
+const dateLabel = sourceLabels(d.video).dateLabel;
 ---
 
 <a
   class="glow-card group border-border/60 relative flex aspect-[16/9] flex-col justify-between gap-6 overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:aspect-[21/9] md:p-8"
   href={`/transcripts/${entry.id}/`}
   data-tags={d.tags.join(' ')}
+  data-kind={kind}
 >
   {
     d.cover ? (
@@ -38,8 +43,8 @@ const tags = d.tags.slice(0, 3);
       class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold text-white shadow-sm"
       style={`background: ${TRANSCRIPTS_SECTION.gradient}`}
     >
-      <Icon name="scroll-text" class="size-3.5" />
-      Расшифровка
+      <Icon name={badge.icon} class="size-3.5" />
+      {badge.label}
     </span>
     <span
       class="inline-flex items-center gap-1 rounded-full bg-black/35 px-2.5 py-1 font-semibold backdrop-blur-sm"
@@ -68,7 +73,7 @@ const tags = d.tags.slice(0, 3);
       <span class="ml-auto flex flex-col items-end gap-0.5 text-[12px] leading-tight font-medium text-white/65">
         {d.video.published && (
           <span>
-            Видео: <time datetime={d.video.published.toISOString()}>{formatDate(d.video.published)}</time>
+            {dateLabel}: <time datetime={d.video.published.toISOString()}>{formatDate(d.video.published)}</time>
           </span>
         )}
         <span>

@@ -1,0 +1,30 @@
+---
+import { formatTimecode, videoTimeUrl } from '../../lib/video';
+
+interface Props {
+  t: number;
+  url: string;
+  class?: string;
+}
+const { t, url, class: cls } = Astro.props;
+// href — рабочий fallback без JS (откроет видео с момента на YouTube).
+// С JS клик перехватывается и перематывает встроенный плеер прямо на странице.
+const href = videoTimeUrl(url, t);
+---
+
+<a
+  href={href}
+  data-seek={t}
+  target="_blank"
+  rel="noopener"
+  class:list={[
+    'seek-chip text-primary bg-primary/10 hover:bg-primary/20 inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-semibold tabular-nums transition-colors',
+    cls,
+  ]}
+  aria-label={`Перейти к моменту ${formatTimecode(t)}`}
+>
+  <svg viewBox="0 0 24 24" fill="currentColor" class="size-3" aria-hidden="true">
+    <path d="M8 5v14l11-7z"></path>
+  </svg>
+  {formatTimecode(t)}
+</a>

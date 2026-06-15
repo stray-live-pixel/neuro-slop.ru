@@ -1,15 +1,18 @@
 ---
 import SectionHeading from './SectionHeading.astro';
+import Timecode from './Timecode.astro';
 import { Icon } from '@/components/ui/icon';
 
 interface Insight {
   title: string;
   text: string;
+  t?: number;
 }
 interface Props {
   insights: Insight[];
+  url: string;
 }
-const { insights } = Astro.props;
+const { insights, url } = Astro.props;
 ---
 
 <section>
@@ -32,6 +35,7 @@ const { insights } = Astro.props;
               {String(i + 1).padStart(2, '0')}
             </span>
             <span class="flex-1 text-[17px] leading-snug font-semibold">{it.title}</span>
+            {typeof it.t === 'number' && <Timecode t={it.t} url={url} />}
             <Icon
               name="chevron-down"
               class="text-muted-foreground size-5 shrink-0 transition-transform duration-300 group-open:rotate-180"

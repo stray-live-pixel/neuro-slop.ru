@@ -27,6 +27,7 @@ video:
   channel: 'Радио-Т'
   published: 2026-06-13
   platform: other
+  kind: podcast
 tags:
   - ai
   - programming

@@ -1,0 +1,44 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import Timecode from './Timecode.astro';
+
+interface Quote {
+  text: string;
+  t?: number;
+  speaker?: string;
+  context?: string;
+}
+interface Props {
+  quotes: Quote[];
+  url: string;
+  hint?: string;
+}
+const { quotes, url, hint = 'Сильные фразы из материала — нажми тайм-код, чтобы услышать в оригинале' } =
+  Astro.props;
+---
+
+<section>
+  <SectionHeading
+    icon="quote"
+    title="Ключевые цитаты"
+    hint={hint}
+  />
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    {
+      quotes.map((q) => (
+        <figure class="border-border/60 bg-card/60 relative flex flex-col gap-3 rounded-2xl border p-5 pl-6 backdrop-blur-sm">
+          <span class="absolute inset-y-0 left-0 w-1 rounded-l-2xl opacity-70" style="background: var(--gradient-brand)" />
+          <blockquote class="text-[17px] leading-relaxed font-medium text-balance">
+            «{q.text}»
+          </blockquote>
+          <figcaption class="text-muted-foreground mt-auto flex flex-wrap items-center gap-2 text-[13px]">
+            {q.speaker && <span class="font-semibold">{q.speaker}</span>}
+            {q.context && <span>{q.context}</span>}
+            {typeof q.t === 'number' && <Timecode t={q.t} url={url} class="ml-auto" />}
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</section>

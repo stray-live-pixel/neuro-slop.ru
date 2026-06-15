@@ -1,16 +1,20 @@
 ---
 import SectionHeading from './SectionHeading.astro';
+import Timecode from './Timecode.astro';
 import { Icon } from '@/components/ui/icon';
 
 interface Node {
   title: string;
   detail?: string;
+  t?: number;
   type?: 'premise' | 'argument' | 'example' | 'conclusion';
 }
 interface Props {
   nodes: Node[];
+  url: string;
+  hint?: string;
 }
-const { nodes } = Astro.props;
+const { nodes, url, hint = 'Как устроена аргументация материала — пройди по шагам' } = Astro.props;
 
 const TYPES = {
   premise: { label: 'Предпосылка', color: '#0894ff' },
@@ -26,7 +30,7 @@ const used = [...new Set(nodes.map((n) => n.type).filter(Boolean))] as (keyof ty
   <SectionHeading
     icon="workflow"
     title="Логика повествования"
-    hint="Как устроена аргументация видео — пройди по шагам"
+    hint={hint}
   />
 
   {
@@ -63,6 +67,7 @@ const used = [...new Set(nodes.map((n) => n.type).filter(Boolean))] as (keyof ty
                   </span>
                 )}
                 <span class="flex-1 text-[15px] leading-snug font-medium">{n.title}</span>
+                {typeof n.t === 'number' && <Timecode t={n.t} url={url} />}
                 {n.detail && (
                   <Icon
                     name="chevron-down"

@@ -21,13 +21,15 @@ export const CATEGORIES = {
 
 export type CategorySlug = keyof typeof CATEGORIES;
 
-// Раздел «Расшифровки» — отдельная коллекция (см. content.config.ts),
-// поэтому живёт рядом с категориями, но не входит в CATEGORIES.
+// Раздел «Разборы» — отдельная коллекция (см. content.config.ts), поэтому живёт
+// рядом с категориями, но не входит в CATEGORIES. URL остаётся /transcripts/ (SEO),
+// меняется только подпись: разбираем не только видео, но и подкасты, статьи и
+// аналитические сводки.
 export const TRANSCRIPTS_SECTION = {
   slug: 'transcripts',
-  label: 'Расшифровки',
+  label: 'Разборы',
   icon: 'scroll-text',
-  description: 'Видео, разобранные по полочкам: суть, инсайты, советы и тест на усвоение',
+  description: 'Видео, подкасты и статьи, разобранные по полочкам: суть, инсайты, советы и тест на усвоение',
   gradient: 'linear-gradient(135deg, #ff9004, #c959dd)',
 } as const;
 

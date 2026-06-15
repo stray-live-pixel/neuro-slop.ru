@@ -42,15 +42,47 @@ const transcripts = defineCollection({
     // Объяснение «на пальцах», как для ребёнка
     forKids: z.string().optional(),
 
-    // Источник
+    // Источник разбора. Поле исторически называется `video`, но разбирать можно
+    // что угодно: видео, подкаст, статью или сводный анализ. `kind` управляет всеми
+    // подписями на странице (CTA, заголовки блоков, даты). Если не задан — выводится:
+    // YouTube/`platform: youtube` → 'video', иначе 'other'. См. src/lib/source.ts.
     video: z.object({
       url: z.string(),
-      title: z.string().optional(), // исходное название видео
-      channel: z.string().optional(),
-      duration: z.string().optional(), // напр. «1 ч 02 мин»
-      published: z.coerce.date().optional(), // дата публикации видео
+      title: z.string().optional(), // исходное название источника
+      channel: z.string().optional(), // канал / автор / издание / ведущие
+      duration: z.string().optional(), // напр. «1 ч 02 мин» (для видео/аудио)
+      durationSeconds: z.number().int().positive().optional(), // длительность в секундах — для ISO 8601 в JSON-LD
+      published: z.coerce.date().optional(), // дата публикации источника
       platform: z.enum(['youtube', 'other']).default('youtube'),
+      // Тип источника — определяет формулировки на странице (CTA, заголовки, даты).
+      kind: z.enum(['video', 'podcast', 'article', 'analysis', 'other']).optional(),
     }),
+
+    // Тайм-коды («главы») видео: t — секунда начала, title — о чём фрагмент.
+    // Клик по главе проигрывает видео с этого момента прямо на странице.
+    chapters: z
+      .array(
+        z.object({
+          t: z.number().int().min(0), // секунда начала
+          title: z.string(),
+          detail: z.string().optional(),
+        })
+      )
+      .optional(),
+
+    // Ключевые цитаты — дословные сильные фразы из видео. t (секунда) опционален:
+    // если задан, рядом появляется кнопка перехода к моменту в видео.
+    quotes: z
+      .array(
+        z.object({
+          text: z.string(),
+          t: z.number().int().min(0).optional(),
+          speaker: z.string().optional(), // кто это сказал (если в видео несколько голосов)
+          context: z.string().optional(), // одна фраза контекста — о чём речь
+        })
+      )
+      .max(8)
+      .optional(),
     // Ссылка на готовый анализ из соседнего проекта (для воспроизводимости)
     sourceAnalysis: z.string().optional(),
 
@@ -68,9 +100,10 @@ const transcripts = defineCollection({
     // Теги из каталога src/lib/tags.ts (новые добавлять туда же)
     tags: z.array(z.string()).min(1),
 
-    // До 5 инсайтов — то, что переворачивает отношение к теме
+    // До 5 инсайтов — то, что переворачивает отношение к теме.
+    // t (секунда) опционален — где в видео это прозвучало.
     insights: z
-      .array(z.object({ title: z.string(), text: z.string() }))
+      .array(z.object({ title: z.string(), text: z.string(), t: z.number().int().min(0).optional() }))
       .max(5)
       .optional(),
 
@@ -99,6 +132,7 @@ const transcripts = defineCollection({
         z.object({
           title: z.string(),
           detail: z.string().optional(),
+          t: z.number().int().min(0).optional(), // секунда в видео, где этот шаг
           // тип узла раскрашивает шаг: предпосылка → аргумент → пример → вывод
           type: z.enum(['premise', 'argument', 'example', 'conclusion']).optional(),
         })
