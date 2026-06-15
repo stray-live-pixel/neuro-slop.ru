@@ -1,0 +1,67 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { Icon } from '@/components/ui/icon';
+import { ratingColor, isTopRating } from '../../lib/categories';
+
+interface Profession {
+  name: string;
+  score: number;
+  why: string;
+}
+interface Props {
+  professions: Profession[];
+}
+const { professions } = Astro.props;
+// Сортировка по оценке: самым полезным профессиям — наверх.
+const sorted = [...professions].sort((a, b) => b.score - a.score);
+---
+
+<section>
+  <SectionHeading
+    icon="briefcase"
+    title="Кому будет полезно"
+    hint="Чем выше оценка — тем больше пользы для профессии. Разверни — почему."
+  />
+
+  <div class="space-y-2.5">
+    {
+      sorted.map((p) => {
+        const top = isTopRating(p.score);
+        return (
+          <details class="prof-card group border-border/60 bg-card/60 overflow-hidden rounded-2xl border backdrop-blur-sm transition-colors">
+            <summary class="flex cursor-pointer list-none items-center gap-4 p-4 pl-5 select-none md:p-5 md:pl-6">
+              <Icon
+                name="chevron-down"
+                class="text-muted-foreground size-5 shrink-0 transition-transform duration-300 group-open:rotate-180"
+              />
+              <span class="flex-1 text-[16px] leading-snug font-semibold md:text-[17px]">
+                Для {p.name}
+              </span>
+              <span class="flex shrink-0 items-baseline gap-0.5 tabular-nums">
+                <span
+                  class:list={['text-xl font-bold', top && 'text-gradient']}
+                  style={top ? undefined : `color:${ratingColor(p.score)}`}
+                >
+                  {p.score}
+                </span>
+                <span class="text-muted-foreground text-sm font-semibold">/5</span>
+              </span>
+            </summary>
+            <p class="text-muted-foreground border-border/50 border-t px-5 py-4 pl-[3.25rem] leading-relaxed md:px-6 md:pl-[3.75rem]">
+              {p.why}
+            </p>
+          </details>
+        );
+      })
+    }
+  </div>
+</section>
+
+<style>
+  .prof-card summary::-webkit-details-marker {
+    display: none;
+  }
+  .prof-card:hover {
+    border-color: color-mix(in oklch, var(--primary) 35%, var(--border));
+  }
+</style>

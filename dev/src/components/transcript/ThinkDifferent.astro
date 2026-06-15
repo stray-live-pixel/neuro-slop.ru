@@ -1,0 +1,43 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface Idea {
+  title: string;
+  text: string;
+  kind?: 'reframe' | 'adjacent' | 'intersection';
+}
+interface Props {
+  ideas: Idea[];
+}
+const { ideas } = Astro.props;
+
+const KIND_LABEL: Record<NonNullable<Idea['kind']>, string> = {
+  reframe: 'Другой угол',
+  adjacent: 'Смежная область',
+  intersection: 'На стыке областей',
+};
+---
+
+<section>
+  <SectionHeading
+    icon="telescope"
+    title="Взгляни иначе"
+    hint="Новый угол, смежные области и потенциал на стыке — пища для размышлений"
+  />
+
+  <div class="grid gap-3 sm:grid-cols-2">
+    {
+      ideas.map((it) => (
+        <div class="glow-card border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-6">
+          {it.kind && (
+            <span class="text-primary bg-primary/10 mb-2 inline-block rounded-full px-2.5 py-0.5 text-[12px] font-semibold">
+              {KIND_LABEL[it.kind]}
+            </span>
+          )}
+          <p class="text-[16px] leading-snug font-semibold md:text-[17px]">{it.title}</p>
+          <p class="text-muted-foreground mt-1.5 leading-relaxed">{it.text}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>

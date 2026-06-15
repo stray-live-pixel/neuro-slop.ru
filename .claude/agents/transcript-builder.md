@@ -36,13 +36,21 @@ frontmatter. В Codex используй этот файл как ролевую
    (`video`/`podcast`/`article`/`analysis`/`other`) — от него зависят все подписи
    (CTA, заголовки, дата, бейдж); логика в `dev/src/lib/source.ts`. YouTube → можно не
    задавать (выведется `video`); для не-видео ставь явно. Желательные блоки пользы (заполняй, если в анализе
-   есть материал): `plain` и `forKids` (объяснение сути простым языком и «как ребёнку»),
-   `chapters` (тайм-коды-главы под видео), `quotes` (до 8 дословных цитат), `tips` (до 10),
+   есть материал): блок «Объясни проще» — `plain`, `forKids`, `analogy` («это как…»),
+   `whyImportant` (зачем это мне) и `forExperts` (для тех, кто в теме); показываются списком,
+   `chapters` (тайм-коды-главы под видео), `quotes` (до 8 дословных цитат),
+   `tips` (до 10 — `{title, text, time?, gain?, steps?}`: `time`/`gain` обязательны как
+   мотиваторы, `steps[]` — пошаговый список действий под cut),
    `userStories` (до 10 — сценарии «Я как роль → боль → хочу → поможет»), `quiz` (до 10–15),
-   `glossary` (словарь спецтерминов под cut). **Тайм-коды**: если в анализе есть секунды,
+   `glossary` (словарь спецтерминов под cut), `professions` (для каких профессий полезно —
+   `{name, score 1–5, why}`, обычно от агента `profession-analyst`; на странице сразу после
+   оценок, cut по каждой профессии). **Только новые статьи** (старые не трогаем): `critique`
+   (`{point, detail, kind?}` — объективная критика) и `thinkDifferent` (`{title, text, kind?}`
+   — «взгляни иначе»), обычно от агента `critical-thinker`; идут в самом конце статьи.
+   **Тайм-коды**: если в анализе есть секунды,
    проставь `chapters[].t`, `quotes[].t`, `insights[].t`, `flowchart[].t` и
-   `video.durationSeconds` — клик по тайм-коду проигрывает видео с этого момента прямо на
-   странице. Не натягивай: если честного материала мало — делай меньше или опусти блок.
+   `video.durationSeconds` — клик по тайм-коду открывает видео с этого момента на YouTube.
+   Не натягивай: если честного материала мало — делай меньше или опусти блок.
    Тело markdown — необязательный «Подробный разбор» (на странице прячется под cut).
 6. **Полную расшифровку** (если прислали) положи рядом как `transcript.md` —
    не публикуется, коллекция грузит только `index.md`.
@@ -51,11 +59,13 @@ frontmatter. В Codex используй этот файл как ролевую
 8. **Иконки** — если используешь новую lucide-иконку, добавь её в глоб
    `dev/src/components/ui/icon/icon.astro`, иначе она не отрендерится.
 9. **Сборка** — `cd dev && npm run build`. Почини ошибки. Доступные компоненты лежат в
-   `dev/src/components/transcript/` (Tldr, PlainSpeak, Ratings, VideoEmbed, Chapters,
-   Insights, Quotes, Tips, UserStories, Flowchart, Plan, Quiz, Glossary, Collapsible,
-   RelatedArticles, TagChips, Timecode, TranscriptNav) — менять их обычно не нужно, статья
-   управляется данными фронтматтера. Навигация (прогресс-бар + оглавление) и встроенный
-   плеер с перемоткой по тайм-кодам подключаются автоматически.
+   `dev/src/components/transcript/` (Tldr, PlainSpeak, Ratings, Professions, VideoEmbed,
+   Chapters, Insights, Quotes, Tips, UserStories, Flowchart, Plan, Quiz, Glossary,
+   Collapsible, Critique, ThinkDifferent, RelatedArticles, TagChips, Timecode,
+   TranscriptNav) — менять их обычно не
+   нужно, статья управляется данными фронтматтера. Навигация (прогресс-бар + оглавление)
+   подключается автоматически; тайм-коды — ссылки, открывающие видео на YouTube с нужной
+   секунды.
 
 ## Дизайн-рамки (см. CLAUDE.md/AGENTS.md)
 - Стиль «яркий минимализм»: воздух, крупная типографика, токены вместо сырых цветов.

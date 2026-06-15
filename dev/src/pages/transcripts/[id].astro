@@ -8,6 +8,7 @@ import { sourceLabels } from '../../lib/source';
 import Tldr from '../../components/transcript/Tldr.astro';
 import PlainSpeak from '../../components/transcript/PlainSpeak.astro';
 import Ratings from '../../components/transcript/Ratings.astro';
+import Professions from '../../components/transcript/Professions.astro';
 import VideoEmbed from '../../components/transcript/VideoEmbed.astro';
 import Chapters from '../../components/transcript/Chapters.astro';
 import TagChips from '../../components/transcript/TagChips.astro';
@@ -20,6 +21,8 @@ import Plan from '../../components/transcript/Plan.astro';
 import Quiz from '../../components/transcript/Quiz.astro';
 import Glossary from '../../components/transcript/Glossary.astro';
 import Collapsible from '../../components/transcript/Collapsible.astro';
+import Critique from '../../components/transcript/Critique.astro';
+import ThinkDifferent from '../../components/transcript/ThinkDifferent.astro';
 import RelatedArticles from '../../components/transcript/RelatedArticles.astro';
 import SectionHeading from '../../components/transcript/SectionHeading.astro';
 import TranscriptNav from '../../components/transcript/TranscriptNav.astro';
@@ -54,7 +57,7 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
 // Универсальные подписи источника (видео/подкаст/статья/разбор) — см. lib/source.ts
 const src = sourceLabels(d.video);
 
-const hasPlain = Boolean(d.plain || d.forKids);
+const hasPlain = Boolean(d.plain || d.forKids || d.analogy || d.whyImportant || d.forExperts);
 const hasInsights = Boolean(d.insights?.length);
 const hasQuotes = Boolean(d.quotes?.length);
 const hasTips = Boolean(d.tips?.length);
@@ -63,12 +66,16 @@ const hasFlow = Boolean(d.flowchart?.length);
 const hasPlan = Boolean(d.plan?.length);
 const hasQuiz = Boolean(d.quiz?.length);
 const hasGlossary = Boolean(d.glossary?.length);
+const hasProfessions = Boolean(d.professions?.length);
+const hasCritique = Boolean(d.critique?.length);
+const hasThinkDifferent = Boolean(d.thinkDifferent?.length);
 
 // Оглавление — только присутствующие секции
 const toc = [
   { id: 'tldr', label: 'Коротко', on: true },
   { id: 'plain', label: 'Простыми словами', on: hasPlain },
   { id: 'ratings', label: 'Оценки', on: true },
+  { id: 'professions', label: 'Кому полезно', on: hasProfessions },
   { id: 'insights', label: 'Инсайты', on: hasInsights },
   { id: 'quotes', label: 'Цитаты', on: hasQuotes },
   { id: 'tips', label: 'Советы', on: hasTips },
@@ -78,6 +85,8 @@ const toc = [
   { id: 'plan', label: 'План', on: hasPlan },
   { id: 'quiz', label: 'Тест', on: hasQuiz },
   { id: 'glossary', label: 'Словарь', on: hasGlossary },
+  { id: 'critique', label: 'Критика', on: hasCritique },
+  { id: 'think-different', label: 'Иначе', on: hasThinkDifferent },
 ].filter((s) => s.on).map(({ id, label }) => ({ id, label }));
 
 // Структурированная разметка schema.org
@@ -192,7 +201,13 @@ const jsonLd = [videoLd, articleLd, faqLd].filter(Boolean);
         {
           hasPlain && (
             <div id="plain" class="scroll-mt-24">
-              <PlainSpeak plain={d.plain} forKids={d.forKids} />
+              <PlainSpeak
+                plain={d.plain}
+                forKids={d.forKids}
+                analogy={d.analogy}
+                whyImportant={d.whyImportant}
+                forExperts={d.forExperts}
+              />
             </div>
           )
         }
@@ -200,6 +215,14 @@ const jsonLd = [videoLd, articleLd, faqLd].filter(Boolean);
         <div id="ratings" class="scroll-mt-24">
           <Ratings ratings={d.ratings} title={src.ratingsTitle} />
         </div>
+
+        {
+          hasProfessions && (
+            <div id="professions" class="scroll-mt-24">
+              <Professions professions={d.professions!} />
+            </div>
+          )
+        }
 
         {
           hasInsights && (
@@ -278,6 +301,22 @@ const jsonLd = [videoLd, articleLd, faqLd].filter(Boolean);
           hasGlossary && (
             <div id="glossary" class="scroll-mt-24">
               <Glossary terms={d.glossary!} />
+            </div>
+          )
+        }
+
+        {
+          hasCritique && (
+            <div id="critique" class="scroll-mt-24">
+              <Critique points={d.critique!} />
+            </div>
+          )
+        }
+
+        {
+          hasThinkDifferent && (
+            <div id="think-different" class="scroll-mt-24">
+              <ThinkDifferent ideas={d.thinkDifferent!} />
             </div>
           )
         }

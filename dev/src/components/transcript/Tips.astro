@@ -1,32 +1,108 @@
 ---
 import SectionHeading from './SectionHeading.astro';
+import { Icon } from '@/components/ui/icon';
 
 interface Tip {
   title: string;
   text: string;
+  time?: string;
+  gain?: string;
+  steps?: string[];
 }
 interface Props {
   tips: Tip[];
 }
 const { tips } = Astro.props;
+
+// Мета-строка «время + выгода» — мотиваторы, видны в шапке карточки.
+const meta = (t: Tip) => Boolean(t.time || t.gain);
+// «Богатый» формат (новые статьи): прячем подробности и шаги под cut.
+// Старый формат (только title+text) показываем текстом сразу — не ломаем читабельность.
+const rich = (t: Tip) => Boolean(t.time || t.gain || t.steps?.length);
 ---
 
 <section>
-  <SectionHeading icon="sprout" title="Полезные советы" hint="Что можно применить уже сегодня" />
+  <SectionHeading
+    icon="sprout"
+    title="Полезные советы"
+    hint="Что можно применить уже сегодня. Разверни совет — сколько займёт, что даст и что конкретно делать"
+  />
 
-  <div class="grid gap-4 sm:grid-cols-2">
+  <div class="space-y-2.5">
     {
-      tips.map((t, i) => (
-        <div class="glow-card group border-border/60 bg-card/60 relative flex gap-4 rounded-2xl border p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-          <span class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-full text-[15px] font-bold tabular-nums">
-            {i + 1}
-          </span>
-          <div>
-            <h3 class="text-[16px] leading-snug font-semibold">{t.title}</h3>
-            <p class="text-muted-foreground mt-1.5 text-[15px] leading-relaxed">{t.text}</p>
+      tips.map((t, i) =>
+        rich(t) ? (
+          <details class="tip-card group border-border/60 bg-card/60 overflow-hidden rounded-2xl border backdrop-blur-sm transition-colors">
+            <summary class="flex cursor-pointer list-none items-start gap-4 p-4 pl-5 select-none md:p-5 md:pl-6">
+              <span class="bg-primary/10 text-primary mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full text-[15px] font-bold tabular-nums">
+                {i + 1}
+              </span>
+              <div class="min-w-0 flex-1">
+                <h3 class="text-[16px] leading-snug font-semibold md:text-[17px]">{t.title}</h3>
+                {meta(t) && (
+                  <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[14px]">
+                    {t.time && (
+                      <span class="text-muted-foreground inline-flex items-center gap-1.5">
+                        <Icon name="clock" class="size-4 shrink-0" />
+                        {t.time}
+                      </span>
+                    )}
+                    {t.gain && (
+                      <span class="text-foreground inline-flex items-center gap-1.5 font-medium">
+                        <Icon name="gift" class="text-primary size-4 shrink-0" />
+                        {t.gain}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+              <Icon
+                name="chevron-down"
+                class="text-muted-foreground mt-1.5 size-5 shrink-0 transition-transform duration-300 group-open:rotate-180"
+              />
+            </summary>
+            <div class="border-border/50 border-t px-5 py-4 pl-[4.5rem] md:px-6 md:pl-[4.75rem]">
+              {t.text && <p class="text-muted-foreground text-[15px] leading-relaxed">{t.text}</p>}
+              {t.steps && t.steps.length > 0 && (
+                <div class:list={[t.text && 'mt-4']}>
+                  <p class="text-muted-foreground/80 mb-2.5 text-[12px] font-semibold tracking-wide uppercase">
+                    Что делать
+                  </p>
+                  <ol class="space-y-2.5">
+                    {t.steps.map((s, si) => (
+                      <li class="flex gap-3">
+                        <span class="border-border text-muted-foreground mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md border text-[13px] font-semibold tabular-nums">
+                          {si + 1}
+                        </span>
+                        <span class="text-[15px] leading-relaxed">{s}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </div>
+          </details>
+        ) : (
+          <div class="tip-card group border-border/60 bg-card/60 flex gap-4 rounded-2xl border p-4 pl-5 backdrop-blur-sm transition-colors md:p-5 md:pl-6">
+            <span class="bg-primary/10 text-primary mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full text-[15px] font-bold tabular-nums">
+              {i + 1}
+            </span>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-[16px] leading-snug font-semibold md:text-[17px]">{t.title}</h3>
+              <p class="text-muted-foreground mt-1.5 text-[15px] leading-relaxed">{t.text}</p>
+            </div>
           </div>
-        </div>
-      ))
+        )
+      )
     }
   </div>
 </section>
+
+<style>
+  .tip-card summary::-webkit-details-marker {
+    display: none;
+  }
+  .tip-card:hover {
+    border-color: color-mix(in oklch, var(--primary) 35%, var(--border));
+  }
+</style>

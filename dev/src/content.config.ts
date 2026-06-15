@@ -37,10 +37,17 @@ const transcripts = defineCollection({
     date: z.coerce.date(),
     cover: z.string().optional(),
 
+    // Блок «Объясни проще» — разные линзы на одну суть (показываются списком):
     // Объяснение сути простым языком — для неподготовленного читателя
     plain: z.string().optional(),
     // Объяснение «на пальцах», как для ребёнка
     forKids: z.string().optional(),
+    // Бытовая аналогия — «это как…»
+    analogy: z.string().optional(),
+    // Зачем это читателю / почему тема важна
+    whyImportant: z.string().optional(),
+    // Плотная выжимка для подготовленных — «для тех, кто в теме»
+    forExperts: z.string().optional(),
 
     // Источник разбора. Поле исторически называется `video`, но разбирать можно
     // что угодно: видео, подкаст, статью или сводный анализ. `kind` управляет всеми
@@ -97,6 +104,19 @@ const transcripts = defineCollection({
       )
       .min(1),
 
+    // Для каких профессий материал особенно полезен. score 1–5 — насколько.
+    // name — в форме после «Для …» (род. падеж мн. ч.): «предпринимателей», «ML-инженеров».
+    // На странице сортируются по score; каждая профессия — cut с обоснованием `why`.
+    professions: z
+      .array(
+        z.object({
+          name: z.string(),
+          score: z.number().min(1).max(5),
+          why: z.string(),
+        })
+      )
+      .optional(),
+
     // Теги из каталога src/lib/tags.ts (новые добавлять туда же)
     tags: z.array(z.string()).min(1),
 
@@ -107,9 +127,20 @@ const transcripts = defineCollection({
       .max(5)
       .optional(),
 
-    // До 10 практических советов для саморазвития
+    // До 10 практических советов для саморазвития.
+    // title — императив-суть; в шапке карточки видны мотиваторы: time (сколько займёт)
+    // и gain (что это даст). Под cut — text (подробнее как/почему) и steps
+    // (детерминированный список конкретных действий: «1. Открой… 2. Набери…»).
     tips: z
-      .array(z.object({ title: z.string(), text: z.string() }))
+      .array(
+        z.object({
+          title: z.string(),
+          text: z.string(),
+          time: z.string().optional(), // сколько времени займёт: «2 минуты», «вечер»
+          gain: z.string().optional(), // что это даст — выгода простыми словами
+          steps: z.array(z.string()).optional(), // пошаговый список действий (под cut)
+        })
+      )
       .max(10)
       .optional(),
 
@@ -158,6 +189,36 @@ const transcripts = defineCollection({
     // Словарь терминов простым языком (показывается под cut в конце статьи)
     glossary: z
       .array(z.object({ term: z.string(), definition: z.string() }))
+      .optional(),
+
+    // Критический взгляд (только новые статьи): объективно — с какими тезисами можно
+    // поспорить, что преувеличено или может быть далеко от правды. Показывается в конце.
+    critique: z
+      .array(
+        z.object({
+          point: z.string(), // спорный тезис / что преувеличено
+          detail: z.string(), // объективное, полезное пояснение почему
+          // ярлык характера претензии (раскрашивает бейдж)
+          kind: z
+            .enum(['exaggeration', 'disputable', 'oversimplified', 'one-sided', 'outdated'])
+            .optional(),
+        })
+      )
+      .max(6)
+      .optional(),
+
+    // «Взгляни иначе» (только новые статьи): пища для размышлений — иной угол на тему,
+    // применение в смежных областях, потенциал на стыке областей. Показывается в конце.
+    thinkDifferent: z
+      .array(
+        z.object({
+          title: z.string(),
+          text: z.string(),
+          // тип поворота мысли: другой угол / смежная область / на стыке областей
+          kind: z.enum(['reframe', 'adjacent', 'intersection']).optional(),
+        })
+      )
+      .max(6)
       .optional(),
 
     // Похожие статьи — id (слаги) других расшифровок

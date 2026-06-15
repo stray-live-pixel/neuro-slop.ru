@@ -5,33 +5,37 @@ import { Icon } from '@/components/ui/icon';
 interface Props {
   plain?: string;
   forKids?: string;
+  analogy?: string;
+  whyImportant?: string;
+  forExperts?: string;
 }
-const { plain, forKids } = Astro.props;
+const { plain, forKids, analogy, whyImportant, forExperts } = Astro.props;
+
+// Разные линзы на одну суть — показываем списком в порядке «от простого к глубокому».
+const cards = [
+  { icon: 'book-open', label: 'Простыми словами', text: plain },
+  { icon: 'baby', label: 'Как ребёнку', text: forKids },
+  { icon: 'puzzle', label: 'Аналогия — «это как…»', text: analogy },
+  { icon: 'target', label: 'Зачем это мне', text: whyImportant },
+  { icon: 'graduation-cap', label: 'Для тех, кто в теме', text: forExperts },
+].filter((c) => c.text);
 ---
 
-<section>
-  <SectionHeading icon="book-open" title="Объясни проще" hint="Суть без жаргона" />
+{
+  cards.length > 0 && (
+    <section>
+      <SectionHeading icon="book-open" title="Объясни проще" hint="Суть без жаргона" />
 
-  <div class="grid gap-4 md:grid-cols-2">
-    {
-      plain && (
-        <div class="glow-card border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-6">
-          <p class="text-primary mb-2.5 flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
-            <Icon name="book-open" class="size-4" /> Простыми словами
-          </p>
-          <p class="text-[15px] leading-relaxed">{plain}</p>
-        </div>
-      )
-    }
-    {
-      forKids && (
-        <div class="glow-card border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-6">
-          <p class="text-primary mb-2.5 flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
-            <Icon name="baby" class="size-4" /> Как ребёнку
-          </p>
-          <p class="text-[15px] leading-relaxed">{forKids}</p>
-        </div>
-      )
-    }
-  </div>
-</section>
+      <div class="grid gap-4">
+        {cards.map((c) => (
+          <div class="glow-card border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-6">
+            <p class="text-primary mb-2.5 flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
+              <Icon name={c.icon} class="size-4" /> {c.label}
+            </p>
+            <p class="text-[15px] leading-relaxed">{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}

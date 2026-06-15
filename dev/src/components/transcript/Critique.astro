@@ -1,0 +1,45 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface CritiquePoint {
+  point: string;
+  detail: string;
+  kind?: 'exaggeration' | 'disputable' | 'oversimplified' | 'one-sided' | 'outdated';
+}
+interface Props {
+  points: CritiquePoint[];
+}
+const { points } = Astro.props;
+
+const KIND_LABEL: Record<NonNullable<CritiquePoint['kind']>, string> = {
+  exaggeration: 'Преувеличение',
+  disputable: 'Спорно',
+  oversimplified: 'Упрощение',
+  'one-sided': 'Однобоко',
+  outdated: 'Может устареть',
+};
+---
+
+<section>
+  <SectionHeading
+    icon="scale"
+    title="Критический взгляд"
+    hint="Объективно: с какими тезисами можно поспорить и что преувеличено"
+  />
+
+  <div class="space-y-3">
+    {
+      points.map((p) => (
+        <div class="border-border/60 bg-card/60 rounded-2xl border p-5 backdrop-blur-sm md:p-6">
+          {p.kind && (
+            <span class="bg-muted text-muted-foreground border-border/70 mb-2 inline-block rounded-md border px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase">
+              {KIND_LABEL[p.kind]}
+            </span>
+          )}
+          <p class="text-[16px] leading-snug font-semibold md:text-[17px]">{p.point}</p>
+          <p class="text-muted-foreground mt-1.5 leading-relaxed">{p.detail}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
