@@ -19,8 +19,6 @@ export interface SourceInput {
 export interface SourceLabels {
   kind: SourceKind;
   isYouTube: boolean;
-  /** Имеет ли смысл встроенный плеер с перемоткой по тайм-кодам (видео/аудио). */
-  seekable: boolean;
   /** CTA на баннере-источнике в шапке статьи. */
   play: string;
   /** aria-label кнопки воспроизведения/перехода. */
@@ -72,14 +70,12 @@ export function resolveKind(src: SourceInput): SourceKind {
 export function sourceLabels(src: SourceInput): SourceLabels {
   const isYouTube = !!youtubeId(src.url);
   const kind = resolveKind(src);
-  const seekable = kind === 'video' || kind === 'podcast';
 
   switch (kind) {
     case 'podcast':
       return {
         kind,
         isYouTube,
-        seekable,
         play: 'Слушать подкаст',
         playAria: 'Слушать подкаст',
         icon: 'mic',
@@ -94,7 +90,6 @@ export function sourceLabels(src: SourceInput): SourceLabels {
       return {
         kind,
         isYouTube,
-        seekable,
         play: 'Читать статью',
         playAria: 'Открыть статью',
         icon: 'newspaper',
@@ -109,7 +104,6 @@ export function sourceLabels(src: SourceInput): SourceLabels {
       return {
         kind,
         isYouTube,
-        seekable,
         play: 'Открыть источник',
         playAria: 'Открыть источник',
         icon: 'scroll-text',
@@ -124,7 +118,6 @@ export function sourceLabels(src: SourceInput): SourceLabels {
       return {
         kind,
         isYouTube,
-        seekable,
         play: 'Открыть ключевую ссылку',
         playAria: 'Открыть ссылку',
         icon: 'link',
@@ -140,7 +133,6 @@ export function sourceLabels(src: SourceInput): SourceLabels {
       return {
         kind: 'video',
         isYouTube,
-        seekable: true,
         play: isYouTube ? 'Смотреть на YouTube' : 'Открыть видео',
         playAria: 'Воспроизвести видео',
         icon: 'play',

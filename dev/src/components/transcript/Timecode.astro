@@ -7,14 +7,12 @@ interface Props {
   class?: string;
 }
 const { t, url, class: cls } = Astro.props;
-// href — рабочий fallback без JS (откроет видео с момента на YouTube).
-// С JS клик перехватывается и перематывает встроенный плеер прямо на странице.
+// Просто ссылка на источник с нужного момента (для YouTube — параметр &t=).
 const href = videoTimeUrl(url, t);
 ---
 
 <a
   href={href}
-  data-seek={t}
   target="_blank"
   rel="noopener"
   class:list={[

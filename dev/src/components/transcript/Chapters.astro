@@ -1,4 +1,5 @@
 ---
+import { Icon } from '@/components/ui/icon';
 import { formatTimecode, videoTimeUrl } from '../../lib/video';
 
 interface Chapter {
@@ -15,19 +16,22 @@ const { chapters, url, label = 'Главы — нажми, чтобы перей
 const sorted = [...chapters].sort((a, b) => a.t - b.t);
 ---
 
-<div class="border-border/60 bg-card/50 -mt-10 rounded-2xl border backdrop-blur-sm">
-  <p
-    class="text-muted-foreground flex items-center gap-2 px-4 pt-3.5 pb-1 text-xs font-semibold tracking-wide uppercase"
+<details class="ns-chapters group border-border/60 bg-card/50 mt-4 rounded-2xl border backdrop-blur-sm">
+  <summary
+    class="text-muted-foreground flex select-none items-center gap-2 px-4 py-3 text-xs font-semibold tracking-wide uppercase"
   >
-    {label}
-  </p>
-  <ol class="divide-border/50 divide-y">
+    <Icon name="chevron-down" class="size-4 transition-transform duration-300 group-open:rotate-180" />
+    <span class="min-w-0 flex-1 truncate normal-case">{label}</span>
+    <span class="text-primary bg-primary/10 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] tabular-nums">
+      {sorted.length}
+    </span>
+  </summary>
+  <ol class="divide-border/50 border-border/50 divide-y border-t">
     {
       sorted.map((c) => (
         <li>
           <a
             href={videoTimeUrl(url, c.t)}
-            data-seek={c.t}
             target="_blank"
             rel="noopener"
             class="hover:bg-accent/50 flex items-start gap-3 px-4 py-3 transition-colors"
@@ -48,4 +52,4 @@ const sorted = [...chapters].sort((a, b) => a.t - b.t);
       ))
     }
   </ol>
-</div>
+</details>
