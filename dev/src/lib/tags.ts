@@ -5,6 +5,7 @@ export const TAGS: Record<string, string> = {
   programming: 'Программирование',
   economics: 'Экономика',
   business: 'Бизнес',
+  management: 'Менеджмент',
   startups: 'Стартапы',
   finance: 'Финансы',
   career: 'Карьера',
