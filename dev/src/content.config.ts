@@ -37,6 +37,19 @@ const transcripts = defineCollection({
     date: z.coerce.date(),
     cover: z.string().optional(),
 
+    // Голосовая выжимка (только новые статьи): короткая озвучка самого ценного из разбора
+    // (Yandex SpeechKit). mp3 лежит в dev/public/audio/<slug>.mp3. На странице — плеер +
+    // свёрнутый текст (script). Генерируется в приватном пайплайне (см. tts/synthesize.py).
+    audio: z
+      .object({
+        src: z.string(), // путь к mp3, напр. /audio/<slug>.mp3
+        duration: z.string().optional(), // подпись «1:47»
+        durationSeconds: z.number().int().positive().optional(),
+        voice: z.string().optional(), // голос синтеза, напр. alena
+        script: z.string().optional(), // текст выжимки (показывается под cut)
+      })
+      .optional(),
+
     // Блок «Объясни проще» — разные линзы на одну суть (показываются списком):
     // Объяснение сути простым языком — для неподготовленного читателя
     plain: z.string().optional(),

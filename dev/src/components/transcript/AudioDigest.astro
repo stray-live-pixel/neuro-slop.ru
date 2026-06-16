@@ -1,0 +1,119 @@
+---
+import { Icon } from '@/components/ui/icon';
+import SectionHeading from './SectionHeading.astro';
+import Collapsible from './Collapsible.astro';
+
+interface Props {
+  src: string;
+  duration?: string;
+  voice?: string;
+  script?: string;
+}
+const { src, duration, voice, script } = Astro.props;
+---
+
+<section data-audio-digest class="scroll-mt-24">
+  <SectionHeading icon="headphones" title="Выжимка голосом" hint="Самое ценное из разбора — за пару минут" />
+
+  <div class="glow-card border-border/60 bg-card/60 relative overflow-hidden rounded-2xl border p-5 backdrop-blur-sm md:p-6">
+    <span class="absolute inset-y-0 left-0 w-1.5" style="background: var(--gradient-brand)"></span>
+
+    <div class="flex items-center gap-4 md:gap-5">
+      <button
+        type="button"
+        data-play
+        class="text-primary-foreground flex size-14 shrink-0 items-center justify-center rounded-full text-white shadow-lg transition-transform duration-200 hover:scale-105 focus-visible:scale-105 focus-visible:outline-none md:size-16"
+        style="background: var(--gradient-brand)"
+        aria-label="Слушать выжимку"
+      >
+        <Icon name="play" data-icon-play class="size-7 translate-x-0.5 md:size-8" />
+        <Icon name="pause" data-icon-pause class="hidden size-7 md:size-8" />
+      </button>
+
+      <div class="min-w-0 flex-1">
+        <button
+          type="button"
+          data-track
+          class="bg-border/70 group relative h-2 w-full cursor-pointer overflow-hidden rounded-full"
+          aria-label="Перемотать"
+        >
+          <span data-fill class="absolute inset-y-0 left-0 w-0" style="background: var(--gradient-brand)"></span>
+        </button>
+        <div class="text-muted-foreground mt-2 flex items-center justify-between text-xs font-medium tabular-nums">
+          <span data-current>0:00</span>
+          <span data-total>{duration ?? '0:00'}</span>
+        </div>
+      </div>
+    </div>
+
+    <audio data-audio preload="metadata" src={src}></audio>
+
+    {
+      script && (
+        <div class="mt-4">
+          <Collapsible label="Показать текст выжимки" openLabel="Скрыть текст выжимки">
+            <div class="text-muted-foreground space-y-3 text-[15px] leading-relaxed whitespace-pre-line">
+              {script}
+            </div>
+          </Collapsible>
+        </div>
+      )
+    }
+
+    {voice && <p class="text-muted-foreground/70 mt-3 text-xs">Озвучено синтезом речи · голос {voice}</p>}
+  </div>
+</section>
+
+<script>
+  function fmt(sec: number): string {
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-audio-digest]').forEach((root) => {
+    const audio = root.querySelector<HTMLAudioElement>('[data-audio]');
+    const playBtn = root.querySelector<HTMLButtonElement>('[data-play]');
+    const iconPlay = root.querySelector<HTMLElement>('[data-icon-play]');
+    const iconPause = root.querySelector<HTMLElement>('[data-icon-pause]');
+    const track = root.querySelector<HTMLButtonElement>('[data-track]');
+    const fill = root.querySelector<HTMLElement>('[data-fill]');
+    const current = root.querySelector<HTMLElement>('[data-current]');
+    const total = root.querySelector<HTMLElement>('[data-total]');
+    if (!audio || !playBtn || !iconPlay || !iconPause || !track || !fill || !current || !total) return;
+
+    const sync = () => {
+      const playing = !audio.paused && !audio.ended;
+      iconPlay.classList.toggle('hidden', playing);
+      iconPause.classList.toggle('hidden', !playing);
+      playBtn.setAttribute('aria-label', playing ? 'Пауза' : 'Слушать выжимку');
+    };
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) audio.play();
+      else audio.pause();
+    });
+    audio.addEventListener('play', sync);
+    audio.addEventListener('pause', sync);
+    audio.addEventListener('ended', sync);
+
+    audio.addEventListener('loadedmetadata', () => {
+      if (isFinite(audio.duration)) total.textContent = fmt(audio.duration);
+    });
+    audio.addEventListener('timeupdate', () => {
+      const d = audio.duration;
+      const pct = isFinite(d) && d > 0 ? (audio.currentTime / d) * 100 : 0;
+      fill.style.width = `${pct}%`;
+      current.textContent = fmt(audio.currentTime);
+    });
+
+    track.addEventListener('click', (e) => {
+      const d = audio.duration;
+      if (!isFinite(d) || d <= 0) return;
+      const rect = track.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      audio.currentTime = ratio * d;
+    });
+  });
+</script>

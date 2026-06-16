@@ -6,6 +6,7 @@ import { formatDate, TRANSCRIPTS_SECTION } from '../../lib/categories';
 import { youtubeId, isoDuration } from '../../lib/video';
 import { sourceLabels } from '../../lib/source';
 import Tldr from '../../components/transcript/Tldr.astro';
+import AudioDigest from '../../components/transcript/AudioDigest.astro';
 import PlainSpeak from '../../components/transcript/PlainSpeak.astro';
 import Ratings from '../../components/transcript/Ratings.astro';
 import Professions from '../../components/transcript/Professions.astro';
@@ -57,6 +58,7 @@ const ogImage = d.cover && !d.cover.endsWith('.svg') ? d.cover : undefined;
 // Универсальные подписи источника (видео/подкаст/статья/разбор) — см. lib/source.ts
 const src = sourceLabels(d.video);
 
+const hasAudio = Boolean(d.audio?.src);
 const hasPlain = Boolean(d.plain || d.forKids || d.analogy || d.whyImportant || d.forExperts);
 const hasInsights = Boolean(d.insights?.length);
 const hasQuotes = Boolean(d.quotes?.length);
@@ -73,6 +75,7 @@ const hasThinkDifferent = Boolean(d.thinkDifferent?.length);
 // Оглавление — только присутствующие секции
 const toc = [
   { id: 'tldr', label: 'Коротко', on: true },
+  { id: 'audio', label: 'Выжимка', on: hasAudio },
   { id: 'plain', label: 'Простыми словами', on: hasPlain },
   { id: 'ratings', label: 'Оценки', on: true },
   { id: 'professions', label: 'Кому полезно', on: hasProfessions },
@@ -197,6 +200,19 @@ const jsonLd = [videoLd, articleLd, faqLd].filter(Boolean);
         <div id="tldr" class="scroll-mt-24">
           <Tldr text={d.tldr} />
         </div>
+
+        {
+          hasAudio && (
+            <div id="audio" class="scroll-mt-24">
+              <AudioDigest
+                src={d.audio!.src}
+                duration={d.audio!.duration}
+                voice={d.audio!.voice}
+                script={d.audio!.script}
+              />
+            </div>
+          )
+        }
 
         {
           hasPlain && (
