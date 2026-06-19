@@ -68,13 +68,8 @@ const jsonLd = {
       </span>
     </div>
 
-    <!-- Чат -->
-    <div class="mt-7">
-      <ChatRoom bot={d} apiBase={CHAT_API_BASE} />
-    </div>
-
-    <!-- Дисклеймеры безопасности -->
-    <div class="border-border/60 bg-card/50 mt-5 rounded-2xl border p-5 backdrop-blur-sm">
+    <!-- Дисклеймеры безопасности (перед чатом) -->
+    <div class="border-border/60 bg-card/50 mt-7 rounded-2xl border p-5 backdrop-blur-sm">
       <p class="text-foreground flex items-center gap-2 text-sm font-semibold">
         <Icon name="triangle-alert" class="size-4" style={`color: var(--primary)`} />
         Прежде чем начать
@@ -87,6 +82,11 @@ const jsonLd = {
           </li>
         ))}
       </ul>
+    </div>
+
+    <!-- Чат -->
+    <div class="mt-5">
+      <ChatRoom bot={d} apiBase={CHAT_API_BASE} />
     </div>
 
     <!-- Текст «о боте» -->
