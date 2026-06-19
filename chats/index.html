@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="ru"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Живые ИИ-боты, с которыми можно поговорить прямо в браузере. Шуточные эксперименты, а не советы"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="canonical" href="https://neuro-slop.ru/chats/"><meta property="og:title" content="Чаты — Neuro Slop"><meta property="og:description" content="Живые ИИ-боты, с которыми можно поговорить прямо в браузере. Шуточные эксперименты, а не советы"><meta property="og:type" content="website"><meta property="og:url" content="https://neuro-slop.ru/chats/"><meta property="og:site_name" content="neuro-slop.ru"><meta property="og:locale" content="ru_RU"><meta property="og:image" content="https://neuro-slop.ru/images/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Чаты — Neuro Slop"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Чаты — Neuro Slop"><meta name="twitter:description" content="Живые ИИ-боты, с которыми можно поговорить прямо в браузере. Шуточные эксперименты, а не советы"><meta name="twitter:image" content="https://neuro-slop.ru/images/og.png"><title>Чаты — Neuro Slop</title><script>
+      // Тема: localStorage → системная. Выполняется до отрисовки, чтобы не мигало.
+      (() => {
+        const stored = localStorage.getItem('theme');
+        const dark =
+          stored === 'dark' ||
+          (!stored && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+
+        window.__setTheme = (theme) => {
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+          localStorage.setItem('theme', theme);
+        };
+      })();
+    </script><!-- Yandex.Metrika counter --><script type="text/javascript">
+      (function(m,e,t,r,i,k,a){
+          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109813401', 'ym');
+
+      ym(109813401, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script><noscript><div><img src="https://mc.yandex.ru/watch/109813401" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter --><link rel="stylesheet" href="/_astro/_category_.BKylPqzo.css"></head> <body class="bg-background text-foreground flex min-h-svh flex-col overscroll-none antialiased"> <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true"> <div class="aurora-blob aurora-blob-1"></div> <div class="aurora-blob aurora-blob-2"></div> <div class="aurora-blob aurora-blob-3"></div> <div class="dot-grid"></div> <div class="cursor-glow" data-cursor-glow></div> </div> <script type="module">const i=document.querySelector("[data-cursor-glow]"),c=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(i&&!c&&window.matchMedia("(pointer: fine)").matches){let n=0,r=0,e=0,t=0,a=0;const s=()=>{e+=(n-e)*.06,t+=(r-t)*.06,i.style.transform=`translate3d(${e}px, ${t}px, 0)`,Math.abs(n-e)>.5||Math.abs(r-t)>.5?a=requestAnimationFrame(s):a=0};window.addEventListener("pointermove",o=>{n=o.clientX,r=o.clientY,i.classList.add("is-active"),a||(a=requestAnimationFrame(s))}),document.documentElement.addEventListener("pointerleave",()=>{i.classList.remove("is-active")})}</script> <header class="bg-background/60 border-border/60 sticky top-0 z-50 border-b backdrop-blur-xl backdrop-saturate-150"> <nav class="mx-auto flex h-14 w-full max-w-[1920px] items-center justify-between px-5 md:px-10 2xl:px-16"> <a href="/" class="text-foreground text-[15px] font-semibold tracking-tight transition-opacity hover:opacity-70"> <span class="text-gradient text-gradient-animated">neuro‑slop.ru</span> </a> <div class="flex items-center gap-1 sm:gap-2"> <a href="/posts/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Записи
+</a> <a href="/transcripts/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Разборы
+</a> <a href="/chats/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Чаты
+</a> <button data-slot="button" class="group/button focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 [&#38;_svg]:pointer-events-none [&#38;_svg]:shrink-0 [&#38;_svg:not([class*='size-'])]:size-4 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 size-8 in-data-[slot=button-group]:rounded-md relative rounded-full" data-theme-toggle="true" aria-label="Toggle theme">  <svg class="dark:hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" />
+</svg> <svg class="hidden dark:block" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+</svg> <span class="sr-only">Toggle theme</span>  </button> <script>
+  if (!window.__themeToggleHandlersInitialized) {
+    window.__themeToggleHandlersInitialized = true
+
+    const syncThemeToggles = () => {
+      const isDark = document.documentElement.classList.contains("dark")
+
+      document.querySelectorAll("[data-theme-toggle]").forEach((toggle) => {
+        if (!(toggle instanceof HTMLButtonElement)) return
+
+        toggle.setAttribute("aria-pressed", isDark ? "true" : "false")
+        toggle.setAttribute("data-state", isDark ? "on" : "off")
+
+        if (isDark) {
+          toggle.setAttribute("data-pressed", "")
+        } else {
+          toggle.removeAttribute("data-pressed")
+        }
+      })
+    }
+
+    syncThemeToggles()
+
+    const observer = new MutationObserver(syncThemeToggles)
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
+    document.addEventListener("click", (event) => {
+      const target = event.target
+
+      if (!(target instanceof Element)) return
+
+      const toggle = target.closest("[data-theme-toggle]")
+
+      if (!(toggle instanceof HTMLButtonElement)) return
+      if (toggle.disabled) return
+
+      const isDark = document.documentElement.classList.contains("dark")
+      const nextTheme = isDark ? "light" : "dark"
+
+      if (typeof window.__setTheme === "function") {
+        window.__setTheme(nextTheme)
+        return
+      }
+
+      document.documentElement.classList[
+        nextTheme === "dark" ? "add" : "remove"
+      ]("dark")
+    })
+  }
+</script> </div> </nav> </header> <div class="flex-1">  <main class="mx-auto w-full max-w-[1440px] px-5 pt-16 md:px-10"> <span class="mb-5 flex size-16 items-center justify-center rounded-2xl text-white shadow-md" style="background: linear-gradient(135deg, #0894ff, #ff2e54)"> <svg class="size-8" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 8V4H8" />
+  <rect width="16" height="12" x="4" y="8" rx="2" />
+  <path d="M2 14h2" />
+  <path d="M20 14h2" />
+  <path d="M15 13v2" />
+  <path d="M9 13v2" />
+</svg> </span> <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[-0.03em]"> Чаты </h1> <p class="text-muted-foreground mt-3 max-w-2xl text-xl font-medium"> Живые ИИ-боты, с которыми можно поговорить прямо в браузере. Шуточные эксперименты, а не советы </p> <div class="border-border/60 bg-card/50 text-muted-foreground mt-6 inline-flex items-start gap-2.5 rounded-2xl border px-4 py-3 text-[14px] backdrop-blur-sm"> <svg class="mt-0.5 size-4 shrink-0 opacity-70" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" />
+</svg> <span>
+Боты отвечают через нейросеть — это <b>развлечение, а не совет</b>. Не отправляй личные данные
+        и не принимай по ответам важных решений.
+</span> </div> <div class="mt-10 grid grid-cols-1 gap-5 xl:grid-cols-2"> <a class="glow-card group border-border/60 relative flex aspect-[16/9] flex-col justify-between gap-6 overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:aspect-[21/9] md:p-8" href="/chats/demotivator/"> <div class="absolute inset-0" style="background: linear-gradient(135deg,"></div> <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/30"></div> <p class="relative flex items-center justify-between gap-3 text-[13px]"> <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold text-white shadow-sm" style="background: linear-gradient(135deg,"> <svg class="size-3.5" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" />
+  <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" />
+  <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" />
+  <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+</svg>
+Живой чат
+</span> <span class="inline-flex items-center gap-1 rounded-full bg-black/35 px-2.5 py-1 font-semibold text-white/90 backdrop-blur-sm"> <svg class="size-3.5" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
+</svg>
+Бот
+</span> </p> <span class="relative block"> <h3 class="text-[clamp(1.35rem,2.2vw,1.7rem)] leading-tight font-bold tracking-tight text-white"> Демотиватор </h3> <span class="mt-2 line-clamp-2 max-w-[60ch] text-[15px] leading-normal text-white/80"> Назови цель — честно объясню, почему она тебе, скорее всего, не нужна. </span> <span class="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-white/90">
+Поговорить
+<svg class="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M7 7h10v10" />
+  <path d="M7 17 17 7" />
+</svg> </span> </span> </a> </div> <p class="mt-14"> <a href="/" class="text-primary text-sm font-medium hover:underline">← На главную</a> </p> </main>  </div> <footer class="border-border/60 mt-16 border-t"> <div class="text-muted-foreground mx-auto flex w-full max-w-[1920px] flex-col items-center justify-between gap-2 px-5 py-8 text-[13px] sm:flex-row md:px-10 2xl:px-16"> <p>© 2026 neuro-slop.ru</p> <p>Сделано вместе с нейросетями</p> </div> </footer> </body> </html>

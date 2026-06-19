@@ -33,6 +33,16 @@ export const TRANSCRIPTS_SECTION = {
   gradient: 'linear-gradient(135deg, #ff9004, #c959dd)',
 } as const;
 
+// Раздел «Чаты» — отдельная коллекция (chats, см. content.config.ts): живые
+// ИИ-боты, с которыми можно поговорить прямо в браузере. Шуточные эксперименты.
+export const CHATS_SECTION = {
+  slug: 'chats',
+  label: 'Чаты',
+  icon: 'bot',
+  description: 'Живые ИИ-боты, с которыми можно поговорить прямо в браузере. Шуточные эксперименты, а не советы',
+  gradient: 'linear-gradient(135deg, #0894ff, #ff2e54)',
+} as const;
+
 // Все разделы сайта — для плиток на главной, фильтра на /posts/ и навигации.
 export const SECTIONS = [
   ...Object.entries(CATEGORIES).map(([slug, c]) => ({
@@ -44,6 +54,7 @@ export const SECTIONS = [
     href: `/category/${slug}/`,
   })),
   { ...TRANSCRIPTS_SECTION, href: '/transcripts/' },
+  { ...CHATS_SECTION, href: '/chats/' },
 ];
 
 export function formatDate(date: Date): string {

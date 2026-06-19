@@ -241,4 +241,45 @@ const transcripts = defineCollection({
   }),
 });
 
-export const collections = { posts, transcripts };
+// Чаты — интерактивные ИИ-боты раздела /chats/. Каждый бот = один md-файл:
+//   src/content/chats/<slug>.md — публичная конфигурация + текст «о боте» (тело).
+// СЕКРЕТНОГО здесь нет: системные промпты, ключи и логика живут только на тонком
+// сервере (приватный репозиторий). Поле botId связывает бота с его серверным промптом.
+const chats = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/chats' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    // Короткий подзаголовок-крючок в hero
+    tagline: z.string(),
+    // Ключ серверного промпта (см. тонкий сервер). НЕ сам промпт.
+    botId: z.string(),
+    icon: z.string().default('bot'),
+    // Собственный градиент бота (иначе берётся градиент раздела)
+    accent: z.string().optional(),
+    cover: z.string().optional(),
+    order: z.number().default(0),
+    // Необязательная подпись «работает на …» (без технических подробностей)
+    model: z.string().optional(),
+    // Лимит сообщений пользователя за сессию (анти-фрод и контроль расходов)
+    maxMessages: z.number().int().positive().default(10),
+    // Первая реплика бота — показывается сразу, без вызова API (экономия)
+    greeting: z.string(),
+    placeholder: z.string().default('Напиши свою цель…'),
+    // Подсказки-стартеры: примеры, по клику отправляются как сообщение
+    starters: z.array(z.string()).max(6).default([]),
+    // Счётчик-механика (для демотиватора — «сколько времени сэкономлено»)
+    counter: z
+      .object({
+        enabled: z.boolean().default(true),
+        label: z.string().default('Сэкономлено'),
+        unit: z.string().default('часов'),
+      })
+      .default({}),
+    // Переопределение дефолтных дисклеймеров (см. src/lib/chats.ts)
+    disclaimers: z.array(z.string()).optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { posts, transcripts, chats };

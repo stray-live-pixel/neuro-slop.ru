@@ -1,0 +1,583 @@
+---
+// Универсальная комната чата: одна на всех ботов раздела /chats/.
+// Стримит ответ по SSE с тонкого сервера, рендерит markdown (с санитайзом),
+// держит лимит сообщений и счётчик «сэкономлено». Чтобы добавить нового бота —
+// заведи md-файл в src/content/chats/ и серверный промпт; этот компонент не меняется.
+import { Icon } from '@/components/ui/icon';
+import { accentOf } from '../../lib/chats';
+
+interface Bot {
+  botId: string;
+  icon?: string;
+  maxMessages: number;
+  greeting: string;
+  placeholder: string;
+  starters: string[];
+  counter: { enabled: boolean; label: string; unit: string };
+  accent?: string;
+}
+interface Props {
+  bot: Bot;
+  apiBase: string;
+}
+
+const { bot, apiBase } = Astro.props;
+const accent = accentOf(bot.accent);
+
+// Конфиг для клиентского скрипта (только публичные значения).
+const config = {
+  apiBase,
+  botId: bot.botId,
+  maxMessages: bot.maxMessages,
+  greeting: bot.greeting,
+  counter: bot.counter,
+};
+---
+
+<section
+  class="glow-card bg-card/60 border-border/60 relative flex flex-col overflow-hidden rounded-3xl border backdrop-blur-sm"
+  data-chat
+  style={`--bot-accent: ${accent}`}
+>
+  <script type="application/json" data-chat-config is:inline set:html={JSON.stringify(config)} />
+
+  <!-- Лента сообщений -->
+  <div class="chat-scroll" data-messages>
+    <div class="chat-msg chat-msg--assistant">
+      <div class="chat-avatar" style={`background:${accent}`}>
+        <Icon name={bot.icon ?? 'bot'} class="size-4" />
+      </div>
+      <div class="chat-bubble" set:text={bot.greeting} />
+    </div>
+  </div>
+
+  <!-- Подсказки-стартеры -->
+  {
+    bot.starters.length > 0 && (
+      <div class="chat-starters" data-starters>
+        <span class="chat-starters__hint">Попробуй с примера:</span>
+        <div class="chat-starters__row">
+          {bot.starters.map((s) => (
+            <button type="button" class="chat-starter" data-starter={s}>
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  <!-- Накопительный счётчик (из localStorage) -->
+  <div class="chat-total" data-total-saved hidden>
+    <Icon name="piggy-bank" class="size-4 opacity-70" />
+    <span>
+      {bot.counter.label} за всё время: <b data-total-value>0</b> {bot.counter.unit}
+    </span>
+  </div>
+
+  <!-- Лимит сообщений -->
+  <div class="chat-limit" data-limit hidden>
+    <p>Лимит в {bot.maxMessages} сообщений на сессию исчерпан — так задумано, чтобы бот не разорял создателя 🙂</p>
+    <button type="button" class="chat-restart" data-restart>
+      <Icon name="refresh-cw" class="size-4" />
+      Начать заново
+    </button>
+  </div>
+
+  <!-- Поле ввода -->
+  <form class="chat-composer" data-form>
+    <textarea
+      class="chat-input"
+      data-input
+      rows="1"
+      maxlength="1000"
+      placeholder={bot.placeholder}
+      autocomplete="off"
+      aria-label="Сообщение боту"></textarea>
+    <button type="submit" class="chat-send" data-send aria-label="Отправить">
+      <Icon name="send" class="size-5" />
+    </button>
+  </form>
+
+  <p class="chat-hint">
+    <span>Enter — отправить, Shift+Enter — перенос строки</span>
+    <span>Осталось сообщений: <b data-remaining>{bot.maxMessages}</b></span>
+  </p>
+</section>
+
+<style is:global>
+  [data-chat] {
+    --chat-radius: 1.5rem;
+  }
+  .chat-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+    padding: 1.25rem 1.25rem 0.5rem;
+    min-height: 360px;
+    max-height: min(62vh, 620px);
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+  }
+  .chat-msg {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.55rem;
+    margin-top: 0.75rem;
+  }
+  .chat-msg--user {
+    justify-content: flex-end;
+  }
+  .chat-msg--assistant {
+    justify-content: flex-start;
+  }
+  .chat-msg--system {
+    justify-content: center;
+  }
+  .chat-avatar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 999px;
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .chat-bubble {
+    max-width: min(85%, 60ch);
+    padding: 0.7rem 1rem;
+    border-radius: 1.15rem;
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+  }
+  .chat-msg--assistant .chat-bubble {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    border-bottom-left-radius: 0.35rem;
+  }
+  .chat-msg--user .chat-bubble {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-bottom-right-radius: 0.35rem;
+  }
+  .chat-msg--system .chat-bubble {
+    background: transparent;
+    color: var(--muted-foreground);
+    font-size: 13px;
+    text-align: center;
+    padding: 0.25rem 0.5rem;
+    max-width: 46ch;
+  }
+  .chat-bubble.is-error {
+    background: color-mix(in oklch, var(--destructive) 14%, var(--card));
+    color: var(--foreground);
+  }
+  .chat-bubble > :first-child { margin-top: 0; }
+  .chat-bubble > :last-child { margin-bottom: 0; }
+  .chat-bubble p { margin: 0.4rem 0; }
+  .chat-bubble ul,
+  .chat-bubble ol { margin: 0.4rem 0; padding-left: 1.2rem; }
+  .chat-bubble ul { list-style: disc; }
+  .chat-bubble ol { list-style: decimal; }
+  .chat-bubble li { margin: 0.15rem 0; }
+  .chat-bubble strong { font-weight: 650; }
+  .chat-bubble code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: color-mix(in oklch, var(--foreground) 8%, transparent);
+    padding: 0.1em 0.35em;
+    border-radius: 6px;
+  }
+
+  /* Индикатор «печатает» */
+  .chat-typing {
+    display: inline-flex;
+    gap: 4px;
+    padding: 0.15rem 0;
+  }
+  .chat-typing i {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.4;
+    animation: chat-blink 1.2s infinite ease-in-out both;
+  }
+  .chat-typing i:nth-child(2) { animation-delay: 0.18s; }
+  .chat-typing i:nth-child(3) { animation-delay: 0.36s; }
+  @keyframes chat-blink {
+    0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-3px); }
+  }
+
+  /* Карточка «сэкономлено» */
+  .chat-saved {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin: 0.9rem auto 0.4rem;
+    padding: 0.85rem 1.1rem;
+    max-width: 92%;
+    border-radius: 1.1rem;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--card), var(--card)) padding-box,
+      var(--bot-accent, var(--gradient-brand)) border-box;
+    box-shadow: var(--shadow-md);
+  }
+  .chat-saved__emoji { font-size: 1.8rem; line-height: 1; }
+  .chat-saved__title { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+  .chat-saved__note { color: var(--muted-foreground); font-size: 14px; margin-top: 0.15rem; }
+
+  .chat-starters {
+    padding: 0.25rem 1.25rem 0.75rem;
+  }
+  .chat-starters__hint {
+    display: block;
+    font-size: 13px;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+  }
+  .chat-starters__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .chat-starter {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--foreground);
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.1s ease;
+  }
+  .chat-starter:hover { border-color: color-mix(in oklch, var(--primary) 55%, transparent); }
+  .chat-starter:active { transform: scale(0.97); }
+
+  .chat-total {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 1.25rem 0.5rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 0.9rem;
+    background: color-mix(in oklch, var(--primary) 8%, transparent);
+    font-size: 14px;
+  }
+
+  .chat-limit {
+    margin: 0 1.25rem 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 14px;
+    text-align: center;
+  }
+  .chat-restart {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .chat-composer {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    padding: 0.85rem 1rem;
+    border-top: 1px solid var(--border);
+    background: color-mix(in oklch, var(--card) 70%, transparent);
+  }
+  .chat-input {
+    flex: 1 1 auto;
+    resize: none;
+    max-height: 160px;
+    border: 1px solid var(--border);
+    background: var(--background);
+    color: var(--foreground);
+    border-radius: 1.1rem;
+    padding: 0.7rem 0.95rem;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1.45;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .chat-input:focus { border-color: color-mix(in oklch, var(--primary) 60%, transparent); }
+  .chat-input:disabled { opacity: 0.55; cursor: not-allowed; }
+  .chat-send {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 2.85rem;
+    height: 2.85rem;
+    border-radius: 999px;
+    background: var(--bot-accent, var(--primary));
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+  }
+  .chat-send:hover:not(:disabled) { transform: translateY(-1px); }
+  .chat-send:active:not(:disabled) { transform: scale(0.94); }
+  .chat-send:disabled { opacity: 0.45; cursor: not-allowed; }
+  .chat-send.is-loading { opacity: 0.6; }
+
+  .chat-hint {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0 1.1rem 0.9rem;
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chat-typing i { animation: none; }
+    .chat-scroll { scroll-behavior: auto; }
+  }
+</style>
+
+<script>
+  import { fetchEventSource } from '@microsoft/fetch-event-source';
+  import { marked } from 'marked';
+  import DOMPurify from 'dompurify';
+
+  type Role = 'user' | 'assistant';
+  interface Msg { role: Role; content: string; }
+
+  class FriendlyError extends Error {}
+
+  marked.setOptions({ breaks: true, gfm: true });
+
+  const MAX_INPUT = 1000; // символов в одном сообщении
+  const MAX_CONTEXT = 9000; // суммарно символов в истории — мягкий предохранитель
+
+  function initChat(root: HTMLElement) {
+    const cfgEl = root.querySelector<HTMLElement>('[data-chat-config]');
+    if (!cfgEl) return;
+    const cfg = JSON.parse(cfgEl.textContent || '{}');
+
+    const messagesEl = root.querySelector<HTMLElement>('[data-messages]')!;
+    const form = root.querySelector<HTMLFormElement>('[data-form]')!;
+    const input = root.querySelector<HTMLTextAreaElement>('[data-input]')!;
+    const sendBtn = root.querySelector<HTMLButtonElement>('[data-send]')!;
+    const startersEl = root.querySelector<HTMLElement>('[data-starters]');
+    const limitEl = root.querySelector<HTMLElement>('[data-limit]');
+    const remainingEl = root.querySelector<HTMLElement>('[data-remaining]');
+    const totalEl = root.querySelector<HTMLElement>('[data-total-saved]');
+
+    const MAX = Number(cfg.maxMessages) || 10;
+    const messages: Msg[] = [{ role: 'assistant', content: String(cfg.greeting || '') }];
+    let userCount = 0;
+    let streaming = false;
+    let locked = false;
+
+    const md = (text: string) =>
+      DOMPurify.sanitize(marked.parse(text || '', { async: false }) as string);
+    const scrollDown = () => { messagesEl.scrollTop = messagesEl.scrollHeight; };
+
+    function bubble(role: Role | 'system'): HTMLElement {
+      const wrap = document.createElement('div');
+      wrap.className = 'chat-msg chat-msg--' + role;
+      const body = document.createElement('div');
+      body.className = 'chat-bubble';
+      wrap.appendChild(body);
+      messagesEl.appendChild(wrap);
+      scrollDown();
+      return body;
+    }
+    function systemNote(text: string) {
+      const b = bubble('system');
+      b.textContent = text;
+    }
+
+    function updateRemaining() {
+      if (remainingEl) remainingEl.textContent = String(Math.max(0, MAX - userCount));
+    }
+    function setStreaming(v: boolean) {
+      streaming = v;
+      sendBtn.disabled = v || locked;
+      sendBtn.classList.toggle('is-loading', v);
+    }
+    function lock() {
+      locked = true;
+      input.disabled = true;
+      sendBtn.disabled = true;
+      startersEl?.setAttribute('hidden', '');
+      limitEl?.removeAttribute('hidden');
+    }
+
+    // --- Счётчик «сэкономлено»: токен [[SAVED hours=NN money=NN note="..."]] ---
+    const SAVED_RE = /\[\[\s*SAVED([^\]]*)\]\]/i;
+    function parseSaved(text: string) {
+      const m = text.match(SAVED_RE);
+      if (!m) return null;
+      const raw = m[1];
+      const num = (re: RegExp) => Number((raw.match(re) || [])[1] || 0) || 0;
+      const note = (raw.match(/note\s*=\s*"([^"]*)"/i) || [])[1] || '';
+      return { hours: num(/hours?\s*=\s*(\d+)/i), money: num(/money\s*=\s*(\d+)/i), note };
+    }
+    const stripSaved = (text: string) => text.replace(SAVED_RE, '').trim();
+
+    const totalKey = () => 'neuroslop:saved:' + cfg.botId;
+    const getTotal = () => Number(localStorage.getItem(totalKey()) || 0) || 0;
+    function renderTotal() {
+      if (!totalEl) return;
+      const t = getTotal();
+      if (t > 0) {
+        totalEl.removeAttribute('hidden');
+        const v = totalEl.querySelector('[data-total-value]');
+        if (v) v.textContent = t.toLocaleString('ru-RU');
+      }
+    }
+    function celebrate(saved: { hours: number; money: number; note: string }) {
+      if (!cfg.counter?.enabled) return;
+      const card = document.createElement('div');
+      card.className = 'chat-saved';
+      const unit = cfg.counter?.unit || 'часов';
+      const label = cfg.counter?.label || 'Сэкономлено';
+      const money = saved.money ? ` и ${saved.money.toLocaleString('ru-RU')} ₽` : '';
+      const emoji = document.createElement('div');
+      emoji.className = 'chat-saved__emoji';
+      emoji.textContent = '💾';
+      const col = document.createElement('div');
+      const title = document.createElement('div');
+      title.className = 'chat-saved__title';
+      title.textContent = `${label}: ${saved.hours} ${unit}${money}`;
+      col.appendChild(title);
+      if (saved.note) {
+        const note = document.createElement('div');
+        note.className = 'chat-saved__note';
+        note.textContent = saved.note; // textContent — без HTML-инъекций из ответа модели
+        col.appendChild(note);
+      }
+      card.append(emoji, col);
+      messagesEl.appendChild(card);
+      try { localStorage.setItem(totalKey(), String(getTotal() + (saved.hours || 0))); } catch {}
+      renderTotal();
+      scrollDown();
+    }
+
+    function autoGrow() {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+    }
+
+    async function send(raw: string) {
+      let text = (raw || '').trim();
+      if (!text || streaming || locked) return;
+      if (text.length > MAX_INPUT) text = text.slice(0, MAX_INPUT);
+
+      const ctxLen = messages.reduce((s, m) => s + m.content.length, 0) + text.length;
+      if (ctxLen > MAX_CONTEXT) {
+        systemNote('Разговор стал слишком длинным. Нажми «Начать заново».');
+        lock();
+        return;
+      }
+
+      startersEl?.setAttribute('hidden', '');
+
+      messages.push({ role: 'user', content: text });
+      bubble('user').textContent = text; // textContent — ввод пользователя без HTML
+      userCount += 1;
+      updateRemaining();
+      input.value = '';
+      autoGrow();
+
+      const ab = bubble('assistant');
+      ab.innerHTML = '<span class="chat-typing"><i></i><i></i><i></i></span>';
+      setStreaming(true);
+
+      let buffer = '';
+      const ctrl = new AbortController();
+
+      try {
+        await fetchEventSource(cfg.apiBase + '/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ botId: cfg.botId, messages }),
+          signal: ctrl.signal,
+          openWhenHidden: true,
+          async onopen(res) {
+            const ct = res.headers.get('content-type') || '';
+            if (res.ok && ct.includes('text/event-stream')) return;
+            if (res.status === 429)
+              throw new FriendlyError('Слишком много сообщений подряд. Передохни минутку и попробуй снова.');
+            let msg = 'Бот сейчас недоступен. Попробуй чуть позже.';
+            try { const j = await res.json(); if (j?.error) msg = j.error; } catch {}
+            throw new FriendlyError(msg);
+          },
+          onmessage(ev) {
+            if (ev.data === '[DONE]') { ctrl.abort(); return; }
+            let d: any;
+            try { d = JSON.parse(ev.data); } catch { return; }
+            if (d.error) throw new FriendlyError(String(d.error));
+            if (typeof d.delta === 'string') {
+              buffer += d.delta;
+              const saved = parseSaved(buffer);
+              ab.innerHTML = md(saved ? stripSaved(buffer) : buffer);
+              scrollDown();
+            }
+          },
+          onerror(err) { throw err; }, // не ретраить — пробрасываем наверх
+        });
+      } catch (err: any) {
+        if (!(err && err.name === 'AbortError')) {
+          const friendly = err instanceof FriendlyError ? err.message : 'Связь прервалась. Попробуй ещё раз.';
+          if (!buffer) {
+            ab.classList.add('is-error');
+            ab.textContent = friendly;
+          } else {
+            systemNote(friendly);
+          }
+        }
+      }
+
+      const finalText = stripSaved(buffer);
+      if (buffer) {
+        ab.innerHTML = md(finalText || '…');
+        messages.push({ role: 'assistant', content: finalText });
+        const saved = parseSaved(buffer);
+        if (saved) celebrate(saved);
+      } else if (!ab.classList.contains('is-error')) {
+        ab.textContent = 'Хм, я завис. Попробуй переспросить.';
+      }
+
+      setStreaming(false);
+      if (userCount >= MAX) lock();
+    }
+
+    // --- Слушатели ---
+    form.addEventListener('submit', (e) => { e.preventDefault(); send(input.value); });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input.value); }
+    });
+    input.addEventListener('input', autoGrow);
+    startersEl?.querySelectorAll<HTMLButtonElement>('[data-starter]').forEach((b) =>
+      b.addEventListener('click', () => send(b.dataset.starter || ''))
+    );
+    root.querySelector('[data-restart]')?.addEventListener('click', () => location.reload());
+
+    updateRemaining();
+    renderTotal();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-chat]').forEach(initChat);
+</script>

@@ -1,0 +1,60 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Icon } from '@/components/ui/icon';
+import { accentOf } from '../lib/chats';
+
+interface Props {
+  entry: CollectionEntry<'chats'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const accent = accentOf(d.accent);
+---
+
+<a
+  class="glow-card group border-border/60 relative flex aspect-[16/9] flex-col justify-between gap-6 overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:aspect-[21/9] md:p-8"
+  href={`/chats/${entry.id}/`}
+>
+  {
+    d.cover ? (
+      <img
+        src={d.cover}
+        alt=""
+        loading="lazy"
+        class="absolute inset-0 h-full w-full scale-[1.06] object-cover blur-[12px] transition-transform duration-700 group-hover:scale-[1.1]"
+      />
+    ) : (
+      <div class="absolute inset-0" style={`background: ${accent}`} />
+    )
+  }
+  <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/30"></div>
+
+  <p class="relative flex items-center justify-between gap-3 text-[13px]">
+    <span
+      class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold text-white shadow-sm"
+      style={`background: ${accent}`}
+    >
+      <Icon name={d.icon ?? 'bot'} class="size-3.5" />
+      Живой чат
+    </span>
+    <span
+      class="inline-flex items-center gap-1 rounded-full bg-black/35 px-2.5 py-1 font-semibold text-white/90 backdrop-blur-sm"
+    >
+      <Icon name="message-circle" class="size-3.5" />
+      Бот
+    </span>
+  </p>
+
+  <span class="relative block">
+    <h3 class="text-[clamp(1.35rem,2.2vw,1.7rem)] leading-tight font-bold tracking-tight text-white">
+      {d.title}
+    </h3>
+    <span class="mt-2 line-clamp-2 max-w-[60ch] text-[15px] leading-normal text-white/80">
+      {d.tagline}
+    </span>
+    <span class="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-white/90">
+      Поговорить
+      <Icon name="arrow-up-right" class="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+    </span>
+  </span>
+</a>

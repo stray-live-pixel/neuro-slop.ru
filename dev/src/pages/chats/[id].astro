@@ -1,0 +1,105 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { Icon } from '@/components/ui/icon';
+import ChatRoom from '../../components/chat/ChatRoom.astro';
+import { CHAT_API_BASE, DEFAULT_DISCLAIMERS, accentOf } from '../../lib/chats';
+
+export async function getStaticPaths() {
+  const bots = await getCollection('chats', ({ data }) => import.meta.env.DEV || !data.draft);
+  return bots.map((bot) => ({ params: { id: bot.id }, props: { bot } }));
+}
+
+const { bot } = Astro.props;
+const d = bot.data;
+const accent = accentOf(d.accent);
+const disclaimers = d.disclaimers ?? DEFAULT_DISCLAIMERS;
+const { Content } = await render(bot);
+const hasBody = (bot.body ?? '').trim().length > 0;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: d.title,
+  description: d.description,
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  url: new URL(`/chats/${bot.id}/`, Astro.site).toString(),
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'RUB' },
+};
+---
+
+<Layout title={`${d.title} — Neuro Slop`} description={d.description} jsonLd={jsonLd}>
+  <main class="mx-auto w-full max-w-[820px] px-5 pt-12 pb-4 md:px-8">
+    <a href="/chats/" class="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center gap-1.5 text-sm font-medium">
+      <Icon name="bot" class="size-4" />
+      Все чаты
+    </a>
+
+    <!-- Шапка бота -->
+    <div class="flex items-start gap-4">
+      <span
+        class="flex size-14 shrink-0 items-center justify-center rounded-2xl text-white shadow-md"
+        style={`background: ${accent}`}
+      >
+        <Icon name={d.icon ?? 'bot'} class="size-7" />
+      </span>
+      <div class="min-w-0">
+        <h1 class="text-[clamp(2rem,5vw,3rem)] leading-[1.05] font-bold tracking-[-0.03em]">{d.title}</h1>
+        <p class="text-muted-foreground mt-2 text-lg font-medium">{d.tagline}</p>
+      </div>
+    </div>
+
+    <!-- Мета: модель + лимит -->
+    <div class="text-muted-foreground mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px]">
+      {d.model && (
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="sparkles" class="size-3.5" />
+          {d.model}
+        </span>
+      )}
+      <span class="inline-flex items-center gap-1.5">
+        <Icon name="message-circle" class="size-3.5" />
+        до {d.maxMessages} сообщений
+      </span>
+      <span class="inline-flex items-center gap-1.5">
+        <Icon name="shield-check" class="size-3.5" />
+        без регистрации
+      </span>
+    </div>
+
+    <!-- Чат -->
+    <div class="mt-7">
+      <ChatRoom bot={d} apiBase={CHAT_API_BASE} />
+    </div>
+
+    <!-- Дисклеймеры безопасности -->
+    <div class="border-border/60 bg-card/50 mt-5 rounded-2xl border p-5 backdrop-blur-sm">
+      <p class="text-foreground flex items-center gap-2 text-sm font-semibold">
+        <Icon name="triangle-alert" class="size-4" style={`color: var(--primary)`} />
+        Прежде чем начать
+      </p>
+      <ul class="text-muted-foreground mt-3 space-y-2 text-[14px]">
+        {disclaimers.map((line) => (
+          <li class="flex items-start gap-2">
+            <Icon name="circle-alert" class="mt-0.5 size-3.5 shrink-0 opacity-60" />
+            <span>{line}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Текст «о боте» -->
+    {
+      hasBody && (
+        <article class="prose mt-12 max-w-none">
+          <Content />
+        </article>
+      )
+    }
+
+    <p class="mt-14">
+      <a href="/chats/" class="text-primary text-sm font-medium hover:underline">← Все чаты</a>
+    </p>
+  </main>
+</Layout>

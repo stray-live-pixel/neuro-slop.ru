@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ChatCard from '../../components/ChatCard.astro';
+import { CHATS_SECTION } from '../../lib/categories';
+import { Icon } from '@/components/ui/icon';
+
+const entries = (
+  await getCollection('chats', ({ data }) => import.meta.env.DEV || !data.draft)
+).sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
+---
+
+<Layout title={`${CHATS_SECTION.label} — Neuro Slop`} description={CHATS_SECTION.description}>
+  <main class="mx-auto w-full max-w-[1440px] px-5 pt-16 md:px-10">
+    <span
+      class="mb-5 flex size-16 items-center justify-center rounded-2xl text-white shadow-md"
+      style={`background: ${CHATS_SECTION.gradient}`}
+    >
+      <Icon name={CHATS_SECTION.icon} class="size-8" />
+    </span>
+    <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[-0.03em]">
+      {CHATS_SECTION.label}
+    </h1>
+    <p class="text-muted-foreground mt-3 max-w-2xl text-xl font-medium">
+      {CHATS_SECTION.description}
+    </p>
+
+    <div
+      class="border-border/60 bg-card/50 text-muted-foreground mt-6 inline-flex items-start gap-2.5 rounded-2xl border px-4 py-3 text-[14px] backdrop-blur-sm"
+    >
+      <Icon name="triangle-alert" class="mt-0.5 size-4 shrink-0 opacity-70" />
+      <span>
+        Боты отвечают через нейросеть — это <b>развлечение, а не совет</b>. Не отправляй личные данные
+        и не принимай по ответам важных решений.
+      </span>
+    </div>
+
+    {
+      entries.length > 0 ? (
+        <div class="mt-10 grid grid-cols-1 gap-5 xl:grid-cols-2">
+          {entries.map((entry) => (
+            <ChatCard entry={entry} />
+          ))}
+        </div>
+      ) : (
+        <div class="bg-card/60 border-border/60 mt-10 rounded-2xl border px-8 py-16 text-center backdrop-blur-sm">
+          <p class="text-muted-foreground">Боты скоро появятся.</p>
+        </div>
+      )
+    }
+
+    <p class="mt-14">
+      <a href="/" class="text-primary text-sm font-medium hover:underline">← На главную</a>
+    </p>
+  </main>
+</Layout>
