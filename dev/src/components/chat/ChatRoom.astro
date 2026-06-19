@@ -119,6 +119,8 @@ const config = {
     scroll-behavior: smooth;
     overscroll-behavior: contain;
   }
+  /* Элементы ленты не сжимаются по высоте — иначе текст карточек обрезается */
+  .chat-scroll > * { flex-shrink: 0; }
   .chat-msg {
     display: flex;
     align-items: flex-end;
