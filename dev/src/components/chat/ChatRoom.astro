@@ -41,6 +41,9 @@ const config = {
 >
   <script type="application/json" data-chat-config is:inline set:html={JSON.stringify(config)} />
 
+  <!-- Иконка для карточки «сэкономлено» (клонируется в JS) -->
+  <template data-saved-icon><Icon name="piggy-bank" class="size-6" /></template>
+
   <!-- Лента сообщений -->
   <div class="chat-scroll" data-messages>
     <div class="chat-msg chat-msg--assistant">
@@ -95,7 +98,7 @@ const config = {
       autocomplete="off"
       aria-label="Сообщение боту"></textarea>
     <button type="submit" class="chat-send" data-send aria-label="Отправить">
-      <Icon name="send" class="size-5" />
+      <Icon name="send-horizontal" class="size-5" />
     </button>
   </form>
 
@@ -215,24 +218,74 @@ const config = {
     40% { opacity: 1; transform: translateY(-3px); }
   }
 
-  /* Карточка «сэкономлено» */
+  /* Карточка «сэкономлено» — анимированный нейро-градиент */
   .chat-saved {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    margin: 0.9rem auto 0.4rem;
-    padding: 0.85rem 1.1rem;
-    max-width: 92%;
-    border-radius: 1.1rem;
-    border: 1px solid transparent;
-    background:
-      linear-gradient(var(--card), var(--card)) padding-box,
-      var(--bot-accent, var(--gradient-brand)) border-box;
-    box-shadow: var(--shadow-md);
+    gap: 0.9rem;
+    margin: 1rem auto 0.5rem;
+    padding: 1rem 1.15rem;
+    max-width: 94%;
+    border-radius: 1.25rem;
+    color: #fff;
+    overflow: hidden;
+    background-image: linear-gradient(
+      110deg,
+      #0894ff,
+      #c959dd,
+      #ff2e54,
+      #ff9004,
+      #ff2e54,
+      #c959dd,
+      #0894ff
+    );
+    background-size: 220% 220%;
+    box-shadow:
+      var(--shadow-lg),
+      0 14px 44px -14px color-mix(in oklch, #c959dd 65%, transparent);
+    animation:
+      chat-saved-pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both,
+      chat-saved-shift 7s ease-in-out infinite;
   }
-  .chat-saved__emoji { font-size: 1.8rem; line-height: 1; }
-  .chat-saved__title { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
-  .chat-saved__note { color: var(--muted-foreground); font-size: 14px; margin-top: 0.15rem; }
+  /* Бегущий блик при появлении */
+  .chat-saved::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(75deg, transparent 32%, rgba(255, 255, 255, 0.28) 50%, transparent 68%);
+    transform: translateX(-130%);
+    animation: chat-saved-shine 2.6s ease-in-out 0.35s 1;
+  }
+  .chat-saved__icon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+  }
+  .chat-saved > div:last-child { position: relative; z-index: 1; }
+  .chat-saved__title { font-weight: 700; font-size: 1.08rem; letter-spacing: -0.01em; line-height: 1.2; }
+  .chat-saved__note { color: rgba(255, 255, 255, 0.88); font-size: 14px; margin-top: 0.2rem; }
+
+  @keyframes chat-saved-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes chat-saved-pop {
+    from { opacity: 0; transform: translateY(10px) scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes chat-saved-shine {
+    to { transform: translateX(130%); }
+  }
 
   .chat-starters {
     padding: 0.25rem 1.25rem 0.75rem;
@@ -348,9 +401,43 @@ const config = {
     color: var(--muted-foreground);
   }
 
+  /* ===== Мобильные уточнения ===== */
+  @media (max-width: 640px) {
+    [data-chat] { border-radius: 1.25rem; }
+    .chat-scroll {
+      padding: 0.85rem 0.85rem 0.4rem;
+      min-height: 300px;
+      max-height: 64dvh;
+    }
+    .chat-msg { gap: 0.45rem; margin-top: 0.6rem; }
+    .chat-avatar { width: 1.7rem; height: 1.7rem; }
+    .chat-bubble {
+      max-width: 88%;
+      font-size: 15.5px;
+      padding: 0.6rem 0.85rem;
+    }
+    .chat-starters,
+    .chat-total,
+    .chat-limit { margin-left: 0.85rem; margin-right: 0.85rem; }
+    .chat-starters { padding-left: 0.85rem; padding-right: 0.85rem; }
+    .chat-composer { padding: 0.65rem 0.7rem; gap: 0.5rem; }
+    .chat-input { padding: 0.6rem 0.8rem; border-radius: 0.95rem; }
+    .chat-send { width: 2.6rem; height: 2.6rem; }
+    .chat-hint {
+      padding: 0 0.85rem 0.75rem;
+      font-size: 11.5px;
+      gap: 0.15rem 0.75rem;
+    }
+    .chat-saved { gap: 0.7rem; padding: 0.85rem 0.95rem; max-width: 96%; }
+    .chat-saved__icon { width: 2.4rem; height: 2.4rem; }
+    .chat-saved__title { font-size: 1rem; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .chat-typing i { animation: none; }
     .chat-scroll { scroll-behavior: auto; }
+    .chat-saved { animation: none; }
+    .chat-saved::after { display: none; }
   }
 </style>
 
@@ -454,9 +541,10 @@ const config = {
       const unit = cfg.counter?.unit || 'часов';
       const label = cfg.counter?.label || 'Сэкономлено';
       const money = saved.money ? ` и ${saved.money.toLocaleString('ru-RU')} ₽` : '';
-      const emoji = document.createElement('div');
-      emoji.className = 'chat-saved__emoji';
-      emoji.textContent = '💾';
+      const icon = document.createElement('div');
+      icon.className = 'chat-saved__icon';
+      const tpl = root.querySelector('[data-saved-icon]');
+      if (tpl && 'content' in tpl) icon.appendChild(tpl.content.cloneNode(true));
       const col = document.createElement('div');
       const title = document.createElement('div');
       title.className = 'chat-saved__title';
@@ -468,7 +556,7 @@ const config = {
         note.textContent = saved.note; // textContent — без HTML-инъекций из ответа модели
         col.appendChild(note);
       }
-      card.append(emoji, col);
+      card.append(icon, col);
       messagesEl.appendChild(card);
       try { localStorage.setItem(totalKey(), String(getTotal() + (saved.hours || 0))); } catch {}
       renderTotal();
