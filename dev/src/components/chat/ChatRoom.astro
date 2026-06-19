@@ -41,8 +41,12 @@ const config = {
 >
   <script type="application/json" data-chat-config is:inline set:html={JSON.stringify(config)} />
 
-  <!-- Иконка для карточки «сэкономлено» (клонируется в JS) -->
+  <!-- Иконки карточек-развязок (клонируются в JS) -->
   <template data-saved-icon><Icon name="piggy-bank" class="size-6" /></template>
+  <template data-stand-icon><Icon name="rocket" class="size-6" /></template>
+
+  <!-- Холст для конфетти (поверх чата, не ловит клики) -->
+  <canvas class="chat-confetti" data-confetti aria-hidden="true"></canvas>
 
   <!-- Лента сообщений -->
   <div class="chat-scroll" data-messages>
@@ -69,14 +73,6 @@ const config = {
       </div>
     )
   }
-
-  <!-- Накопительный счётчик (из localStorage) -->
-  <div class="chat-total" data-total-saved hidden>
-    <Icon name="piggy-bank" class="size-4 opacity-70" />
-    <span>
-      {bot.counter.label} за всё время: <b data-total-value>0</b> {bot.counter.unit}
-    </span>
-  </div>
 
   <!-- Лимит сообщений -->
   <div class="chat-limit" data-limit hidden>
@@ -272,6 +268,21 @@ const config = {
   }
   .chat-saved__note { color: var(--muted-foreground); font-size: 14px; margin-top: 0.2rem; }
 
+  /* Развязка «остался при своём»: тёплый энергичный акцент в иконке-ракете */
+  .chat-saved--stand .chat-saved__icon {
+    background: linear-gradient(135deg, #ff9004, #ff2e54);
+  }
+
+  /* Холст конфетти — поверх ленты, не ловит клики */
+  .chat-confetti {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
   @keyframes chat-saved-shift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -307,17 +318,6 @@ const config = {
   }
   .chat-starter:hover { border-color: color-mix(in oklch, var(--primary) 55%, transparent); }
   .chat-starter:active { transform: scale(0.97); }
-
-  .chat-total {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0 1.25rem 0.5rem;
-    padding: 0.55rem 0.85rem;
-    border-radius: 0.9rem;
-    background: color-mix(in oklch, var(--primary) 8%, transparent);
-    font-size: 14px;
-  }
 
   .chat-limit {
     margin: 0 1.25rem 0.75rem;
@@ -411,7 +411,6 @@ const config = {
       padding: 0.6rem 0.85rem;
     }
     .chat-starters,
-    .chat-total,
     .chat-limit { margin-left: 0.85rem; margin-right: 0.85rem; }
     .chat-starters { padding-left: 0.85rem; padding-right: 0.85rem; }
     .chat-composer { padding: 0.65rem 0.7rem; gap: 0.5rem; }
@@ -438,6 +437,7 @@ const config = {
   import { fetchEventSource } from '@microsoft/fetch-event-source';
   import { marked } from 'marked';
   import DOMPurify from 'dompurify';
+  import confetti from 'canvas-confetti';
 
   type Role = 'user' | 'assistant';
   interface Msg { role: Role; content: string; }
@@ -461,7 +461,7 @@ const config = {
     const startersEl = root.querySelector<HTMLElement>('[data-starters]');
     const limitEl = root.querySelector<HTMLElement>('[data-limit]');
     const remainingEl = root.querySelector<HTMLElement>('[data-remaining]');
-    const totalEl = root.querySelector<HTMLElement>('[data-total-saved]');
+    const canvasEl = root.querySelector<HTMLCanvasElement>('[data-confetti]');
 
     const MAX = Number(cfg.maxMessages) || 10;
     const messages: Msg[] = [{ role: 'assistant', content: String(cfg.greeting || '') }];
@@ -504,56 +504,84 @@ const config = {
       limitEl?.removeAttribute('hidden');
     }
 
-    // --- Счётчик «сэкономлено»: токен [[SAVED hours=NN money=NN note="..."]] ---
+    // --- Развязки: токены модели (на экране не видны, превращаются в карточки) ---
+    // [[SAVED hours=NN money=NN note="..."]] — человек отказался от цели.
+    // [[STAND note="..."]] — человек остался при своём (успех + конфетти).
     const SAVED_RE = /\[\[\s*SAVED([^\]]*)\]\]/i;
+    const STAND_RE = /\[\[\s*STAND([^\]]*)\]\]/i;
+    const attr = (raw: string, re: RegExp) => (raw.match(re) || [])[1] || '';
     function parseSaved(text: string) {
       const m = text.match(SAVED_RE);
       if (!m) return null;
-      const raw = m[1];
-      const num = (re: RegExp) => Number((raw.match(re) || [])[1] || 0) || 0;
-      const note = (raw.match(/note\s*=\s*"([^"]*)"/i) || [])[1] || '';
-      return { hours: num(/hours?\s*=\s*(\d+)/i), money: num(/money\s*=\s*(\d+)/i), note };
+      const num = (re: RegExp) => Number(attr(m[1], re)) || 0;
+      return {
+        hours: num(/hours?\s*=\s*(\d+)/i),
+        money: num(/money\s*=\s*(\d+)/i),
+        note: attr(m[1], /note\s*=\s*"([^"]*)"/i),
+      };
     }
-    const stripSaved = (text: string) => text.replace(SAVED_RE, '').trim();
+    function parseStand(text: string) {
+      const m = text.match(STAND_RE);
+      if (!m) return null;
+      return { note: attr(m[1], /note\s*=\s*"([^"]*)"/i) };
+    }
+    // Убираем оба токена из видимого текста.
+    const stripTokens = (text: string) => text.replace(SAVED_RE, '').replace(STAND_RE, '').trim();
 
-    const totalKey = () => 'neuroslop:saved:' + cfg.botId;
-    const getTotal = () => Number(localStorage.getItem(totalKey()) || 0) || 0;
-    function renderTotal() {
-      if (!totalEl) return;
-      const t = getTotal();
-      if (t > 0) {
-        totalEl.removeAttribute('hidden');
-        const v = totalEl.querySelector('[data-total-value]');
-        if (v) v.textContent = t.toLocaleString('ru-RU');
-      }
-    }
-    function celebrate(saved: { hours: number; money: number; note: string }) {
-      if (!cfg.counter?.enabled) return;
+    // Универсальная карточка-развязка (стекло) с иконкой из шаблона.
+    function outcomeCard(opts: { variant: string; iconTpl: string; title: string; note?: string }) {
       const card = document.createElement('div');
-      card.className = 'chat-saved';
-      const unit = cfg.counter?.unit || 'часов';
-      const label = cfg.counter?.label || 'Сэкономлено';
-      const money = saved.money ? ` и ${saved.money.toLocaleString('ru-RU')} ₽` : '';
+      card.className = 'chat-saved' + (opts.variant ? ' ' + opts.variant : '');
       const icon = document.createElement('div');
       icon.className = 'chat-saved__icon';
-      const tpl = root.querySelector('[data-saved-icon]');
-      if (tpl && 'content' in tpl) icon.appendChild(tpl.content.cloneNode(true));
+      const tpl = root.querySelector(opts.iconTpl);
+      if (tpl && 'content' in tpl) icon.appendChild((tpl as HTMLTemplateElement).content.cloneNode(true));
       const col = document.createElement('div');
       const title = document.createElement('div');
       title.className = 'chat-saved__title';
-      title.textContent = `${label}: ${saved.hours} ${unit}${money}`;
+      title.textContent = opts.title;
       col.appendChild(title);
-      if (saved.note) {
+      if (opts.note) {
         const note = document.createElement('div');
         note.className = 'chat-saved__note';
-        note.textContent = saved.note; // textContent — без HTML-инъекций из ответа модели
+        note.textContent = opts.note; // textContent — без HTML-инъекций из ответа модели
         col.appendChild(note);
       }
       card.append(icon, col);
       messagesEl.appendChild(card);
-      try { localStorage.setItem(totalKey(), String(getTotal() + (saved.hours || 0))); } catch {}
-      renderTotal();
       scrollDown();
+    }
+
+    function celebrate(saved: { hours: number; money: number; note: string }) {
+      const unit = cfg.counter?.unit || 'часов';
+      const label = cfg.counter?.label || 'Сэкономлено';
+      const money = saved.money ? ` и ${saved.money.toLocaleString('ru-RU')} ₽` : '';
+      outcomeCard({
+        variant: '',
+        iconTpl: '[data-saved-icon]',
+        title: `${label}: ${saved.hours} ${unit}${money}`,
+        note: saved.note,
+      });
+    }
+
+    function standOvation(stand: { note: string }) {
+      outcomeCard({
+        variant: 'chat-saved--stand',
+        iconTpl: '[data-stand-icon]',
+        title: stand.note || 'Это твоё — иди и бери.',
+        note: 'Ты не свернул, когда тебя настойчиво отговаривали. Это и есть твоё настоящее «зачем».',
+      });
+      fireConfetti();
+    }
+
+    // Конфетти в чате — на холсте поверх ленты (не ловит клики).
+    function fireConfetti() {
+      if (!canvasEl || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const shoot = confetti.create(canvasEl, { resize: true, useWorker: false });
+      const colors = ['#0894ff', '#c959dd', '#ff2e54', '#ff9004'];
+      shoot({ particleCount: 90, spread: 75, startVelocity: 38, origin: { y: 0.7 }, colors });
+      setTimeout(() => shoot({ particleCount: 60, spread: 100, startVelocity: 30, origin: { x: 0.2, y: 0.8 }, colors }), 180);
+      setTimeout(() => shoot({ particleCount: 60, spread: 100, startVelocity: 30, origin: { x: 0.8, y: 0.8 }, colors }), 320);
     }
 
     function autoGrow() {
@@ -612,8 +640,7 @@ const config = {
             if (d.error) throw new FriendlyError(String(d.error));
             if (typeof d.delta === 'string') {
               buffer += d.delta;
-              const saved = parseSaved(buffer);
-              ab.innerHTML = md(saved ? stripSaved(buffer) : buffer);
+              ab.innerHTML = md(stripTokens(buffer));
               scrollDown();
             }
           },
@@ -631,12 +658,14 @@ const config = {
         }
       }
 
-      const finalText = stripSaved(buffer);
+      const finalText = stripTokens(buffer);
       if (buffer) {
         ab.innerHTML = md(finalText || '…');
         messages.push({ role: 'assistant', content: finalText });
         const saved = parseSaved(buffer);
+        const stand = parseStand(buffer);
         if (saved) celebrate(saved);
+        else if (stand) standOvation(stand);
       } else if (!ab.classList.contains('is-error')) {
         ab.textContent = 'Хм, я завис. Попробуй переспросить.';
       }
@@ -657,7 +686,6 @@ const config = {
     root.querySelector('[data-restart]')?.addEventListener('click', () => location.reload());
 
     updateRemaining();
-    renderTotal();
   }
 
   document.querySelectorAll<HTMLElement>('[data-chat]').forEach(initChat);
