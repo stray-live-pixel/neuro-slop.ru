@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import { Icon } from '@/components/ui/icon';
 import ChatRoom from '../../components/chat/ChatRoom.astro';
+import ChatQuota from '../../components/chat/ChatQuota.astro';
 import { CHAT_API_BASE, DEFAULT_DISCLAIMERS, accentOf } from '../../lib/chats';
 
 export async function getStaticPaths() {
@@ -89,6 +90,7 @@ const jsonLd = {
     <!-- Чат -->
     <div class="mt-5">
       <ChatRoom bot={d} apiBase={CHAT_API_BASE} />
+      <ChatQuota apiBase={CHAT_API_BASE} />
     </div>
 
     <!-- Текст «о боте» -->

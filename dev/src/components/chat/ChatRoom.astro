@@ -103,18 +103,6 @@ const config = {
     <span>Осталось сообщений: <b data-remaining>{bot.maxMessages}</b></span>
   </p>
 
-  <!-- Общий дневной лимит бесплатных запросов (на всех пользователей) -->
-  <p
-    class="chat-quota"
-    data-quota
-    hidden
-    title="Общий бесплатный лимит запросов к боту на всех пользователей за сутки"
-  >
-    <Icon name="zap" class="size-3.5 opacity-70" />
-    <span>
-      Бесплатный лимит на всех сегодня: <b data-quota-remaining>—</b> из <b data-quota-limit>—</b> запросов
-    </span>
-  </p>
 </section>
 
 <style is:global>
@@ -409,20 +397,6 @@ const config = {
     font-size: 12px;
     color: var(--muted-foreground);
   }
-  .chat-quota {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    margin: 0 1.1rem 0.9rem;
-    padding: 0.5rem 0.8rem;
-    border-top: 1px solid var(--border);
-    padding-top: 0.7rem;
-    font-size: 12px;
-    color: var(--muted-foreground);
-    text-align: center;
-  }
-  .chat-quota b { color: var(--foreground); font-weight: 650; }
 
   /* ===== Мобильные уточнения ===== */
   @media (max-width: 640px) {
@@ -491,7 +465,6 @@ const config = {
     const limitEl = root.querySelector<HTMLElement>('[data-limit]');
     const remainingEl = root.querySelector<HTMLElement>('[data-remaining]');
     const canvasEl = root.querySelector<HTMLCanvasElement>('[data-confetti]');
-    const quotaEl = root.querySelector<HTMLElement>('[data-quota]');
 
     const MAX = Number(cfg.maxMessages) || 10;
     const messages: Msg[] = [{ role: 'assistant', content: String(cfg.greeting || '') }];
@@ -620,22 +593,6 @@ const config = {
       input.style.height = Math.min(input.scrollHeight, 160) + 'px';
     }
 
-    // Общий дневной лимит бесплатных запросов на всех — показываем под чатом.
-    async function loadQuota() {
-      if (!quotaEl) return;
-      try {
-        const r = await fetch(cfg.apiBase + '/api/quota');
-        if (!r.ok) return;
-        const q = await r.json();
-        if (typeof q.remaining !== 'number' || typeof q.limit !== 'number') return;
-        const rem = quotaEl.querySelector('[data-quota-remaining]');
-        const lim = quotaEl.querySelector('[data-quota-limit]');
-        if (rem) rem.textContent = q.remaining.toLocaleString('ru-RU');
-        if (lim) lim.textContent = q.limit.toLocaleString('ru-RU');
-        quotaEl.removeAttribute('hidden');
-      } catch {}
-    }
-
     async function send(raw: string) {
       let text = (raw || '').trim();
       if (!text || streaming || locked) return;
@@ -719,7 +676,8 @@ const config = {
 
       setStreaming(false);
       if (userCount >= MAX) lock();
-      loadQuota(); // обновляем общий остаток после каждого ответа
+      // сообщаем индикатору лимита под чатом, что был ответ — он обновит остаток
+      window.dispatchEvent(new CustomEvent('chat:answered'));
     }
 
     // --- Слушатели ---
@@ -734,7 +692,6 @@ const config = {
     root.querySelector('[data-restart]')?.addEventListener('click', () => location.reload());
 
     updateRemaining();
-    loadQuota();
   }
 
   document.querySelectorAll<HTMLElement>('[data-chat]').forEach(initChat);

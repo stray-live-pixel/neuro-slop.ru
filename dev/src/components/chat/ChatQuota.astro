@@ -1,0 +1,101 @@
+---
+// Индикатор общего дневного лимита бесплатных запросов — под чатом.
+// Сам тянет остаток с сервера (/api/quota) и обновляется по событию chat:answered.
+import { Icon } from '@/components/ui/icon';
+
+interface Props {
+  apiBase: string;
+}
+const { apiBase } = Astro.props;
+---
+
+<div class="quota" data-quota-bar data-api={apiBase} hidden>
+  <div class="quota__top">
+    <span class="quota__label">
+      <Icon name="zap" class="size-3.5 opacity-70" />
+      Бесплатный общий лимит на сегодня
+    </span>
+    <span class="quota__count"><b data-quota-remaining>—</b> / <b data-quota-limit>—</b></span>
+  </div>
+  <div class="quota__track">
+    <div class="quota__fill" data-quota-fill style="width: 0%"></div>
+  </div>
+</div>
+
+<style>
+  .quota {
+    margin-top: 0.85rem;
+    padding: 0.85rem 1rem;
+  }
+  .quota__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 13px;
+    color: var(--muted-foreground);
+  }
+  .quota__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .quota__count {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .quota__count b {
+    color: var(--foreground);
+    font-weight: 650;
+  }
+  .quota__track {
+    margin-top: 0.5rem;
+    height: 8px;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--foreground) 9%, transparent);
+    overflow: hidden;
+  }
+  .quota__fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--gradient-brand);
+    transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .quota__fill.is-low {
+    background: linear-gradient(90deg, #ff9004, #ff2e54);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .quota__fill { transition: none; }
+  }
+</style>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-quota-bar]');
+  if (box) {
+    const api = (box.dataset.api || '').replace(/\/$/, '');
+    const remEl = box.querySelector<HTMLElement>('[data-quota-remaining]');
+    const limEl = box.querySelector<HTMLElement>('[data-quota-limit]');
+    const fill = box.querySelector<HTMLElement>('[data-quota-fill]');
+
+    async function load() {
+      try {
+        const r = await fetch(api + '/api/quota');
+        if (!r.ok) return;
+        const q = await r.json();
+        if (typeof q.remaining !== 'number' || typeof q.limit !== 'number' || q.limit <= 0) return;
+        if (remEl) remEl.textContent = q.remaining.toLocaleString('ru-RU');
+        if (limEl) limEl.textContent = q.limit.toLocaleString('ru-RU');
+        const pct = Math.max(0, Math.min(100, (q.remaining / q.limit) * 100));
+        if (fill) {
+          fill.style.width = pct + '%';
+          fill.classList.toggle('is-low', pct < 15);
+        }
+        box.removeAttribute('hidden');
+      } catch {}
+    }
+
+    load();
+    // Обновляемся, когда чат получил ответ (событие шлёт ChatRoom).
+    window.addEventListener('chat:answered', load);
+  }
+</script>
