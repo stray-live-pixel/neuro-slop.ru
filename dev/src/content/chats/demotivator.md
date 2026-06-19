@@ -5,6 +5,7 @@ tagline: Назови цель — честно объясню, почему о�
 botId: demotivator
 icon: hand
 accent: linear-gradient(135deg, #ff2e54, #c959dd)
+cover: /images/chats/demotivator.jpg
 order: 0
 model: Дешёвая быстрая модель (так и задумано)
 maxMessages: 7
