@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7a0b2b"/>
+      <stop offset="45%" stop-color="#ff2e54"/>
+      <stop offset="100%" stop-color="#c959dd"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="62%" cy="26%" r="62%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#bg)"/>
+  <rect width="1200" height="600" fill="url(#glow)"/>
+
+  <!-- Кривая «мотивации»: красиво растёт — и резко падает (демотиватор) -->
+  <g fill="none" stroke="#fff" stroke-opacity="0.9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M120 450 L320 370 L500 255 L680 160" stroke-opacity="0.95"/>
+    <path d="M680 160 L840 300 L1000 430 L1110 505" stroke-dasharray="2 18" stroke-opacity="0.85"/>
+  </g>
+
+  <!-- Узлы кривой -->
+  <g fill="#fff">
+    <circle cx="120" cy="450" r="9" fill-opacity="0.8"/>
+    <circle cx="320" cy="370" r="10" fill-opacity="0.85"/>
+    <circle cx="500" cy="255" r="11" fill-opacity="0.9"/>
+    <circle cx="680" cy="160" r="18" fill-opacity="0.98"/>
+    <circle cx="840" cy="300" r="10" fill-opacity="0.8"/>
+    <circle cx="1000" cy="430" r="9" fill-opacity="0.75"/>
+  </g>
+
+  <!-- Стрелка вниз на конце падения -->
+  <g stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-opacity="0.95">
+    <path d="M1110 505 L1110 455"/>
+    <path d="M1085 482 L1110 510 L1135 482"/>
+  </g>
+</svg>

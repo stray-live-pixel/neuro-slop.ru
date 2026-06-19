@@ -1,0 +1,136 @@
+<!DOCTYPE html><html lang="ru"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Все вокруг мотивируют. Я сделал ИИ-анти-коуча, который делает наоборот — и неожиданно это оказалось полезнее любого пинка."><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="canonical" href="https://neuro-slop.ru/posts/demotivator/"><meta property="og:title" content="Демотиватор: я сделал бота, который отговаривает вас от ваших же целей — Neuro Slop"><meta property="og:description" content="Все вокруг мотивируют. Я сделал ИИ-анти-коуча, который делает наоборот — и неожиданно это оказалось полезнее любого пинка."><meta property="og:type" content="website"><meta property="og:url" content="https://neuro-slop.ru/posts/demotivator/"><meta property="og:site_name" content="neuro-slop.ru"><meta property="og:locale" content="ru_RU"><meta property="og:image" content="https://neuro-slop.ru/images/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Демотиватор: я сделал бота, который отговаривает вас от ваших же целей — Neuro Slop"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Демотиватор: я сделал бота, который отговаривает вас от ваших же целей — Neuro Slop"><meta name="twitter:description" content="Все вокруг мотивируют. Я сделал ИИ-анти-коуча, который делает наоборот — и неожиданно это оказалось полезнее любого пинка."><meta name="twitter:image" content="https://neuro-slop.ru/images/og.png"><title>Демотиватор: я сделал бота, который отговаривает вас от ваших же целей — Neuro Slop</title><script>
+      // Тема: localStorage → системная. Выполняется до отрисовки, чтобы не мигало.
+      (() => {
+        const stored = localStorage.getItem('theme');
+        const dark =
+          stored === 'dark' ||
+          (!stored && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+
+        window.__setTheme = (theme) => {
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+          localStorage.setItem('theme', theme);
+        };
+      })();
+    </script><!-- Yandex.Metrika counter --><script type="text/javascript">
+      (function(m,e,t,r,i,k,a){
+          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109813401', 'ym');
+
+      ym(109813401, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script><noscript><div><img src="https://mc.yandex.ru/watch/109813401" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter --><link rel="stylesheet" href="/_astro/_category_.DRmWXPlD.css"></head> <body class="bg-background text-foreground flex min-h-svh flex-col overscroll-none antialiased"> <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true"> <div class="aurora-blob aurora-blob-1"></div> <div class="aurora-blob aurora-blob-2"></div> <div class="aurora-blob aurora-blob-3"></div> <div class="dot-grid"></div> <div class="cursor-glow" data-cursor-glow></div> </div> <script type="module">const i=document.querySelector("[data-cursor-glow]"),c=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(i&&!c&&window.matchMedia("(pointer: fine)").matches){let n=0,r=0,e=0,t=0,a=0;const s=()=>{e+=(n-e)*.06,t+=(r-t)*.06,i.style.transform=`translate3d(${e}px, ${t}px, 0)`,Math.abs(n-e)>.5||Math.abs(r-t)>.5?a=requestAnimationFrame(s):a=0};window.addEventListener("pointermove",o=>{n=o.clientX,r=o.clientY,i.classList.add("is-active"),a||(a=requestAnimationFrame(s))}),document.documentElement.addEventListener("pointerleave",()=>{i.classList.remove("is-active")})}</script> <header class="bg-background/60 border-border/60 sticky top-0 z-50 border-b backdrop-blur-xl backdrop-saturate-150"> <nav class="mx-auto flex h-14 w-full max-w-[1920px] items-center justify-between px-5 md:px-10 2xl:px-16"> <a href="/" class="text-foreground text-[15px] font-semibold tracking-tight transition-opacity hover:opacity-70"> <span class="text-gradient text-gradient-animated">neuro‑slop.ru</span> </a> <div class="flex items-center gap-1 sm:gap-2"> <a href="/posts/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Записи
+</a> <a href="/transcripts/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Разборы
+</a> <a href="/chats/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Чаты
+</a> <button data-slot="button" class="group/button focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 [&#38;_svg]:pointer-events-none [&#38;_svg]:shrink-0 [&#38;_svg:not([class*='size-'])]:size-4 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 size-8 in-data-[slot=button-group]:rounded-md relative rounded-full" data-theme-toggle="true" aria-label="Toggle theme">  <svg class="dark:hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" />
+</svg> <svg class="hidden dark:block" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+</svg> <span class="sr-only">Toggle theme</span>  </button> <script>
+  if (!window.__themeToggleHandlersInitialized) {
+    window.__themeToggleHandlersInitialized = true
+
+    const syncThemeToggles = () => {
+      const isDark = document.documentElement.classList.contains("dark")
+
+      document.querySelectorAll("[data-theme-toggle]").forEach((toggle) => {
+        if (!(toggle instanceof HTMLButtonElement)) return
+
+        toggle.setAttribute("aria-pressed", isDark ? "true" : "false")
+        toggle.setAttribute("data-state", isDark ? "on" : "off")
+
+        if (isDark) {
+          toggle.setAttribute("data-pressed", "")
+        } else {
+          toggle.removeAttribute("data-pressed")
+        }
+      })
+    }
+
+    syncThemeToggles()
+
+    const observer = new MutationObserver(syncThemeToggles)
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
+    document.addEventListener("click", (event) => {
+      const target = event.target
+
+      if (!(target instanceof Element)) return
+
+      const toggle = target.closest("[data-theme-toggle]")
+
+      if (!(toggle instanceof HTMLButtonElement)) return
+      if (toggle.disabled) return
+
+      const isDark = document.documentElement.classList.contains("dark")
+      const nextTheme = isDark ? "light" : "dark"
+
+      if (typeof window.__setTheme === "function") {
+        window.__setTheme(nextTheme)
+        return
+      }
+
+      document.documentElement.classList[
+        nextTheme === "dark" ? "add" : "remove"
+      ]("dark")
+    })
+  }
+</script> </div> </nav> </header> <div class="flex-1">  <main class="mx-auto w-full max-w-[760px] px-5 pt-16 md:px-0"> <article> <header class="mb-12"> <p class="text-muted-foreground flex items-center gap-2 text-sm"> <a href="/category/news/" class="hover:text-foreground inline-flex items-center gap-1.5 font-semibold transition-colors"> <svg class="size-4" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M15 18h-5" />
+  <path d="M18 14h-8" />
+  <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2" />
+  <rect width="8" height="4" x="10" y="6" rx="1" />
+</svg> Новости </a> <span>·</span> <time datetime="2026-06-20T09:00:00.000Z">20 июня 2026 г.</time> </p> <h1 class="mt-4 text-[clamp(2.25rem,5.5vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance"> Демотиватор: я сделал бота, который отговаривает вас от ваших же целей </h1> <p class="text-muted-foreground mt-5 text-xl leading-relaxed font-medium"> Все вокруг мотивируют. Я сделал ИИ-анти-коуча, который делает наоборот — и неожиданно это оказалось полезнее любого пинка. </p>  <div class="from-border mt-10 h-px w-full bg-gradient-to-r to-transparent"></div> </header>  <div class="prose"> <p>Все приложения, книги и коучи вокруг твердят одно и то же: ставь цели, беги, достигай, не ленись. Я слегка устал от этого бодрого хора и сделал ровно наоборот — <strong>бота, который вас отговаривает.</strong></p>
+<p>Знакомьтесь: <a href="https://neuro-slop.ru/chats/demotivator/">Демотиватор</a> — ехидный анти-коуч на нейросети. Вы называете цель, к которой рвётесь, а он честно, с сарказмом и без розовых соплей разбирает: нужна ли она вам на самом деле — или это чужая хотелка, навязанная модой, сравнением с другими и слишком красивой лентой в соцсетях.</p>
+<h2 id="зачем-вообще-кого-то-отговаривать">Зачем вообще кого-то отговаривать</h2>
+<p>Затем, что огромная часть наших целей — не наши. «Выучить пять языков», «накачать пресс к лету», «запустить стартап, потому что у всех стартап» — за половиной громких целей стоит не желание, а тревога: казаться, догнать, не отстать. На такие цели уходят годы и деньги, а радости — ноль.</p>
+<p>Демотиватор помогает поймать этот момент. Он не подбадривает — он отрезвляет.</p>
+<h2 id="в-чём-фишка-тут-есть-второе-дно">В чём фишка (тут есть второе дно)</h2>
+<p>Это тайно инструмент «пойми своё настоящее зачем», только заходящий с чёрного хода. Когда бот начинает спорить, вы реагируете одним из двух способов:</p>
+<ul>
+<li><strong>«…да, и правда не надо»</strong> — значит, цель была пустой. Бот поздравляет вас и показывает, сколько часов и денег вы только что сэкономили.</li>
+<li><strong>«Нет, я правда этого хочу»</strong> — и если вы держитесь под его напором, бот сдаётся, с уважением признаёт, что это ваше, и устраивает вам овацию с конфетти.</li>
+</ul>
+<p>В обоих случаях вы уходите с ясностью. Сопротивление вскрывает настоящее желание лучше, чем любой подбадривающий коуч.</p>
+<p>Выглядит это примерно так:</p>
+<blockquote>
+<p><strong>— Хочу дорогие часы за 800 тысяч.</strong>
+— Зачем? Чтобы что почувствовать?
+<strong>— Чтобы показать, что добился успеха.</strong>
+— То есть это не про часы, а про чужой взгляд. Дороговато платить за то, чтобы кто-то в баре одобрительно кивнул.
+<strong>— Да, ты прав. Не буду.</strong>
+💾 <em>Сэкономлено: 150 часов и 800 000 ₽.</em></p>
+</blockquote>
+<h2 id="как-это-работает">Как это работает</h2>
+<ul>
+<li>Пишете цель одной фразой: «хочу …».</li>
+<li>Бот пару сообщений вас расспрашивает, а потом делает 2–3 захода, чтобы отговорить — иногда довольно ехидно.</li>
+<li>В финале — одна из двух развязок: разбор ваших ошибок мышления и счётчик «сэкономлено», либо мотивационный итог с конфетти, если вы не сдались под давлением.</li>
+<li>И там, и там — подходящая по смыслу цитата реального исторического деятеля.</li>
+</ul>
+<p>Бесплатно, без регистрации, прямо в браузере. На сессию — 7 сообщений (так задумано, чтобы бот не разорял создателя).</p>
+<h2 id="это-не-злая-игрушка">Это не злая игрушка</h2>
+<p>Демотиватор намеренно ворчлив и язвителен, но у него жёсткие рамки. Он <strong>не</strong> отговаривает от здоровья, безопасности, учёбы, отказа от вредных привычек и от настоящей мечты. На тяжёлых темах он мгновенно выходит из роли и по-человечески советует обратиться за помощью. Это развлекательный проект, а не совет — и об этом честно написано прямо в интерфейсе.</p>
+<h2 id="как-это-сделано">Как это сделано</h2>
+<p>Демотиватор — эксперимент для моей маленькой лаборатории нейро-штук <a href="https://neuro-slop.ru/">neuro-slop.ru</a>. Под капотом — дешёвая быстрая модель, ответ стримится в чат по мере генерации, а весь «характер» и ключи спрятаны на тонком сервере, чтобы их нельзя было подсмотреть. Получилось дёшево, быстро и, кажется, смешно.</p>
+<h2 id="попробуйте-прямо-сейчас">Попробуйте прямо сейчас</h2>
+<p>Назовите Демотиватору любую свою цель — и посмотрите, отговорит он вас или, наоборот, устроит овацию с конфетти.</p>
+<p><strong>→ <a href="https://neuro-slop.ru/chats/demotivator/">Открыть Демотиватора</a></strong></p>
+<p>Только честно отвечайте на его вопросы. Он это чувствует.</p> </div> <p class="mt-14"> <a href="/posts/" class="text-primary text-sm font-medium hover:underline">← Все записи</a> </p> </article> </main>  </div> <footer class="border-border/60 mt-16 border-t"> <div class="text-muted-foreground mx-auto flex w-full max-w-[1920px] flex-col items-center justify-between gap-2 px-5 py-8 text-[13px] sm:flex-row md:px-10 2xl:px-16"> <p>© 2026 neuro-slop.ru</p> <p>Сделано вместе с нейросетями</p> </div> </footer> </body> </html>
