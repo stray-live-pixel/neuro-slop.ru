@@ -3,7 +3,7 @@ import type { Graphics } from 'pixi.js';
 import { iso, colHex } from '../core/iso';
 import { G } from '../core/state';
 import { R } from './context';
-import { moveOrderMarkers } from './moveOrders';
+import { orderChainMarkers } from './moveOrders';
 import type { Building } from '../core/types';
 
 interface Pt { x: number; y: number; }
@@ -76,18 +76,18 @@ export function drawFx(dt: number) {
     g.ellipse(p.x, p.y, 4, 2).fill({ color: 0xffce42, alpha: 0.85 });
   }
 
-  // маршрут и флажок назначения для выделенных юнитов с приказом «идти»
-  const markers = moveOrderMarkers(G.selection);
-  if (markers.length) {
+  // цепочка приказов выделенных юнитов: маршрут + флажки (текущий приказ и вся очередь Shift)
+  const chains = orderChainMarkers(G.selection);
+  if (chains.length) {
     const phase = G.time * 26;                          // px/сек — пунктир «течёт» к цели
     // мягкая подложка-дорожка (один штрих по всем маршрутам)
-    for (const m of markers) dashedPolyline(g, m.route.map(p => iso(p.x, p.y)), 9, 7, phase);
+    for (const m of chains) dashedPolyline(g, m.points.map(p => iso(p.x, p.y)), 9, 7, phase);
     g.stroke({ width: 5, color: 0x6fb0ff, alpha: 0.14 });
-    for (const m of markers) dashedPolyline(g, m.route.map(p => iso(p.x, p.y)), 9, 7, phase);
+    for (const m of chains) dashedPolyline(g, m.points.map(p => iso(p.x, p.y)), 9, 7, phase);
     g.stroke({ width: 1.8, color: 0xbfe0ff, alpha: 0.7 });
-    // флажок в точке назначения каждого юнита
-    for (const m of markers) {
-      const p = iso(m.dest.x, m.dest.y);
+    // флажок в каждой точке назначения цепочки
+    for (const m of chains) for (const f of m.flags) {
+      const p = iso(f.x, f.y);
       g.ellipse(p.x, p.y, 4, 2).fill({ color: 0x6fb0ff, alpha: 0.8 });
       g.moveTo(p.x, p.y).lineTo(p.x, p.y - 22).stroke({ width: 2, color: 0xeaf2ff, alpha: 0.95 });
       g.poly([p.x, p.y - 22, p.x + 13, p.y - 18.5, p.x, p.y - 15], true).fill({ color: 0x6fb0ff, alpha: 0.95 });

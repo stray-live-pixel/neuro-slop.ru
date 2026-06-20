@@ -16,11 +16,12 @@ export interface RenderContext {
   dragG: Graphics;         // рамка выделения (экранное пространство)
   vignette: Sprite;        // затемнение по краям
   tex: Record<string, Texture>;
+  pad: Record<string, number>;   // доля прозрачного поля снизу текстуры (посадка «на землю»)
   badge: Record<string, Texture | null>;
 }
 
 export const R: RenderContext = {
-  tex: {}, badge: {},
+  tex: {}, pad: {}, badge: {},
 } as RenderContext;
 
 const canvas = () => document.getElementById('game') as HTMLCanvasElement;

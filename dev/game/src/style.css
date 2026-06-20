@@ -29,6 +29,14 @@ body.touch .desktop-only{display:none;}
   border:1px solid var(--line);background:#efe5cf;border-radius:9px;color:#6a5a44;cursor:pointer;transition:.12s;}
 .iconbtn:hover{background:#fff;color:var(--ink);}
 .iconbtn svg{display:block;}
+/* кнопка-счётчик бездействующих крестьян — заметная, пульсирует, чтобы не забыть занять людей */
+.idlebtn{width:auto;gap:3px;padding:0 9px 0 7px;border-color:var(--accent);background:var(--accent);
+  color:#fff;font-weight:800;font-size:14px;animation:idlepulse 1.6s infinite;}
+.idlebtn:hover{background:#c4502f;color:#fff;}
+.idlebtn .iic{display:inline-flex;align-items:center;}
+.idlebtn .iic svg{display:block;}
+.idlebtn .cnt{font-variant-numeric:tabular-nums;}
+@keyframes idlepulse{50%{box-shadow:0 0 0 4px rgba(181,70,46,.28);}}
 
 /* ---------- настройки графики ---------- */
 #settings{position:fixed;top:calc(max(10px,env(safe-area-inset-top)) + 46px);left:50%;transform:translateX(-50%);

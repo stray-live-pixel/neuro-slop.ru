@@ -6,6 +6,7 @@ import { TILE } from '../../data/config';
 import { R } from '../context';
 import { drawTileShade } from '../draw';
 import { makeOutline, syncOutline, hideOutline } from '../outline';
+import { spriteBox } from '../hit';
 import type { ResourceNode } from '../../core/types';
 
 export interface NodeView extends Container { sh: Graphics; outline: Container; sp: Sprite; }
@@ -30,6 +31,7 @@ export function makeNodeView(n: ResourceNode): NodeView {
   } else {
     const w = TILE.w * 1.12; sp.scale.set(w / (t.width || w));
   }
+  sp.y += (R.pad[img] || 0) * sp.scale.y * (t.height || 0);   // опустить на пустое поле снизу PNG
   c.sp = sp;
   return c;
 }
@@ -41,4 +43,5 @@ export function updateNodeView(c: NodeView, n: ResourceNode) {
   if (G.selection.includes(n)) syncOutline(c.outline, c.sp, 0xffffff, 1, 3);
   else if (G.hover === n) syncOutline(c.outline, c.sp, 0xffffff, 0.5, 3);
   else hideOutline(c.outline);
+  n.hit = spriteBox(c.sp);   // весь PNG кликабелен (дерево/руда выше своего тайла)
 }

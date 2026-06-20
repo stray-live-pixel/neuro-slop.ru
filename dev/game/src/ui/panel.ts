@@ -61,6 +61,7 @@ export function renderPanel() {
       html += `<div class="label">Строительство</div><div class="grid">`;
       html += BUILD_MENU.map(k => buildBtn(k)).join('');
       html += `</div>`;
+      html += `<div class="hint">Зажми <b>Shift</b> — ставь стройки в очередь. <b>Частокол</b> можно тянуть <b>линией</b> — крестьянин пройдёт её по порядку.</div>`;
     }
     p.innerHTML = html;
     return;

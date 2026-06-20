@@ -3,10 +3,9 @@ import { G, mouse } from '../core/state';
 import { s2g, g2s, clamp } from '../core/iso';
 import { pickTile } from '../core/grid';
 import { commandSelection } from '../sim/commands';
-import { tryPlace } from '../sim/placement';
+import { tryPlace, placeWallLine, wallLineCells } from '../sim/placement';
 import { ensureAudio } from '../audio/sfx';
-import { pickUnit, selectOne, deselect, boxSelect } from './selection';
-import type { Selectable } from '../core/types';
+import { pickUnit, pickObj, selectOne, deselect, boxSelect } from './selection';
 
 const canvas = () => document.getElementById('game') as HTMLCanvasElement;
 
@@ -37,10 +36,15 @@ function mouseDown(e: PointerEvent) {
   if (G.over) return;
   ensureAudio();
   const sx = e.clientX, sy = e.clientY; const w = s2g(sx, sy);
-  if (e.button === 2) { if (G.place) { G.place = null; return; } commandSelection(w.x, w.y); return; }
+  if (e.button === 2) { if (G.place) { G.place = null; return; } commandSelection(w.x, w.y, e.shiftKey); return; }
   if (e.button === 1) { mouse.pan = { x: sx, y: sy, cx: G.cam.x, cy: G.cam.y }; return; }
   if (e.button !== 0) return;
-  if (G.place) { tryPlace(); return; }
+  if (G.place) {
+    // частокол ставим тягой-линией (фиксируем якорь, конец — под курсором, ставим на отпускании)
+    if (G.place.key === 'wall') { G.place.line = { ax: Math.round(w.x), ay: Math.round(w.y) }; }
+    else tryPlace();
+    return;
+  }
   mouse.down = true; mouse.dragStart = { x: sx, y: sy }; mouse.moved = false;
 }
 function mouseMove(e: PointerEvent) {
@@ -62,6 +66,13 @@ function mouseMove(e: PointerEvent) {
 }
 function mouseUp(e: PointerEvent) {
   if (e.button === 1) { mouse.pan = null; return; }
+  // завершение тяги частокола линией: ставим все тайлы от якоря до курсора
+  if (e.button === 0 && G.place && G.place.line) {
+    const ln = G.place.line; G.place.line = null;
+    placeWallLine(wallLineCells(ln.ax, ln.ay, Math.round(mouse.gx), Math.round(mouse.gy)), e.shiftKey);
+    if (!e.shiftKey) G.place = null;
+    return;
+  }
   if (e.button !== 0 || !mouse.down) return;
   mouse.down = false;
   if (mouse.moved && mouse.dragRect) boxSelect(mouse.dragRect, e.shiftKey);
@@ -70,7 +81,7 @@ function mouseUp(e: PointerEvent) {
     if (u) {
       if (e.shiftKey) { const i = G.selection.indexOf(u); i >= 0 ? G.selection.splice(i, 1) : G.selection.push(u); }
       else selectOne(u);
-    } else { const t = pickTile(mouse.gx, mouse.gy); selectOne(t && (t.kind === 'building' || t.kind === 'node') ? t : null); }
+    } else selectOne(pickObj(mouse.x, mouse.y));   // здание/ресурс — по всему PNG
   }
   mouse.dragRect = null; mouse.dragStart = null;
 }
@@ -98,7 +109,7 @@ function touchTap(sx: number, sy: number) {
     if (!u && !tile) { commandSelection(w.x, w.y); return; }   // пустая земля — идти
   }
   if (u) { selectOne(u); return; }
-  selectOne(tile && (tile.kind === 'building' || tile.kind === 'node') ? tile as Selectable : null);
+  selectOne(pickObj(sx, sy));
 }
 
 function touchDown(e: PointerEvent) {

@@ -13,7 +13,7 @@ export function spawnUnit(type: string, gx: number, gy: number, side?: Side): Un
   const u: Unit = {
     id: G.uid++, kind: 'unit', type, side: side || d.side, name: d.name,
     gx, gy, vx: 1, hp: d.hp, maxhp: d.hp, def: d,
-    order: null, path: null, wp: 0, cd: 0, anim: 0,
+    order: null, queue: [], path: null, wp: 0, cd: 0, anim: 0,
     guard: { x: gx, y: gy },
     gatherRes: null, carry: 0,
   };

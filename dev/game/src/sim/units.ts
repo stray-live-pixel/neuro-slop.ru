@@ -5,7 +5,7 @@ import { REACH } from '../data/config';
 import { unitStat, gatherMult } from './economy';
 import { removeNode } from './entities';
 import { acquireEnemy, doAttack, attackReach, unitTargetDist } from './combat';
-import { attackOrder, moveOrder, returnToGuard, faceTo, gatherOrder, farmOrder, nearestNode } from './commands';
+import { attackOrder, moveOrder, returnToGuard, faceTo, gatherOrder, farmOrder, buildOrder, nearestNode, advanceOrder, nearestUnbuilt } from './commands';
 import { pathToNear } from './pathfind';
 import { onBuildComplete } from './buildings';
 import { recalcPop } from './entities';
@@ -26,6 +26,14 @@ export function moveAlong(u: Unit, dt: number, speed: number): boolean {
   return false;
 }
 
+// Чем заняться крестьянину после стройки: сперва отложенные приказы (Shift-очередь),
+// затем — ближайшее ещё не достроенное здание на карте, иначе встать без дела.
+function nextBuildTask(u: Unit) {
+  if (u.queue.length) { advanceOrder(u); return; }
+  const nb = nearestUnbuilt(u);
+  if (nb) buildOrder(u, nb); else u.order = null;
+}
+
 export function updateUnit(u: Unit, dt: number) {
   u.cd -= dt; u.anim += dt;
   const st = unitStat(u);
@@ -42,22 +50,24 @@ export function updateUnit(u: Unit, dt: number) {
     return;
   }
 
-  if (o.type === 'move') { if (moveAlong(u, dt, st.speed)) u.order = null; return; }
+  if (o.type === 'move') { if (moveAlong(u, dt, st.speed)) advanceOrder(u); return; }
 
   if (o.type === 'gather') {
     const node = o.target as any;
     // поле (farm-здание): бесконечная еда, узел не истощается
     if (node && node.kind === 'building') {
-      if (!G.buildings.includes(node) || node.progress < 1) { u.order = null; u.gatherRes = null; return; }
+      if (!G.buildings.includes(node) || node.progress < 1) { u.gatherRes = null; advanceOrder(u); return; }
       if (unitTargetDist(u, node) <= REACH) {
         u.path = null; u.gatherRes = 'food';
         G.res.food += (u.def.gather || 0) * gatherMult('food') * dt * 0.8;
-      } else if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, node); u.wp = 0; }
+      } else if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, node, true); u.wp = 0; }
       return;
     }
     if (!node || node.amount <= 0) {
-      u.order = null; u.gatherRes = null;
-      const nx = nearestNode(u, node && node.node); if (nx) gatherOrder(u, nx);
+      u.gatherRes = null;
+      if (u.queue.length) { advanceOrder(u); return; }           // есть отложенные приказы — к ним
+      const nx = nearestNode(u, node && node.node);              // иначе сам перейдёт на ближайший такой же
+      if (nx) gatherOrder(u, nx); else u.order = null;
       return;
     }
     if (unitTargetDist(u, node) <= REACH) {
@@ -65,25 +75,27 @@ export function updateUnit(u: Unit, dt: number) {
       const amt = (u.def.gather || 0) * gatherMult(node.res) * dt;
       const take = Math.min(amt, node.amount); node.amount -= take; G.res[node.res as ResKey] += take;
       if (node.amount <= 0) removeNode(node);
-    } else if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, node); u.wp = 0; }
+    } else if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, node, true); u.wp = 0; }
     return;
   }
 
   if (o.type === 'build') {
     const b = o.target as any;
-    if (!b || b.progress >= 1 || !G.buildings.includes(b)) { u.order = null; return; }
+    if (!b || b.progress >= 1 || !G.buildings.includes(b)) { nextBuildTask(u); return; }  // цель уже готова/снесена — к следующей
     if (unitTargetDist(u, b) <= REACH) {
       u.path = null;
       b.progress = Math.min(1, b.progress + (1 / b.def.build) * (u.def.build || 1) * dt);
       b.hp = Math.max(b.hp, b.maxhp * b.progress);
-      if (b.progress >= 1) { b.hp = b.maxhp; recalcPop(); onBuildComplete(b); if (b.def.farm) farmOrder(u, b); else u.order = null; }
-    } else if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, b); u.wp = 0; }
+      // достроено: поле без очереди — жнём; иначе идём по очереди / к следующей стройке
+      if (b.progress >= 1) { b.hp = b.maxhp; recalcPop(); onBuildComplete(b); if (b.def.farm && !u.queue.length) farmOrder(u, b); else nextBuildTask(u); }
+    } else if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, b, true); u.wp = 0; }
     return;
   }
 
   if (o.type === 'attack') {
     const t = o.target as Unit | Building;
     if (!t || t.hp <= 0 || (t.kind === 'building' && !G.buildings.includes(t)) || (t.kind === 'unit' && !G.units.includes(t))) {
+      if (u.queue.length) { advanceOrder(u); return; }   // цель повержена — к следующему приказу
       u.order = null;
       if (!o.forced) { const e = acquireEnemy(u, 9); if (e) attackOrder(u, e, false); else returnToGuard(u); }
       return;
@@ -94,7 +106,7 @@ export function updateUnit(u: Unit, dt: number) {
       if (u.cd <= 0) { doAttack(u, t, st); u.cd = st.rate; }
     } else {
       if (!o.forced && dist(u.gx, u.gy, u.guard.x, u.guard.y) > 11) { u.order = null; returnToGuard(u); return; }
-      if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, t); u.wp = 0; }
+      if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, t, true); u.wp = 0; }
     }
     return;
   }

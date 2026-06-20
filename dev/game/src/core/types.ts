@@ -71,11 +71,17 @@ export interface WaveComp {
 /* ----------------------------- живые сущности ----------------------------- */
 export interface PathPt { x: number; y: number; }
 
+// Бокс PNG-ассета в локальных px контейнера (центр cx, полуширина hw, верх/низ
+// относительно начала контейнера) — кешируется рендером для хит-теста по всему спрайту.
+export interface HitBox { cx: number; hw: number; top: number; bot: number; }
+
 export interface Order {
   type: 'move' | 'gather' | 'build' | 'attack';
   target?: Entity;
   forced?: boolean;
   repath?: number;
+  gx?: number;   // точка назначения для move (нужна, чтобы переотдать приказ из очереди)
+  gy?: number;
 }
 
 export interface Unit {
@@ -91,6 +97,7 @@ export interface Unit {
   maxhp: number;
   def: UnitDef;
   order: Order | null;
+  queue: Order[];            // отложенные приказы (Shift) — выполняются по очереди после текущего
   path: PathPt[] | null;
   wp: number;
   cd: number;
@@ -99,6 +106,7 @@ export interface Unit {
   gatherRes: ResKey | null;
   carry: number;
   view?: Container;
+  hit?: HitBox;
   _lunge?: number;
   _hurt?: number;
 }
@@ -125,6 +133,7 @@ export interface Building {
   rally: Rally | null;
   anim: number;
   view?: Container;
+  hit?: HitBox;
   popped?: boolean;
   _pop?: number;
   _qlen?: number;
@@ -142,6 +151,7 @@ export interface ResourceNode {
   max: number;
   label: string;
   view?: Container;
+  hit?: HitBox;
 }
 
 export type Entity = Unit | Building | ResourceNode;
@@ -183,7 +193,12 @@ export interface Particle {
   dead?: boolean;
 }
 
-export interface Placement { key: string; ox?: number; oy?: number; }
+export interface Placement {
+  key: string;
+  ox?: number;
+  oy?: number;
+  line?: { ax: number; ay: number } | null;   // частокол линией: якорь тяги (конец — под курсором)
+}
 
 export interface GameState {
   res: Record<ResKey, number>;

@@ -1,6 +1,6 @@
 // Клавиатура: камера (WASD/стрелки), пауза, метрики, снос здания, хоткеи.
 import { G, keys, mouse } from '../core/state';
-import { deselect, selectAllArmy } from './selection';
+import { deselect, selectAllArmy, selectIdlePeasant } from './selection';
 import { refund } from '../sim/economy';
 import { removeBuilding } from '../sim/entities';
 import { centerOn } from '../sim/map';
@@ -45,6 +45,7 @@ export function initKeyboard() {
     if (e.key === ' ') { togglePause(); e.preventDefault(); }
     if (e.key === 'F3') { togglePerf(); e.preventDefault(); }
     if (e.key.toLowerCase() === 'a' && e.ctrlKey) { selectAllArmy(); e.preventDefault(); }
+    if (e.key === '.' || e.key === '>') { selectIdlePeasant(); e.preventDefault(); }   // следующий простаивающий крестьянин
     const dg = e.code.match(/^Digit([1-4])$/);
     if (dg) { e.shiftKey ? assignGroup(+dg[1]) : selectGroup(+dg[1]); e.preventDefault(); }
     if (e.key === 'Delete' && G.selection.length) {

@@ -20,6 +20,7 @@ import { initMinimap, drawMinimap } from './ui/minimap';
 import { toast, updateToasts } from './ui/toast';
 import { ensureAudio, toggleMute } from './audio/sfx';
 import { initKeyboard, cameraKeys } from './input/keyboard';
+import { selectIdlePeasant } from './input/selection';
 import { initPointer } from './input/pointer';
 import { initMobile } from './input/mobile';
 import { initSettings } from './ui/settings';
@@ -99,6 +100,7 @@ async function boot() {
   initKeyboard(); initPointer(); initPanel(); initMobile(); initMinimap(); initSettings();
   window.addEventListener('resize', resizeRenderer);
   document.getElementById('muteBtn')!.addEventListener('click', () => toggleMute());
+  document.getElementById('idleBtn')!.addEventListener('click', () => selectIdlePeasant());
   document.getElementById('perfBtn')!.addEventListener('click', () => togglePerf());
   document.getElementById('callWave')!.addEventListener('click', () => earlyCall());
   document.getElementById('startBtn')!.addEventListener('click', startGame);

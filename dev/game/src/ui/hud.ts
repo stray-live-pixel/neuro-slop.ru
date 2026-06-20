@@ -19,6 +19,7 @@ export function fillHudIcons() {
   el('muteBtn')!.innerHTML = iconSVG('sound', 18);
   el('perfBtn')!.innerHTML = iconSVG('gauge', 18);
   el('settingsBtn')!.innerHTML = iconSVG('settings', 18);
+  el('idleBtn')!.querySelector('.iic')!.innerHTML = iconSVG('pop', 16, '#fff');
 }
 
 export function updateHUD() {
@@ -28,6 +29,11 @@ export function updateHUD() {
   el('rGold')!.textContent = String(Math.floor(G.res.gold));
   el('rPop')!.textContent = G.pop.used + '/' + G.pop.cap;
   el('rPop')!.className = G.pop.used >= G.pop.cap ? 'val warn' : 'val';
+  // счётчик бездействующих крестьян (определение «без работы» — см. selection.idlePeasants)
+  let idle = 0;
+  for (const u of G.units) if (u.side === 'player' && u.type === 'peasant' && !u.order && u.queue.length === 0) idle++;
+  el('idleBtn')!.classList.toggle('hidden', idle === 0);
+  el('idleCount')!.textContent = String(idle);
   const w = G.wave;
   if (w.state === 'prep') {
     const next = waveComposition(w.index + 1);

@@ -7,7 +7,9 @@ import type { Building, PathPt, ResourceNode, Unit } from '../core/types';
 const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
 export { DIRS };
 
-export function findPath(sx: number, sy: number, tx: number, ty: number, allowGoalSolid: boolean): PathPt[] | null {
+// cornerCut: разрешить диагональ между двумя занятыми углами (юниты игрока пролезают
+// в щели между зданиями). По умолчанию выключено — враги не срезают углы у стен/домов.
+export function findPath(sx: number, sy: number, tx: number, ty: number, allowGoalSolid: boolean, cornerCut = false): PathPt[] | null {
   sx |= 0; sy |= 0; tx |= 0; ty |= 0;
   if (!inBounds(tx, ty)) return null;
   if (sx === tx && sy === ty) return [{ x: tx, y: ty }];
@@ -31,7 +33,7 @@ export function findPath(sx: number, sy: number, tx: number, ty: number, allowGo
       if (!inBounds(nx, ny)) continue;
       const goal = nx === tx && ny === ty;
       if (G.solid[ny][nx] && !(goal && allowGoalSolid)) continue;
-      if (dx && dy) { if (G.solid[cur.y][nx] || G.solid[ny][cur.x]) continue; } // без срезания углов
+      if (dx && dy && !cornerCut) { if (G.solid[cur.y][nx] || G.solid[ny][cur.x]) continue; } // без срезания углов
       const ng = cur.g + (dx && dy ? 1.41 : 1);
       const nk = key(nx, ny);
       if (ng < (gsc.get(nk) ?? 1e9)) {
@@ -44,7 +46,7 @@ export function findPath(sx: number, sy: number, tx: number, ty: number, allowGo
 }
 
 // ближайший свободный тайл рядом с целью (зданием/узлом), достижимый из (sx,sy)
-export function pathToNear(sx: number, sy: number, target: Building | ResourceNode | Unit): PathPt[] | null {
+export function pathToNear(sx: number, sy: number, target: Building | ResourceNode | Unit, cornerCut = false): PathPt[] | null {
   const ring: [number, number][] = [];
   if (target.kind === 'building') {
     const s = target.size;
@@ -58,18 +60,18 @@ export function pathToNear(sx: number, sy: number, target: Building | ResourceNo
   ring.sort((a, b) => (Math.abs(a[0] - sx) + Math.abs(a[1] - sy)) - (Math.abs(b[0] - sx) + Math.abs(b[1] - sy)));
   for (const [x, y] of ring) {
     if (!inBounds(x, y) || G.solid[y][x]) continue;
-    const p = findPath(sx, sy, x, y, false);
+    const p = findPath(sx, sy, x, y, false, cornerCut);
     if (p) return p;
   }
   return null;
 }
 
 // если целевой тайл занят — встать рядом
-export function pathToNearTile(sx: number, sy: number, tx: number, ty: number): PathPt[] | null {
+export function pathToNearTile(sx: number, sy: number, tx: number, ty: number, cornerCut = false): PathPt[] | null {
   const cands: [number, number][] = [[tx, ty], ...DIRS.map(([dx, dy]) => [tx + dx, ty + dy] as [number, number])];
   cands.sort((a, b) => (Math.abs(a[0] - tx) + Math.abs(a[1] - ty)) - (Math.abs(b[0] - tx) + Math.abs(b[1] - ty)));
   for (const [x, y] of cands) {
-    if (inBounds(x, y) && !G.solid[y][x]) { const p = findPath(sx, sy, x, y, false); if (p) return p; }
+    if (inBounds(x, y) && !G.solid[y][x]) { const p = findPath(sx, sy, x, y, false, cornerCut); if (p) return p; }
   }
   return null;
 }

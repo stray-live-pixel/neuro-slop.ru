@@ -8,6 +8,7 @@ import { spawnSmoke } from '../../sim/effects';
 import { R } from '../context';
 import { drawBarG, drawDiamondSel, drawFootprintShade } from '../draw';
 import { makeOutline, syncOutline, hideOutline } from '../outline';
+import { spriteBox } from '../hit';
 import type { Building } from '../../core/types';
 
 export interface BuildingView extends Container {
@@ -25,6 +26,7 @@ export function makeBuildingView(b: Building): BuildingView {
   const w = TILE.w * b.size * (flat ? 1.16 : 1.04); const sc = w / (t.width || w); sp.scale.set(sc);
   sp.y = flat ? TILE.h * b.size * 0.22 : TILE.h / 2 * b.size * 0.5;
   c.sp = sp; c.baseSy = sc; c.spriteH = sc * (t.height || 60);
+  if (!flat) sp.y += (R.pad[def.img] || 0) * c.spriteH;   // опустить на пустое поле снизу PNG → стоит на земле
   if (!flat) drawFootprintShade(c.sh, b);
   c.bar = c.addChild(new Graphics());
   c.sel = c.addChild(new Graphics());
@@ -47,6 +49,7 @@ export function updateBuildingView(c: BuildingView, b: Building, dt: number) {
   // наведение — бледный контур по силуэту (у выделённого хватает ромба)
   if (G.hover === b && !sel) syncOutline(c.outline, c.sp, 0xffffff, 0.5, 3);
   else hideOutline(c.outline);
+  b.hit = spriteBox(c.sp);   // весь PNG кликабелен (включая высокую крышу над тайлом)
   if (b.progress >= 1 && (b.key === 'blacksmith' || b.key === 'house' || b.key === 'townhall')) {
     c.smokeT -= dt;
     if (c.smokeT <= 0) { c.smokeT = b.key === 'blacksmith' ? 0.3 : 0.9; spawnSmoke(p.x + TILE.w * 0.12, p.y - c.spriteH * 0.82); }

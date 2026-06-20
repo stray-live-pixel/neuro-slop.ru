@@ -11,13 +11,14 @@ import { inDragRect } from '../../input/selection';
 import { R } from '../context';
 import { drawBarG, drawGroundShadow } from '../draw';
 import { makeOutline, syncOutline, hideOutline } from '../outline';
+import { spriteBox } from '../hit';
 import type { Unit } from '../../core/types';
 
 interface BadgeContainer extends Container { bg: Graphics; ic: Sprite; }
 export interface UnitView extends Container {
   sh: Graphics; sel: Graphics; outline: Container; sp: Sprite; bar: Graphics; badge: BadgeContainer;
   fxT: number; curImg: string | null; selOn: boolean; barOn: boolean; curBadge: string | null;
-  baseScale: number; texW: number; spriteH: number;
+  baseScale: number; texW: number; spriteH: number; footPad: number;
 }
 
 export function makeUnitView(_u: Unit): UnitView {
@@ -33,7 +34,7 @@ export function makeUnitView(_u: Unit): UnitView {
   badge.ic = badge.addChild(new Sprite()); badge.ic.anchor.set(0.5); badge.ic.scale.set(0.4);
   badge.visible = false; c.badge = badge;
   c.fxT = 0; c.curImg = null; c.selOn = false; c.barOn = false; c.curBadge = null;
-  c.baseScale = 1; c.texW = 40; c.spriteH = 40;
+  c.baseScale = 1; c.texW = 40; c.spriteH = 40; c.footPad = 0;
   return c;
 }
 
@@ -43,6 +44,7 @@ export function updateUnitView(c: UnitView, u: Unit, dt: number) {
     c.curImg = st.img; c.sp.texture = t;
     const bodyH = TILE.h * (u.def.img === 'mongol-rider' ? 2.0 : 1.62);
     c.baseScale = bodyH / (t.height || bodyH); c.texW = t.width || 40; c.spriteH = c.baseScale * (t.height || 40);
+    c.footPad = (R.pad[st.img] || 0) * c.spriteH;     // пустое поле снизу PNG → опускаем спрайт до тени
     c.sh.clear(); drawGroundShadow(c.sh, 0, FEET, c.baseScale * c.texW * 0.23, TILE.h * 0.12, 0.36);
   }
   const p = iso(u.gx, u.gy); c.position.set(p.x, p.y); c.zIndex = u.gx + u.gy + 0.4;
@@ -57,7 +59,7 @@ export function updateUnitView(c: UnitView, u: Unit, dt: number) {
   } else { breathe = 1 + Math.sin(tm * 2.4 + u.id) * 0.025; }
   if ((u._lunge || 0) > 0) { u._lunge = Math.max(0, u._lunge! - dt * 5); lungeX = facing * Math.sin((1 - u._lunge!) * Math.PI) * TILE.w * 0.13; }
   c.sp.scale.set(facing * c.baseScale, c.baseScale * breathe);
-  c.sp.rotation = rot; c.sp.x = lungeX; c.sp.y = FEET + bobY;
+  c.sp.rotation = rot; c.sp.x = lungeX; c.sp.y = FEET + bobY + c.footPad;
   if ((u._hurt || 0) > 0) { c.sp.tint = 0xff8a6a; u._hurt = Math.max(0, u._hurt! - dt * 4); } else c.sp.tint = 0xffffff;
 
   // выделение (перерисовываем только у выделённых — пульс)
@@ -74,6 +76,9 @@ export function updateUnitView(c: UnitView, u: Unit, dt: number) {
   else if (G.hover === u) syncOutline(c.outline, c.sp, 0xffffff, 0.5, 2.6);
   else hideOutline(c.outline);
 
+  // весь PNG-ассет кликабелен и попадает под рамку — кешируем его экранный бокс
+  u.hit = spriteBox(c.sp, 0);
+
   // hp-бар (только у раненых)
   if (u.hp < u.maxhp) {
     c.bar.clear();
@@ -81,8 +86,10 @@ export function updateUnitView(c: UnitView, u: Unit, dt: number) {
     c.barOn = true;
   } else if (c.barOn) { c.bar.clear(); c.barOn = false; }
 
-  // бейдж действия (только у игрока)
-  const bk = u.side === 'player' ? badgeFor(act) : null;
+  // бейдж действия (только у игрока). Простаивающему крестьянину — бейдж «без работы».
+  const bk = u.side === 'player'
+    ? (act === 'idle' ? (u.type === 'peasant' ? 'idle' : null) : badgeFor(act))
+    : null;
   if (bk && R.badge[bk]) {
     c.badge.visible = true;
     if (c.curBadge !== bk) { c.badge.ic.texture = R.badge[bk]!; c.curBadge = bk; }
