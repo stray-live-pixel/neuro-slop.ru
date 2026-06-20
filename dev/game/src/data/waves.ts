@@ -2,6 +2,9 @@
    Возвращает состав волны i (1..10): список юнитов врага и их усиление. */
 import type { WaveComp } from '../core/types';
 
+// Названия сторон захода орды (индекс = w.side, совпадает с раскладкой в startWave).
+export const SIDE_NAME = ['севера', 'востока', 'юга', 'запада'];
+
 export function waveComposition(i: number): WaveComp {
   const foot = 4 + i * 2;                     // пехота растёт
   const riders = i >= 4 ? Math.floor((i - 2) / 2) : 0;

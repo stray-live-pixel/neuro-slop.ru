@@ -34,4 +34,15 @@ export function drawFx(dt: number) {
     else if (f.type === 'die') g.circle(s.x, s.y, 6 + k * 16).fill({ color: 0x7a2018, alpha: (1 - k) * 0.5 });
     else if (f.type === 'collapse') g.circle(s.x, s.y, 10 + k * 46).fill({ color: 0x3c3228, alpha: (1 - k) * 0.6 });
   }
+
+  // флажки точек сбора у выделенных производящих зданий
+  for (const sel of G.selection) {
+    if (sel.kind !== 'building' || !(sel as Building).rally) continue;
+    const b = sel as Building, r = b.rally!;
+    const a = iso(b.cx, b.cy), p = iso(r.x, r.y);
+    g.moveTo(a.x, a.y).lineTo(p.x, p.y).stroke({ width: 1.4, color: 0xffe07a, alpha: 0.35 });
+    g.moveTo(p.x, p.y).lineTo(p.x, p.y - 22).stroke({ width: 2, color: 0xf3e6bc, alpha: 0.95 });
+    g.poly([p.x, p.y - 22, p.x + 13, p.y - 18.5, p.x, p.y - 15], true).fill({ color: 0xffce42, alpha: 0.95 });
+    g.ellipse(p.x, p.y, 4, 2).fill({ color: 0xffce42, alpha: 0.85 });
+  }
 }

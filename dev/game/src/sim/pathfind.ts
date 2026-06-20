@@ -15,7 +15,8 @@ export function findPath(sx: number, sy: number, tx: number, ty: number, allowGo
   const open = [{ x: sx, y: sy, g: 0, f: 0 }];
   const came = new Map<number, number>(), gsc = new Map<number, number>();
   gsc.set(key(sx, sy), 0);
-  const h = (x: number, y: number) => Math.abs(x - tx) + Math.abs(y - ty);
+  // октиль-эвристика (допускает диагонали) — пути ровнее, без «лесенки»
+  const h = (x: number, y: number) => { const dx = Math.abs(x - tx), dy = Math.abs(y - ty); return (dx + dy) - 0.586 * Math.min(dx, dy); };
   let guard = 0;
   while (open.length && guard++ < 9000) {
     let bi = 0; for (let i = 1; i < open.length; i++) if (open[i].f < open[bi].f) bi = i;

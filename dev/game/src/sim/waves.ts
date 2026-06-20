@@ -25,14 +25,25 @@ export function updateWaves(dt: number) {
       toast('Волна ' + w.index + ' отражена! Награда: +' + comp.reward.gold + ' золота', 2.5);
       if (w.index >= TOTAL_WAVES) { endGame(true); return; }
       w.state = 'prep'; w.timer = 165; w.announced = false;
+      w.side = Math.floor(Math.random() * 4);   // сторона захода решается заранее — для превью
     }
   }
+}
+
+// Позвать волну раньше: бонус за смелость пропорционально оставшейся паузе.
+export function earlyCall() {
+  const w = G.wave;
+  if (w.state !== 'prep' || G.over) return;
+  const bonus = { gold: Math.round(w.timer * 0.5), food: Math.round(w.timer * 0.4) };
+  refund(bonus, 1);
+  toast(`Ранний вызов! Бонус: +${bonus.gold} золота, +${bonus.food} еды`, 2.6); sfx('done');
+  w.timer = 0; startWave();
 }
 
 export function startWave() {
   const w = G.wave; w.index++; w.state = 'active'; w.announced = false;
   const comp = waveComposition(w.index);
-  const side = Math.floor(Math.random() * 4);
+  const side = w.side;
   comp.list.forEach((type) => {
     let x: number, y: number;
     const t = Math.floor(Math.random() * Math.max(MAP.W, MAP.H));

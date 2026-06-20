@@ -3,6 +3,7 @@ import { G } from '../core/state';
 import { computePopUsed } from './entities';
 import { updateWaves } from './waves';
 import { updateUnit } from './units';
+import { separateUnits } from './separation';
 import { updateBuilding } from './buildings';
 import { updateProjectiles } from './combat';
 import { endGame } from './gameover';
@@ -13,6 +14,7 @@ export function update(dt: number) {
   computePopUsed();
   updateWaves(dt);
   for (const u of G.units) updateUnit(u, dt);
+  separateUnits(dt);
   for (const b of G.buildings) updateBuilding(b, dt);
   updateProjectiles(dt);
   // чистка мёртвых

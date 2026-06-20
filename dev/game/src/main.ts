@@ -16,11 +16,13 @@ import { buildGround } from './render/ground';
 import { syncScene } from './render/scene';
 import { fillHudIcons, updateHUD } from './ui/hud';
 import { renderPanel, updatePanelLive, initPanel, enqueueUnit } from './ui/panel';
+import { initMinimap, drawMinimap } from './ui/minimap';
 import { toast, updateToasts } from './ui/toast';
 import { ensureAudio, toggleMute } from './audio/sfx';
 import { initKeyboard, cameraKeys } from './input/keyboard';
 import { initPointer } from './input/pointer';
 import { initMobile } from './input/mobile';
+import { earlyCall } from './sim/waves';
 import { perfSample, togglePerf } from './perf/metrics';
 
 /* ------------------------------ главный цикл ------------------------------ */
@@ -46,7 +48,7 @@ function loop(ts: number) {
     }
     R.app.renderer.render(R.app.stage);
     renderMs = performance.now() - tr;
-    updateHUD(); updatePanelLive();
+    updateHUD(); updatePanelLive(); drawMinimap();
     perfSample(performance.now() - tFrame, simMs, renderMs);
   } catch (err) { console.error('frame error: ' + ((err as Error)?.stack || err)); }
   updateToasts(dt);
@@ -84,10 +86,11 @@ function devSeed() {
 /* ------------------------------ загрузка ---------------------------------- */
 async function boot() {
   await initPixi();
-  initKeyboard(); initPointer(); initPanel(); initMobile();
+  initKeyboard(); initPointer(); initPanel(); initMobile(); initMinimap();
   window.addEventListener('resize', resizeRenderer);
   document.getElementById('muteBtn')!.addEventListener('click', () => toggleMute());
   document.getElementById('perfBtn')!.addEventListener('click', () => togglePerf());
+  document.getElementById('callWave')!.addEventListener('click', () => earlyCall());
   document.getElementById('startBtn')!.addEventListener('click', startGame);
   document.getElementById('ovRestart')!.addEventListener('click', () => location.reload());
 

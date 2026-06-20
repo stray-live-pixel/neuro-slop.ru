@@ -8,6 +8,7 @@ import { makeBuildingView, updateBuildingView } from './views/building';
 import { makeUnitView, updateUnitView } from './views/unit';
 import { drawFx } from './fx';
 import { updateGhost } from './ghost';
+import { updateClouds } from './clouds';
 import type { Entity } from '../core/types';
 
 const viewReg = new Map<Entity, Container>();
@@ -30,6 +31,7 @@ function cull(gx: number, gy: number, v: Container, VW: number, VH: number, M: n
 
 export function syncScene(dt: number) {
   R.world.position.set(G.cam.x, G.cam.y); R.world.scale.set(G.cam.zoom);
+  updateClouds();
   const live = new Set<Entity>();
   const VW = window.innerWidth, VH = window.innerHeight, M = 160;
   let vis = 0, total = 0;

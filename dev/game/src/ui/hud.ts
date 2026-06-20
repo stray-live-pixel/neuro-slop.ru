@@ -1,6 +1,7 @@
 // Верхняя панель ресурсов и индикатор волны.
 import { G } from '../core/state';
 import { TOTAL_WAVES } from '../data/config';
+import { waveComposition, SIDE_NAME } from '../data/waves';
 import { iconSVG } from './icons';
 
 const el = (id: string) => document.getElementById(id);
@@ -28,10 +29,18 @@ export function updateHUD() {
   el('rPop')!.className = G.pop.used >= G.pop.cap ? 'val warn' : 'val';
   const w = G.wave;
   if (w.state === 'prep') {
-    el('waveInfo')!.innerHTML = `${iconSVG('clock', 15)} Волна <b>${w.index + 1}/${TOTAL_WAVES}</b> через <b>${Math.ceil(w.timer)}с</b>`;
+    const next = waveComposition(w.index + 1);
+    const foot = next.list.filter(t => t === 'mongol').length;
+    const riders = next.list.filter(t => t === 'rider').length;
+    const comp = `${foot} пеших` + (riders ? `, ${riders} конных` : '');
+    el('waveInfo')!.innerHTML =
+      `${iconSVG('clock', 15)} Волна <b>${w.index + 1}/${TOTAL_WAVES}</b> через <b>${Math.ceil(w.timer)}с</b>` +
+      `<span class="wsub">Орда с <b>${SIDE_NAME[w.side]}</b> · ${comp}</span>`;
     el('waveBox')!.className = '';
+    el('callWave')!.classList.remove('hidden');
   } else {
     el('waveInfo')!.innerHTML = `${iconSVG('swords', 15)} ВОЛНА <b>${w.index}/${TOTAL_WAVES}</b> · врагов: <b>${w.alive}</b>`;
     el('waveBox')!.className = 'active';
+    el('callWave')!.classList.add('hidden');
   }
 }

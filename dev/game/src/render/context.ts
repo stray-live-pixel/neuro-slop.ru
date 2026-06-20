@@ -9,6 +9,7 @@ export interface RenderContext {
   app: Application;
   world: Container;        // камера: позиция + масштаб
   groundG: Graphics;       // изо-земля (рисуется один раз)
+  cloudG: Graphics;        // дрейфующие тени облаков (под объектами)
   objLayer: Container;     // depth-сортируемые объекты
   fxG: Graphics;           // частицы/снаряды/вспышки (мировое пространство)
   ghostC: GhostContainer;  // призрак стройки
@@ -42,6 +43,7 @@ export async function initPixi() {
 
   R.world = new Container(); app.stage.addChild(R.world);
   R.groundG = new Graphics(); R.world.addChild(R.groundG);
+  R.cloudG = new Graphics(); R.world.addChild(R.cloudG);
   R.objLayer = new Container(); R.objLayer.sortableChildren = true; R.world.addChild(R.objLayer);
   R.fxG = new Graphics(); R.world.addChild(R.fxG);
 

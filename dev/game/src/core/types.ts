@@ -201,7 +201,8 @@ export interface GameState {
   cam: { x: number; y: number; zoom: number };
   solid: Uint8Array[];
   tileObj: (Entity | null)[][];
-  wave: { index: number; state: 'prep' | 'active'; timer: number; alive: number; announced: boolean };
+  groups: Record<number, number[]>;   // контрол-группы: цифра → id юнитов
+  wave: { index: number; state: 'prep' | 'active'; timer: number; alive: number; announced: boolean; side: number };
   time: number;
   paused: boolean;
   speed: number;
