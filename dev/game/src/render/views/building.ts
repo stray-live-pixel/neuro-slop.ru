@@ -1,0 +1,46 @@
+// Вид здания: спрайт, прогресс/HP-бары, выделение, дым из труб, «поп» при достройке.
+import { Container, Graphics, Sprite } from 'pixi.js';
+import { G } from '../../core/state';
+import { iso } from '../../core/iso';
+import { TILE } from '../../data/config';
+import { BUILDINGS } from '../../data/buildings';
+import { spawnSmoke } from '../../sim/effects';
+import { R } from '../context';
+import { drawBarG, drawDiamondSel } from '../draw';
+import type { Building } from '../../core/types';
+
+export interface BuildingView extends Container {
+  sh: Graphics; sp: Sprite; bar: Graphics; sel: Graphics;
+  baseSy: number; spriteH: number; smokeT: number; popped: boolean; _pop: number;
+}
+
+export function makeBuildingView(b: Building): BuildingView {
+  const def = BUILDINGS[b.key]; const c = new Container() as BuildingView;
+  c.sh = c.addChild(new Graphics());
+  const t = R.tex[def.img];
+  const sp = c.addChild(new Sprite(t)); sp.anchor.set(0.5, 1);
+  const w = TILE.w * b.size * 1.04; const sc = w / (t.width || w); sp.scale.set(sc);
+  sp.y = TILE.h / 2 * b.size * 0.5; c.sp = sp; c.baseSy = sc; c.spriteH = sc * (t.height || 60);
+  c.sh.ellipse(0, sp.y - 4, w * 0.32, TILE.h * b.size * 0.3).fill({ color: 0x2a2418, alpha: 0.22 });
+  c.bar = c.addChild(new Graphics());
+  c.sel = c.addChild(new Graphics());
+  c.smokeT = 0; c.popped = false; c._pop = 0;
+  return c;
+}
+
+export function updateBuildingView(c: BuildingView, b: Building, dt: number) {
+  const p = iso(b.cx, b.cy); c.position.set(p.x, p.y); c.zIndex = (b.ox + b.size - 1) + (b.oy + b.size - 1);
+  c.sp.alpha = b.progress < 1 ? 0.4 + b.progress * 0.5 : 1;
+  c.sp.tint = (b.key === 'wall' && G.up.stonewall) ? 0xC2C7CC : 0xffffff;
+  if (b.progress >= 1 && !c.popped) { c.popped = true; c._pop = 1; }
+  if (c._pop > 0) { c._pop = Math.max(0, c._pop - dt * 3); c.sp.scale.set(c.baseSy, c.baseSy * (1 + 0.14 * c._pop)); }
+  else c.sp.scale.set(c.baseSy);
+  c.bar.clear();
+  if (b.progress < 1) drawBarG(c.bar, 0, c.sp.y - 6, TILE.w * b.size * 0.6, b.progress, 0xe7c14b);
+  else if (b.hp < b.maxhp) drawBarG(c.bar, 0, c.sp.y - c.spriteH - 10, TILE.w * b.size * 0.5, b.hp / b.maxhp, 0x6fcf6f);
+  c.sel.clear(); if (G.selection.includes(b)) drawDiamondSel(c.sel, b);
+  if (b.progress >= 1 && (b.key === 'blacksmith' || b.key === 'house' || b.key === 'townhall')) {
+    c.smokeT -= dt;
+    if (c.smokeT <= 0) { c.smokeT = b.key === 'blacksmith' ? 0.3 : 0.9; spawnSmoke(p.x + TILE.w * 0.12, p.y - c.spriteH * 0.82); }
+  }
+}

@@ -1,0 +1,74 @@
+// A*-поиск пути по сетке. Стены/здания/узлы — преграды.
+import { G } from '../core/state';
+import { inBounds } from '../core/iso';
+import { MAP } from '../data/config';
+import type { Building, PathPt, ResourceNode, Unit } from '../core/types';
+
+const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+export { DIRS };
+
+export function findPath(sx: number, sy: number, tx: number, ty: number, allowGoalSolid: boolean): PathPt[] | null {
+  sx |= 0; sy |= 0; tx |= 0; ty |= 0;
+  if (!inBounds(tx, ty)) return null;
+  if (sx === tx && sy === ty) return [{ x: tx, y: ty }];
+  const key = (x: number, y: number) => y * MAP.W + x;
+  const open = [{ x: sx, y: sy, g: 0, f: 0 }];
+  const came = new Map<number, number>(), gsc = new Map<number, number>();
+  gsc.set(key(sx, sy), 0);
+  const h = (x: number, y: number) => Math.abs(x - tx) + Math.abs(y - ty);
+  let guard = 0;
+  while (open.length && guard++ < 9000) {
+    let bi = 0; for (let i = 1; i < open.length; i++) if (open[i].f < open[bi].f) bi = i;
+    const cur = open.splice(bi, 1)[0];
+    if (cur.x === tx && cur.y === ty) {
+      const path: PathPt[] = []; let k = key(cur.x, cur.y), cx = cur.x, cy = cur.y;
+      while (k !== key(sx, sy)) { path.push({ x: cx, y: cy }); const p = came.get(k)!; cx = p % MAP.W; cy = (p - cx) / MAP.W; k = p; }
+      path.reverse(); return path;
+    }
+    for (const [dx, dy] of DIRS) {
+      const nx = cur.x + dx, ny = cur.y + dy;
+      if (!inBounds(nx, ny)) continue;
+      const goal = nx === tx && ny === ty;
+      if (G.solid[ny][nx] && !(goal && allowGoalSolid)) continue;
+      if (dx && dy) { if (G.solid[cur.y][nx] || G.solid[ny][cur.x]) continue; } // без срезания углов
+      const ng = cur.g + (dx && dy ? 1.41 : 1);
+      const nk = key(nx, ny);
+      if (ng < (gsc.get(nk) ?? 1e9)) {
+        came.set(nk, key(cur.x, cur.y)); gsc.set(nk, ng);
+        open.push({ x: nx, y: ny, g: ng, f: ng + h(nx, ny) });
+      }
+    }
+  }
+  return null;
+}
+
+// ближайший свободный тайл рядом с целью (зданием/узлом), достижимый из (sx,sy)
+export function pathToNear(sx: number, sy: number, target: Building | ResourceNode | Unit): PathPt[] | null {
+  const ring: [number, number][] = [];
+  if (target.kind === 'building') {
+    const s = target.size;
+    for (let x = target.ox - 1; x <= target.ox + s; x++) { ring.push([x, target.oy - 1], [x, target.oy + s]); }
+    for (let y = target.oy; y < target.oy + s; y++) { ring.push([target.ox - 1, y], [target.ox + s, y]); }
+  } else {
+    const tx = Math.round(target.gx), ty = Math.round(target.gy);
+    ring.push([tx, ty]);                                  // сам тайл цели (юнит не блокирует)
+    for (const [dx, dy] of DIRS) ring.push([tx + dx, ty + dy]);
+  }
+  ring.sort((a, b) => (Math.abs(a[0] - sx) + Math.abs(a[1] - sy)) - (Math.abs(b[0] - sx) + Math.abs(b[1] - sy)));
+  for (const [x, y] of ring) {
+    if (!inBounds(x, y) || G.solid[y][x]) continue;
+    const p = findPath(sx, sy, x, y, false);
+    if (p) return p;
+  }
+  return null;
+}
+
+// если целевой тайл занят — встать рядом
+export function pathToNearTile(sx: number, sy: number, tx: number, ty: number): PathPt[] | null {
+  const cands: [number, number][] = [[tx, ty], ...DIRS.map(([dx, dy]) => [tx + dx, ty + dy] as [number, number])];
+  cands.sort((a, b) => (Math.abs(a[0] - tx) + Math.abs(a[1] - ty)) - (Math.abs(b[0] - tx) + Math.abs(b[1] - ty)));
+  for (const [x, y] of cands) {
+    if (inBounds(x, y) && !G.solid[y][x]) { const p = findPath(sx, sy, x, y, false); if (p) return p; }
+  }
+  return null;
+}

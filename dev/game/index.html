@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#cdbfa3">
+<title>Гардарика — славянская стратегия обороны</title>
+<meta name="description" content="Изометрическая экономическая стратегия: развивай древнеславянский город, добывай ресурсы, строй и держи 10 волн монгольской орды.">
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<!-- HUD -->
+<div id="topbar">
+  <div class="res"><span class="ic" data-icon="food"></span><span class="val" id="rFood">0</span></div>
+  <div class="res"><span class="ic" data-icon="wood"></span><span class="val" id="rWood">0</span></div>
+  <div class="res"><span class="ic" data-icon="stone"></span><span class="val" id="rStone">0</span></div>
+  <div class="res"><span class="ic" data-icon="gold"></span><span class="val" id="rGold">0</span></div>
+  <div class="res"><span class="ic" data-icon="pop"></span><span class="val" id="rPop">0/0</span></div>
+  <button id="muteBtn" class="iconbtn" title="Звук (вкл/выкл)"></button>
+  <button id="perfBtn" class="iconbtn" title="Метрики производительности (F3)"></button>
+</div>
+<div id="waveBox"><span id="waveInfo">—</span></div>
+<div id="pauseTag" class="hidden">⏸ Пауза</div>
+<div id="toasts"></div>
+
+<!-- метрики производительности -->
+<div id="perf" class="hidden"></div>
+
+<!-- мобильные контролы -->
+<div id="mobilebar" class="hidden">
+  <button class="mbtn" data-act="army" title="Выделить всё войско"><span class="mic" data-icon="swords"></span></button>
+  <button class="mbtn" data-act="idle" title="Свободный крестьянин"><span class="mic" data-icon="pop"></span></button>
+  <button class="mbtn" data-act="center" title="К ратуше"><span class="mic" data-icon="house"></span></button>
+  <button class="mbtn" data-act="pause" title="Пауза"><span class="mic" data-icon="pause"></span></button>
+</div>
+
+<div id="panel"><div class="hint">Загрузка…</div></div>
+
+<!-- старт -->
+<div id="start" class="screen">
+  <h1>ГАРДАРИКА</h1>
+  <div class="sub">Изометрическая экономическая стратегия о древнеславянском городе. Развивай хозяйство, куй дружину и выстой <b>10 волн</b> монгольской орды.</div>
+  <div class="card">
+    <b>Как играть</b><br>
+    <span class="desktop-only">• <b>ЛКМ</b> — выделить юнита/здание, <b>перетащить</b> — рамкой выделить отряд.<br>
+    • <b>ПКМ</b> — приказ: идти, <b>добывать</b>, <b>строить</b>, <b>атаковать</b>.<br>
+    • Камера: <b>WASD</b>/стрелки/край, <b>колесо</b> — зум, <b>пробел</b> — пауза.</span>
+    <span class="touch-only">• <b>Тап</b> — выделить юнита/здание/ресурс.<br>
+    • С выделенными воинами/крестьянами <b>тап</b> по земле/врагу/ресурсу — приказ.<br>
+    • <b>Один палец</b> — двигать карту, <b>два пальца</b> — зум. Кнопки снизу — быстрый выбор.</span><br>
+    • Строй <b>избы</b> (население), казармы и кузницу, изучай улучшения, ставь <b>башни и частокол</b>.
+    <div class="row"><span>🌾 Еда</span><span>🪵 Дерево</span><span>🪨 Камень</span><span>🪙 Золото</span><span>👥 до 200</span></div>
+  </div>
+  <button id="startBtn" class="btn" disabled><span id="loading">Готовим ассеты…</span></button>
+</div>
+
+<!-- финал -->
+<div id="overlay" class="screen hidden">
+  <h1 id="ovTitle"></h1>
+  <div id="ovText"></div>
+  <button id="ovRestart" class="btn">Сыграть снова</button>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

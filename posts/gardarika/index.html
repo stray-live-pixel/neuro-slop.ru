@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="ru"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Изометрическая экономическая стратегия в духе Age of Empires II: развивай древнеславянский город, добывай ресурсы, куй дружину и держи 10 волн монгольской орды. Модульный TypeScript, рендер на WebGL (PixiJS v8), 60 fps на 4K, играется и на мобиле. Вся графика нарисована Gemini."><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="canonical" href="https://neuro-slop.ru/posts/gardarika/"><meta property="og:title" content="Гардарика — Neuro Slop"><meta property="og:description" content="Изометрическая экономическая стратегия в духе Age of Empires II: развивай древнеславянский город, добывай ресурсы, куй дружину и держи 10 волн монгольской орды. Модульный TypeScript, рендер на WebGL (PixiJS v8), 60 fps на 4K, играется и на мобиле. Вся графика нарисована Gemini."><meta property="og:type" content="website"><meta property="og:url" content="https://neuro-slop.ru/posts/gardarika/"><meta property="og:site_name" content="neuro-slop.ru"><meta property="og:locale" content="ru_RU"><meta property="og:image" content="https://neuro-slop.ru/lab/gardarika/cover.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Гардарика — Neuro Slop"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Гардарика — Neuro Slop"><meta name="twitter:description" content="Изометрическая экономическая стратегия в духе Age of Empires II: развивай древнеславянский город, добывай ресурсы, куй дружину и держи 10 волн монгольской орды. Модульный TypeScript, рендер на WebGL (PixiJS v8), 60 fps на 4K, играется и на мобиле. Вся графика нарисована Gemini."><meta name="twitter:image" content="https://neuro-slop.ru/lab/gardarika/cover.jpg"><title>Гардарика — Neuro Slop</title><script>
+      // Тема: localStorage → системная. Выполняется до отрисовки, чтобы не мигало.
+      (() => {
+        const stored = localStorage.getItem('theme');
+        const dark =
+          stored === 'dark' ||
+          (!stored && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+
+        window.__setTheme = (theme) => {
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+          localStorage.setItem('theme', theme);
+        };
+      })();
+    </script><!-- Yandex.Metrika counter --><script type="text/javascript">
+      (function(m,e,t,r,i,k,a){
+          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109813401', 'ym');
+
+      ym(109813401, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script><noscript><div><img src="https://mc.yandex.ru/watch/109813401" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter --><link rel="stylesheet" href="/_astro/_category_.D1JefShG.css"></head> <body class="bg-background text-foreground flex min-h-svh flex-col overscroll-none antialiased"> <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true"> <div class="aurora-blob aurora-blob-1"></div> <div class="aurora-blob aurora-blob-2"></div> <div class="aurora-blob aurora-blob-3"></div> <div class="dot-grid"></div> <div class="cursor-glow" data-cursor-glow></div> </div> <script type="module">const i=document.querySelector("[data-cursor-glow]"),c=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(i&&!c&&window.matchMedia("(pointer: fine)").matches){let n=0,r=0,e=0,t=0,a=0;const s=()=>{e+=(n-e)*.06,t+=(r-t)*.06,i.style.transform=`translate3d(${e}px, ${t}px, 0)`,Math.abs(n-e)>.5||Math.abs(r-t)>.5?a=requestAnimationFrame(s):a=0};window.addEventListener("pointermove",o=>{n=o.clientX,r=o.clientY,i.classList.add("is-active"),a||(a=requestAnimationFrame(s))}),document.documentElement.addEventListener("pointerleave",()=>{i.classList.remove("is-active")})}</script> <header class="bg-background/60 border-border/60 sticky top-0 z-50 border-b backdrop-blur-xl backdrop-saturate-150"> <nav class="mx-auto flex h-14 w-full max-w-[1920px] items-center justify-between px-5 md:px-10 2xl:px-16"> <a href="/" class="text-foreground text-[15px] font-semibold tracking-tight transition-opacity hover:opacity-70"> <span class="text-gradient text-gradient-animated">neuro‑slop.ru</span> </a> <div class="flex items-center gap-1 sm:gap-2"> <a href="/posts/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Записи
+</a> <a href="/transcripts/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Разборы
+</a> <a href="/chats/" class="text-foreground/80 hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4">
+Чаты
+</a> <button data-slot="button" class="group/button focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 [&#38;_svg]:pointer-events-none [&#38;_svg]:shrink-0 [&#38;_svg:not([class*='size-'])]:size-4 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 size-8 in-data-[slot=button-group]:rounded-md relative rounded-full" data-theme-toggle="true" aria-label="Toggle theme">  <svg class="dark:hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" />
+</svg> <svg class="hidden dark:block" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+</svg> <span class="sr-only">Toggle theme</span>  </button> <script>
+  if (!window.__themeToggleHandlersInitialized) {
+    window.__themeToggleHandlersInitialized = true
+
+    const syncThemeToggles = () => {
+      const isDark = document.documentElement.classList.contains("dark")
+
+      document.querySelectorAll("[data-theme-toggle]").forEach((toggle) => {
+        if (!(toggle instanceof HTMLButtonElement)) return
+
+        toggle.setAttribute("aria-pressed", isDark ? "true" : "false")
+        toggle.setAttribute("data-state", isDark ? "on" : "off")
+
+        if (isDark) {
+          toggle.setAttribute("data-pressed", "")
+        } else {
+          toggle.removeAttribute("data-pressed")
+        }
+      })
+    }
+
+    syncThemeToggles()
+
+    const observer = new MutationObserver(syncThemeToggles)
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
+    document.addEventListener("click", (event) => {
+      const target = event.target
+
+      if (!(target instanceof Element)) return
+
+      const toggle = target.closest("[data-theme-toggle]")
+
+      if (!(toggle instanceof HTMLButtonElement)) return
+      if (toggle.disabled) return
+
+      const isDark = document.documentElement.classList.contains("dark")
+      const nextTheme = isDark ? "light" : "dark"
+
+      if (typeof window.__setTheme === "function") {
+        window.__setTheme(nextTheme)
+        return
+      }
+
+      document.documentElement.classList[
+        nextTheme === "dark" ? "add" : "remove"
+      ]("dark")
+    })
+  }
+</script> </div> </nav> </header> <div class="flex-1">  <main class="mx-auto w-full max-w-[760px] px-5 pt-16 md:px-0"> <article> <header class="mb-12"> <p class="text-muted-foreground flex items-center gap-2 text-sm"> <a href="/category/games/" class="hover:text-foreground inline-flex items-center gap-1.5 font-semibold transition-colors"> <svg class="size-4" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="6" x2="10" y1="11" y2="11" />
+  <line x1="8" x2="8" y1="9" y2="13" />
+  <line x1="15" x2="15.01" y1="12" y2="12" />
+  <line x1="18" x2="18.01" y1="10" y2="10" />
+  <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" />
+</svg> Игры </a> <span>·</span> <time datetime="2026-06-20T14:30:00.000Z">20 июня 2026 г.</time> </p> <h1 class="mt-4 text-[clamp(2.25rem,5.5vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance"> Гардарика </h1> <p class="text-muted-foreground mt-5 text-xl leading-relaxed font-medium"> Изометрическая экономическая стратегия в духе Age of Empires II: развивай древнеславянский город, добывай ресурсы, куй дружину и держи 10 волн монгольской орды. Модульный TypeScript, рендер на WebGL (PixiJS v8), 60 fps на 4K, играется и на мобиле. Вся графика нарисована Gemini. </p> <dl class="mt-7 flex flex-wrap gap-x-10 gap-y-4"> <div> <dt class="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+Модель
+</dt> <dd class="mt-1 text-[15px] font-medium">Claude Opus 4.8 + Gemini 3.1 Flash Image</dd> </div> <div> <dt class="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+Версия от
+</dt> <dd class="mt-1 text-[15px] font-medium">20 июня 2026 г.</dd> </div> <div> <dt class="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+Время разработки
+</dt> <dd class="mt-1 text-[15px] font-medium">одна сессия (~3 часа, автономно)</dd> </div> </dl> <div class="from-border mt-10 h-px w-full bg-gradient-to-r to-transparent"></div> </header> <section class="group border-border/60 relative mb-12 overflow-hidden rounded-3xl border"> <img src="/lab/gardarika/cover.jpg" alt="Гардарика" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"> <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent"></div> <div class="relative flex min-h-[300px] items-end justify-between gap-4 p-6 md:min-h-[400px] md:p-8"> <a data-slot="button" class="group/button focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 [&#38;_svg]:pointer-events-none [&#38;_svg]:shrink-0 [&#38;_svg:not([class*='size-'])]:size-4 bg-primary text-primary-foreground hover:bg-primary/80 h-10 gap-1.5 px-2.5 has-[>svg:first-child]:pl-2 has-[>svg:last-child]:pr-2 rounded-full shadow-lg" href="/lab/gardarika/" target="_blank" rel="noopener">  <svg class="size-5" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="6" x2="10" y1="11" y2="11" />
+  <line x1="8" x2="8" y1="9" y2="13" />
+  <line x1="15" x2="15.01" y1="12" y2="12" />
+  <line x1="18" x2="18.01" y1="10" y2="10" />
+  <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" />
+</svg>
+Играть
+ </a> <span class="text-sm font-medium text-white/75">откроется в новой вкладке</span> </div> </section> <div class="prose"> <p>Полноценная RTS-«песочница» о Древней Руси: ставишь ратушу, гонишь крестьян рубить лес, бить камень и мыть золото, строишь избы под население, казармы и кузницу, изучаешь улучшения — и отбиваешь десять волн орды, каждая злее предыдущей. Управление нарочно сделано в логике <strong>Age of Empires II</strong>: левая кнопка выделяет (рамкой — целый отряд), правая отдаёт умный приказ — идти, добывать, строить или атаковать, смотря на что нажал. У монголов нет базы: они просто накатывают волнами с края карты, ломают частокол и жгут город, а строить и развиваться может только игрок.</p>
+<p>Вся экономика — настоящая: ресурсные узлы истощаются, население упирается в лимит от изб (потолок — 200), а исследования меняют не только цифры, но и <strong>внешний вид</strong>. Самый заметный апгрейд — «Дружина»: ополченцы в льняных рубахах превращаются в дружинников в кольчуге, с плащом и каплевидным щитом (и заметно живучее). Башни и каменная кладка частокола тоже меняются с улучшениями. Под капотом — лёгкий A*-поиск пути (стены — настоящая преграда, орда их прогрызает), depth-сортировка изометрии, очереди найма и исследований, авто-оборона гарнизона и волновой «режиссёр» со скейлингом по HP и урону.</p>
+<p>Игра написана <strong>автономно</strong>. Под капотом — <strong>модульный TypeScript</strong> со сборкой на Vite: симуляция (экономика, A*-поиск, бой, ИИ орды, волны) разнесена по слоям <code>data/</code> (декларативные таблицы), <code>sim/</code>, <code>render/</code>, <code>input/</code>, <code>ui/</code> — вместо прежнего монолита в один файл. Рендер — <strong>WebGL через PixiJS v8</strong>: изометрия с depth-сортировкой, контактные тени под каждым юнитом и зданием, частицы (щепки, искры, дым из труб), виньетка для объёма. Персонажи <strong>анимированы процедурно</strong> — покачивание при ходьбе, замах при рубке/добыче/стройке, выпад при ударе, «дыхание» в простое; а над юнитом висит <strong>бейдж-иконка</strong> (топор, кирка, молот, мечи), чтобы было видно, чем он занят прямо сейчас. Интерфейсные иконки — из набора <strong>Lucide</strong> вместо эмодзи, плюс лёгкий звук на действия.</p>
+<p>Отдельно вылизана <strong>производительность</strong>: всё рисуется с плотностью пикселей 1 (не множим на Retina/4K), объекты за кадром отсекаются куллингом, а <strong>встроенный оверлей метрик</strong> (клавиша <strong>F3</strong> или кнопка-спидометр) показывает fps, время симуляции и рендера, число объектов в кадре. На 230 юнитах чистый JS-бюджет кадра — доли миллисекунды, так что <strong>60 fps на 4K-мониторе</strong> держатся с запасом. Игра адаптирована и под <strong>мобилки</strong>: один палец двигает карту, два — зум, тап выделяет или отдаёт приказ, а HUD и панели перестраиваются под узкий экран.</p>
+<p>Вся графика — ~20 спрайтов в едином стиле «карандашный мультик» (терема, избы, кузница, лес, дружинники, монгольская конница) и панорамная обложка — нарисована <strong>Gemini 3.1 Flash Image</strong> через скилл генерации ассетов, фон снят в прозрачность цветовым ключом. Чтобы проверять баланс и ловить баги без рук, агент гонял безголовый Chromium: делал скриншоты сцены, читал реальное состояние симуляции и замерял бюджет кадра — так нашлись, например, крестьяне, которые «не дотягивались» до ресурса по диагонали, и население, уходившее в минус.</p>
+<h2 id="как-играть">Как играть</h2>
+<ul>
+<li><strong>ЛКМ</strong> — выделить юнита/здание, <strong>перетащить</strong> — выделить отряд рамкой</li>
+<li><strong>ПКМ</strong> — приказ: идти · <strong>добывать</strong> ресурс · <strong>строить</strong>/достроить · <strong>атаковать</strong> врага</li>
+<li><strong>На телефоне</strong>: тап — выделить/приказ · один палец — двигать карту · два пальца — зум · кнопки справа — быстрый выбор войска/крестьянина/центра/паузы</li>
+<li>Выдели крестьянина → в нижней панели выбери здание → поставь на землю; крестьяне его построят</li>
+<li>Строй <strong>избы</strong> (население), <strong>казармы</strong> и <strong>кузницу</strong>, изучай улучшения, ставь <strong>башни</strong> и <strong>частокол</strong></li>
+<li>Камера: <strong>WASD</strong>/стрелки/край экрана · <strong>колесо</strong> — зум · <strong>пробел</strong> — пауза · <strong>Delete</strong> — снести здание · <strong>F3</strong> — метрики</li>
+<li>Цель: пережить <strong>10 волн</strong>. Между волнами — передышка на отстройку обороны</li>
+</ul> </div> <p class="mt-14"> <a href="/posts/" class="text-primary text-sm font-medium hover:underline">← Все записи</a> </p> </article> </main>  </div> <footer class="border-border/60 mt-16 border-t"> <div class="text-muted-foreground mx-auto flex w-full max-w-[1920px] flex-col items-center justify-between gap-2 px-5 py-8 text-[13px] sm:flex-row md:px-10 2xl:px-16"> <p>© 2026 neuro-slop.ru</p> <p>Сделано вместе с нейросетями</p> </div> </footer> </body> </html>
