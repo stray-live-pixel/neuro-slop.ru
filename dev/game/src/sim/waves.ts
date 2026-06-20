@@ -24,7 +24,7 @@ export function updateWaves(dt: number) {
       refund(comp.reward, 1);
       toast('Волна ' + w.index + ' отражена! Награда: +' + comp.reward.gold + ' золота', 2.5);
       if (w.index >= TOTAL_WAVES) { endGame(true); return; }
-      w.state = 'prep'; w.timer = 55; w.announced = false;
+      w.state = 'prep'; w.timer = 165; w.announced = false;
     }
   }
 }

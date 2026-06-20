@@ -8,7 +8,7 @@ import { unitStat } from '../../sim/economy';
 import { unitAction, badgeFor } from '../../sim/units';
 import { spawnWorkParticle } from '../../sim/effects';
 import { R } from '../context';
-import { drawBarG } from '../draw';
+import { drawBarG, drawGroundShadow } from '../draw';
 import type { Unit } from '../../core/types';
 
 interface BadgeContainer extends Container { bg: Graphics; ic: Sprite; }
@@ -40,7 +40,7 @@ export function updateUnitView(c: UnitView, u: Unit, dt: number) {
     c.curImg = st.img; c.sp.texture = t;
     const bodyH = TILE.h * (u.def.img === 'mongol-rider' ? 2.0 : 1.62);
     c.baseScale = bodyH / (t.height || bodyH); c.texW = t.width || 40; c.spriteH = c.baseScale * (t.height || 40);
-    c.sh.clear().ellipse(0, FEET, c.baseScale * c.texW * 0.3, TILE.h * 0.15).fill({ color: 0x2a2418, alpha: 0.22 });
+    c.sh.clear(); drawGroundShadow(c.sh, 0, FEET, c.baseScale * c.texW * 0.23, TILE.h * 0.12, 0.36);
   }
   const p = iso(u.gx, u.gy); c.position.set(p.x, p.y); c.zIndex = u.gx + u.gy + 0.4;
   const tm = G.time, facing = u.vx < 0 ? -1 : 1;

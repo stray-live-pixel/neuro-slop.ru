@@ -6,7 +6,7 @@ import { TILE } from '../../data/config';
 import { BUILDINGS } from '../../data/buildings';
 import { spawnSmoke } from '../../sim/effects';
 import { R } from '../context';
-import { drawBarG, drawDiamondSel } from '../draw';
+import { drawBarG, drawDiamondSel, drawFootprintShade } from '../draw';
 import type { Building } from '../../core/types';
 
 export interface BuildingView extends Container {
@@ -21,7 +21,7 @@ export function makeBuildingView(b: Building): BuildingView {
   const sp = c.addChild(new Sprite(t)); sp.anchor.set(0.5, 1);
   const w = TILE.w * b.size * 1.04; const sc = w / (t.width || w); sp.scale.set(sc);
   sp.y = TILE.h / 2 * b.size * 0.5; c.sp = sp; c.baseSy = sc; c.spriteH = sc * (t.height || 60);
-  c.sh.ellipse(0, sp.y - 4, w * 0.32, TILE.h * b.size * 0.3).fill({ color: 0x2a2418, alpha: 0.22 });
+  drawFootprintShade(c.sh, b);
   c.bar = c.addChild(new Graphics());
   c.sel = c.addChild(new Graphics());
   c.smokeT = 0; c.popped = false; c._pop = 0;
