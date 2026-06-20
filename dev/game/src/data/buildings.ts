@@ -56,7 +56,7 @@ export const BUILDINGS: Record<string, BuildingDef> = {
     desc: 'Большая башня 2×2. Сама стреляет по врагам в радиусе — втрое сильнее. Каменная защита.',
   },
   wall: {
-    name: 'Частокол', img: 'wall', size: 1, hp: 1000, build: 6,
+    name: 'Частокол', img: 'wall-post', size: 1, hp: 1000, build: 6,
     cost: { stone: 20 }, wall: true,
     desc: 'Преграда. Орда ломает стены, чтобы прорваться.',
   },

@@ -10,7 +10,10 @@ export { DIRS };
 // cornerCut: разрешить диагональ между двумя занятыми углами (юниты игрока пролезают
 // в щели между зданиями). По умолчанию выключено — враги не срезают углы у стен/домов.
 export function findPath(sx: number, sy: number, tx: number, ty: number, allowGoalSolid: boolean, cornerCut = false): PathPt[] | null {
-  sx |= 0; sy |= 0; tx |= 0; ty |= 0;
+  // координаты приходят дробными (позиция юнита, точка клика) — берём БЛИЖАЙШИЙ тайл, как
+  // ghost-превью и pickTile (Math.round). Раньше тут было |0 (обрезание вниз): при клике в
+  // верхнюю половину ромба цель уезжала на клетку вверх-влево — флажок вставал не туда.
+  sx = Math.round(sx); sy = Math.round(sy); tx = Math.round(tx); ty = Math.round(ty);
   if (!inBounds(tx, ty)) return null;
   if (sx === tx && sy === ty) return [{ x: tx, y: ty }];
   const key = (x: number, y: number) => y * MAP.W + x;

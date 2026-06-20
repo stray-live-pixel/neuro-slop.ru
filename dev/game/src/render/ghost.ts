@@ -30,8 +30,9 @@ export function updateGhost() {
     const aff = canAfford(d.cost);
     for (const c of cells) { const w = iso(c.x, c.y); tileDiamond(g, ctr.x, ctr.y, w.x, w.y, canPlace(c.x, c.y, 1) && aff); }
     const sp = gc.sp; const tx = R.tex[d.img];
-    if (sp.texture !== tx) { sp.texture = tx; const w = TILE.w * 1.04; sp.scale.set(w / (tx.width || w)); }
-    sp.y = TILE.h / 2 * 0.5 + (R.pad[d.img] || 0) * sp.scale.y * (tx.height || 0);
+    if (sp.texture !== tx) sp.texture = tx;
+    const sc = (TILE.h * 1.46) / (tx.height || TILE.h);   // частокол — кол по высоте, не во всю клетку
+    sp.scale.set(sc); sp.y = TILE.h * 0.22;
     sp.tint = 0xffffff;
     return;
   }
@@ -42,8 +43,13 @@ export function updateGhost() {
     const w = iso(x, y); tileDiamond(g, ctr.x, ctr.y, w.x, w.y, ok);
   }
   const sp = gc.sp; const tx = R.tex[d.img];
-  if (sp.texture !== tx) { sp.texture = tx; const w = TILE.w * s * 1.04; sp.scale.set(w / (tx.width || w)); }
-  // тот же сдвиг на пустое поле снизу PNG, что и у поставленного здания — превью совпадает
-  sp.y = TILE.h / 2 * s * 0.5 + (R.pad[d.img] || 0) * sp.scale.y * (tx.height || 0);
+  if (d.wall) {
+    if (sp.texture !== tx) sp.texture = tx;
+    sp.scale.set((TILE.h * 1.46) / (tx.height || TILE.h)); sp.y = TILE.h * 0.22;
+  } else {
+    if (sp.texture !== tx) { sp.texture = tx; const w = TILE.w * s * 1.04; sp.scale.set(w / (tx.width || w)); }
+    // тот же сдвиг на пустое поле снизу PNG, что и у поставленного здания — превью совпадает
+    sp.y = TILE.h / 2 * s * 0.5 + (R.pad[d.img] || 0) * sp.scale.y * (tx.height || 0);
+  }
   sp.tint = ok ? 0xffffff : 0xff8888;
 }

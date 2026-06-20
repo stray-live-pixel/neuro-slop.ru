@@ -5,6 +5,7 @@ import { g2s } from '../core/iso';
 import { R } from './context';
 import { makeNodeView, updateNodeView } from './views/node';
 import { makeBuildingView, updateBuildingView } from './views/building';
+import { makeWallView, updateWallView } from './views/wall';
 import { makeUnitView, updateUnitView } from './views/unit';
 import { makeDecorView } from './views/decor';
 import { drawFx } from './fx';
@@ -49,7 +50,11 @@ export function syncScene(dt: number) {
   for (const [d, v] of decorReg) if (!liveDecor.has(d)) { v.destroy({ children: true }); decorReg.delete(d); }
 
   for (const n of G.nodes) { live.add(n); const v = ensureView(n, makeNodeView); updateNodeView(v, n); total++; if (cull(n.gx, n.gy, v, VW, VH, M)) vis++; }
-  for (const b of G.buildings) { live.add(b); const v = ensureView(b, makeBuildingView); updateBuildingView(v, b, dt); total++; if (cull(b.cx, b.cy, v, VW, VH, M)) vis++; }
+  for (const b of G.buildings) {
+    live.add(b);
+    if (b.def.wall) { const v = ensureView(b, makeWallView); updateWallView(v, b, dt); total++; if (cull(b.cx, b.cy, v, VW, VH, M)) vis++; }
+    else { const v = ensureView(b, makeBuildingView); updateBuildingView(v, b, dt); total++; if (cull(b.cx, b.cy, v, VW, VH, M)) vis++; }
+  }
   for (const u of G.units) { live.add(u); const v = ensureView(u, makeUnitView); updateUnitView(v, u, dt); total++; if (cull(u.gx, u.gy, v, VW, VH, M)) vis++; }
 
   for (const [ent, v] of viewReg) if (!live.has(ent)) { v.destroy({ children: true }); viewReg.delete(ent); }

@@ -3,6 +3,7 @@ import { G } from '../core/state';
 import { g2s, inBounds } from '../core/iso';
 import { MAP } from '../data/config';
 import { makeGrid } from '../core/grid';
+import { rng, pick } from '../core/rng';
 import { placeBuilding, spawnUnit, addNode, recalcPop } from './entities';
 import { gatherOrder, nearestNode } from './commands';
 
@@ -10,8 +11,8 @@ function blob(cx: number, cy: number, kind: string, count: number, spread: numbe
   let placed = 0, tries = 0;
   while (placed < count && tries < count * 12) {
     tries++;
-    const x = Math.round(cx + (Math.random() - 0.5) * spread);
-    const y = Math.round(cy + (Math.random() - 0.5) * spread);
+    const x = Math.round(cx + (rng() - 0.5) * spread);
+    const y = Math.round(cy + (rng() - 0.5) * spread);
     if (inBounds(x, y) && !G.solid[y][x]) { addNode(kind, x, y); placed++; }
   }
 }
@@ -43,11 +44,11 @@ export function genMap() {
   // декор для оживления карты — кусты, цветы, брёвна, стога, пни (не блокируют)
   const DECOR = ['bush', 'bush', 'bush', 'flowers', 'flowers', 'flowers', 'flowers', 'stump', 'log', 'haystack'];
   for (let i = 0; i < 85; i++) {
-    const x = 1 + ((Math.random() * (MAP.W - 2)) | 0), y = 1 + ((Math.random() * (MAP.H - 2)) | 0);
+    const x = 1 + ((rng() * (MAP.W - 2)) | 0), y = 1 + ((rng() * (MAP.H - 2)) | 0);
     if (G.solid[y][x]) continue;                                   // не на узлах/зданиях
     if (Math.abs(x - mx) < 3 && Math.abs(y - my) < 3) continue;    // не впритык к ратуше
-    const img = DECOR[(Math.random() * DECOR.length) | 0];
-    G.decor.push({ img, gx: x + (Math.random() - 0.5) * 0.5, gy: y + (Math.random() - 0.5) * 0.5 });
+    const img = pick(DECOR);
+    G.decor.push({ img, gx: x + (rng() - 0.5) * 0.5, gy: y + (rng() - 0.5) * 0.5 });
   }
   // авто-задание стартовым крестьянам: показать, как идёт добыча
   starters.forEach((u, i) => { const kind = i < 3 ? 'forest' : 'berries'; const n = nearestNode(u, kind) || nearestNode(u); if (n) gatherOrder(u, n); });

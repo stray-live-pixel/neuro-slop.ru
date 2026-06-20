@@ -1,6 +1,7 @@
 // Точка входа: загрузка, главный цикл (фиксированный timestep), старт игры.
 import './style.css';
 import { G, mouse } from './core/state';
+import { seedRng } from './core/rng';
 import { MAP } from './data/config';
 import { TECHS } from './data/techs';
 import { update } from './sim/update';
@@ -69,6 +70,13 @@ function loop(ts: number) {
 /* ------------------------------ старт игры -------------------------------- */
 function startGame() {
   document.getElementById('start')!.classList.add('hidden');
+  // сид партии: из ?seed=N в URL (воспроизвести конкретную игру) или случайный.
+  // Сид определяет карту, ресурсы и волны — сидим ДО genMap(). Печатаем, чтобы можно
+  // было повторить ту же партию: открой ту же ссылку с ?seed=<это число>.
+  const sParam = new URLSearchParams(location.search).get('seed');
+  const seed = sParam !== null ? (parseInt(sParam, 10) >>> 0) : ((Math.random() * 0x100000000) >>> 0);
+  seedRng(seed);
+  console.log('%c[Гардарика] сид игры: ' + seed + ' — повторить: ?seed=' + seed, 'color:#0894ff');
   genMap(); buildGround();
   fillHudIcons(); renderPanel(); updateHUD();
   toast('Добро пожаловать в Гардарику! Развивай город и держи 10 волн.', 3.5);

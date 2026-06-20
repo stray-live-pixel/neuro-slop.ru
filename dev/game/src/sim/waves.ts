@@ -1,6 +1,7 @@
 // Волновой «режиссёр»: подготовка, запуск и подсчёт волн орды.
 import { G } from '../core/state';
 import { clamp } from '../core/iso';
+import { rng, rndInt } from '../core/rng';
 import { MAP, TOTAL_WAVES } from '../data/config';
 import { UNITS } from '../data/units';
 import { waveComposition } from '../data/waves';
@@ -25,7 +26,7 @@ export function updateWaves(dt: number) {
       toast('Волна ' + w.index + ' отражена! Награда: +' + comp.reward.gold + ' золота', 2.5);
       if (w.index >= TOTAL_WAVES) { endGame(true); return; }
       w.state = 'prep'; w.timer = 165; w.announced = false;
-      w.side = Math.floor(Math.random() * 4);   // сторона захода решается заранее — для превью
+      w.side = rndInt(4);   // сторона захода решается заранее — для превью
     }
   }
 }
@@ -46,14 +47,14 @@ export function startWave() {
   const side = w.side;
   comp.list.forEach((type) => {
     let x: number, y: number;
-    const t = Math.floor(Math.random() * Math.max(MAP.W, MAP.H));
+    const t = rndInt(Math.max(MAP.W, MAP.H));
     if (side === 0) { x = clamp(t, 1, MAP.W - 2); y = 1; }
     else if (side === 1) { x = MAP.W - 2; y = clamp(t, 1, MAP.H - 2); }
     else if (side === 2) { x = clamp(t, 1, MAP.W - 2); y = MAP.H - 2; }
     else { x = 1; y = clamp(t, 1, MAP.H - 2); }
     for (let r = 0; r < 30 && G.solid[y][x]; r++) {
-      x = clamp(x + (Math.random() < .5 ? 1 : -1), 1, MAP.W - 2);
-      y = clamp(y + (Math.random() < .5 ? 1 : -1), 1, MAP.H - 2);
+      x = clamp(x + (rng() < .5 ? 1 : -1), 1, MAP.W - 2);
+      y = clamp(y + (rng() < .5 ? 1 : -1), 1, MAP.H - 2);
     }
     const u = spawnUnit(type, x, y, 'enemy');
     u.maxhp = Math.round(u.maxhp * comp.hpScale); u.hp = u.maxhp;

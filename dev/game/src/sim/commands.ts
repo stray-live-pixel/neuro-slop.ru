@@ -21,9 +21,12 @@ import type { Building, Entity, Order, ResourceNode, Unit } from '../core/types'
 function hasOrders(u: Unit): boolean { return !!u.order || u.queue.length > 0; }
 
 function beginMove(u: Unit, gx: number, gy: number) {
-  const p = findPath(u.gx, u.gy, gx, gy, false, true) || pathToNearTile(u.gx, u.gy, gx, gy, true);
-  u.order = { type: 'move', gx: gx | 0, gy: gy | 0 }; u.path = p; u.wp = 0;
-  u.guard = { x: gx | 0, y: gy | 0 };
+  // клик приходит дробным — снимаем на ближайший тайл (Math.round), как ghost/pickTile.
+  // |0 (обрезание вниз) уводило цель на клетку вверх при клике в верхнюю половину ромба.
+  const tx = Math.round(gx), ty = Math.round(gy);
+  const p = findPath(u.gx, u.gy, tx, ty, false, true) || pathToNearTile(u.gx, u.gy, tx, ty, true);
+  u.order = { type: 'move', gx: tx, gy: ty }; u.path = p; u.wp = 0;
+  u.guard = { x: tx, y: ty };
 }
 function beginGather(u: Unit, node: ResourceNode) {
   u.order = { type: 'gather', target: node };
@@ -44,7 +47,7 @@ function beginAttack(u: Unit, t: Entity, forced?: boolean) {
 }
 
 export function moveOrder(u: Unit, gx: number, gy: number, queue = false) {
-  if (queue && hasOrders(u)) { u.queue.push({ type: 'move', gx: gx | 0, gy: gy | 0 }); return; }
+  if (queue && hasOrders(u)) { u.queue.push({ type: 'move', gx: Math.round(gx), gy: Math.round(gy) }); return; }
   u.queue = []; beginMove(u, gx, gy);
 }
 export function gatherOrder(u: Unit, node: ResourceNode, queue = false) {

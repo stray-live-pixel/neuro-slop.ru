@@ -30,7 +30,7 @@ function measureBottomPad(tex: Texture): number {
   } catch { return 0; }
 }
 
-const ASSET_LIST = ['townhall', 'house', 'granary', 'field', 'lumbermill', 'mine', 'barracks', 'blacksmith', 'tower', 'wall',
+const ASSET_LIST = ['townhall', 'house', 'granary', 'field', 'lumbermill', 'mine', 'barracks', 'blacksmith', 'tower', 'wall-post',
   'tree', 'tree-oak', 'tree-pine', 'tree-autumn', 'rocks', 'gold', 'berries', 'peasant', 'militia', 'druzhina', 'archer', 'mongol', 'mongol-rider',
   'bush', 'flowers', 'log', 'haystack', 'stump'];
 

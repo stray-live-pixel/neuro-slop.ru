@@ -1,6 +1,7 @@
 // Глобальное изменяемое состояние игры — единственный экземпляр на всю сессию.
 import type { GameState, Mouse } from './types';
 import { START_RES } from '../data/config';
+import { rndInt } from './rng';
 
 function createState(): GameState {
   return {
@@ -15,7 +16,7 @@ function createState(): GameState {
     cam: { x: 0, y: 0, zoom: 1 },
     solid: [], tileObj: [],
     groups: {},
-    wave: { index: 0, state: 'prep', timer: 270, alive: 0, announced: false, side: Math.floor(Math.random() * 4) },
+    wave: { index: 0, state: 'prep', timer: 270, alive: 0, announced: false, side: rndInt(4) },
     time: 0, paused: false, speed: 1, over: null,
     place: null,
     uid: 1,

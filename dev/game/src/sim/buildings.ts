@@ -47,7 +47,7 @@ export function spawnFromBuilding(b: Building, type: string) {
   for (let r = 0; r < 6 && (!inBounds(sx, sy) || G.solid[sy][sx]); r++) { sx = b.ox + (r % b.size); sy = b.oy + b.size + ((r / b.size) | 0); }
   const u = spawnUnit(type, clamp(sx, 0, MAP.W - 1), clamp(sy, 0, MAP.H - 1), 'player');
   const r = b.rally;
-  if (r) { if (r.node && r.node.amount > 0 && type === 'peasant') gatherOrder(u, r.node); else moveOrder(u, r.x | 0, r.y | 0); }
+  if (r) { if (r.node && r.node.amount > 0 && type === 'peasant') gatherOrder(u, r.node); else moveOrder(u, r.x, r.y); }
   else if (type === 'peasant') { const n = nearestNode(u); if (n) gatherOrder(u, n); }
 }
 
