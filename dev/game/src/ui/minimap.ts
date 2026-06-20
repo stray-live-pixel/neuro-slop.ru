@@ -57,6 +57,7 @@ const EDGES: [[number, number], [number, number]][] = [
 export function drawMinimap() {
   if (!ctx) return;
   ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#cdbfa3'; ctx.fillRect(0, 0, W, H);   // бежевый фон по краям (как основной цвет игры)
 
   // подложка-ромб самой карты
   const dia = [toMini(0, 0), toMini(MAP.W, 0), toMini(MAP.W, MAP.H), toMini(0, MAP.H)];

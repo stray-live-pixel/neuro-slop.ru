@@ -14,8 +14,11 @@ export function makeNodeView(n: ResourceNode): NodeView {
   drawTileShade(c.sh, TILE.w * 0.46, TILE.h * 0.46);
   const t = R.tex[n.img];
   const sp = c.addChild(new Sprite(t)); sp.anchor.set(0.5, 1);
-  sp.y = TILE.h * 0.2;                              // опускаем основание к земле (ствол/руда стоят на тайле)
-  const w = TILE.w * 1.12; sp.scale.set(w / (t.width || w)); c.sp = sp;
+  const isTree = n.img === 'tree';
+  const isOre = n.img === 'rocks' || n.img === 'gold';
+  sp.y = TILE.h * (isOre ? 0.4 : 0.2);             // руду опускаем ещё ниже — сидит на земле
+  const w = TILE.w * 1.12 * (isTree ? 2 : 1);      // деревья крупнее ×2
+  sp.scale.set(w / (t.width || w)); c.sp = sp;
   return c;
 }
 
