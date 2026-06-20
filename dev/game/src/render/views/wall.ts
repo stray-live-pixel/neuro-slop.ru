@@ -14,7 +14,7 @@ import type { Building } from '../../core/types';
 
 export interface WallView extends Container {
   sh: Graphics; posts: Container; bar: Graphics; sel: Graphics;
-  imgKey: string; mask: number; stoneTint: number; spriteH: number;
+  imgKey: string; wallMask: number; stoneTint: number; spriteH: number;
   popped: boolean; _pop: number;
 }
 
@@ -34,6 +34,7 @@ const DIRS = [
 
 const STAKE_H = TILE.h * 1.5;   // высота кола ≈ полтора тайла — стена выше земли
 const POST_GAP = 12;            // шаг кольев вдоль пролёта (px) — для плотной сплошной стены
+const SINGLE_RING_RADIUS = 0.5; // одиночный ромб: те же колья, но примерно на 50% ближе к центру
 
 function isWall(x: number, y: number): boolean {
   if (!inBounds(x, y)) return false;
@@ -69,14 +70,18 @@ function addSpan(c: WallView, mx: number, my: number): void {
   for (let i = 1; i <= n; i++) addStake(c, (mx * i) / n, (my * i) / n);
 }
 
+function addSingleRing(c: WallView): void {
+  for (const d of DIRS) addStake(c, d.mx * SINGLE_RING_RADIUS, d.my * SINGLE_RING_RADIUS);
+}
+
 // Пересобрать колья под текущую маску соседей.
 function rebuild(c: WallView): void {
   c.posts.removeChildren().forEach(s => s.destroy());
   c.posts.sortableChildren = true;
-  const m = c.mask;
+  const m = c.wallMask;
 
   if (m === 0) {                               // одиночный блок — замкнутый частокол по контуру ромба
-    for (const d of DIRS) addStake(c, d.mx, d.my);   // 8 кольев: углы + середины граней
+    addSingleRing(c);                                // 8 кольев, как раньше, но ближе к центру
     addStake(c, 0, 0, 1.06);                         // столб в центре
     c.spriteH = STAKE_H * 1.06;
     return;
@@ -99,7 +104,7 @@ export function makeWallView(b: Building): WallView {
   c.posts = c.addChild(new Container());
   c.bar = c.addChild(new Graphics());
   c.sel = c.addChild(new Graphics());
-  c.mask = -1; c.stoneTint = 0xffffff; c.spriteH = STAKE_H;
+  c.wallMask = -1; c.stoneTint = 0xffffff; c.spriteH = STAKE_H;
   c.popped = false; c._pop = 0;
   drawFootprintShade(c.sh, b);
   return c;
@@ -111,7 +116,7 @@ export function updateWallView(c: WallView, b: Building, dt: number) {
 
   const stone = (b.key === 'wall' && G.up.stonewall) ? 0xC2C7CC : 0xffffff;
   const m = neighborMask(b);
-  if (m !== c.mask || stone !== c.stoneTint) { c.mask = m; c.stoneTint = stone; rebuild(c); }
+  if (m !== c.wallMask || stone !== c.stoneTint) { c.wallMask = m; c.stoneTint = stone; rebuild(c); }
 
   // Достройка: ровная «призрачная» полупрозрачность — одинаковая у всех недостроенных,
   // поэтому ряд не выглядит пятнистым и «разноцветным». Готовый частокол — плотный.
