@@ -8,30 +8,45 @@ import type { Building } from '../core/types';
 
 interface Pt { x: number; y: number; }
 
-// Пунктир «бегущая дорожка» вдоль ломаной (мировые координаты). Фаза сдвигается со
-// временем, штрихи плывут к назначению. Копит штрихи в текущий путь Graphics — стробится
-// одним вызовом stroke() снаружи.
-function dashedPolyline(g: Graphics, pts: Pt[], dash: number, gap: number, phase: number) {
+const DASH_EPS = 1e-4;
+
+export function dashedPolylineSegments(pts: Pt[], dash: number, gap: number, phase: number): [Pt, Pt][] {
+  const out: [Pt, Pt][] = [];
   const period = dash + gap;
+  if (!Number.isFinite(period) || period <= 0 || dash <= 0) return out;
+
   let d0 = 0;                                          // дистанция от начала ломаной до точки a
   for (let i = 0; i < pts.length - 1; i++) {
     const a = pts[i], b = pts[i + 1];
     const L = Math.hypot(b.x - a.x, b.y - a.y);
-    if (L < 1e-3) continue;
+    if (!Number.isFinite(L) || L < 1e-3) continue;
     const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L;
     let d = d0; const end = d0 + L;
-    while (d < end - 1e-6) {
+    let guard = 0;
+    while (d < end - 1e-6 && guard++ < 10000) {
       const m = (((d - phase) % period) + period) % period;   // позиция внутри периода
       const on = m < dash;
-      const segEnd = Math.min(end, d + (on ? dash - m : period - m));
+      const advance = on ? dash - m : period - m;
+      if (advance <= DASH_EPS) { d = Math.min(end, d + DASH_EPS); continue; }
+      const segEnd = Math.min(end, d + advance);
       if (on) {
-        g.moveTo(a.x + ux * (d - d0), a.y + uy * (d - d0))
-         .lineTo(a.x + ux * (segEnd - d0), a.y + uy * (segEnd - d0));
+        out.push([
+          { x: a.x + ux * (d - d0), y: a.y + uy * (d - d0) },
+          { x: a.x + ux * (segEnd - d0), y: a.y + uy * (segEnd - d0) },
+        ]);
       }
       d = segEnd;
     }
     d0 = end;
   }
+  return out;
+}
+
+// Пунктир «бегущая дорожка» вдоль ломаной (мировые координаты). Фаза сдвигается со
+// временем, штрихи плывут к назначению. Копит штрихи в текущий путь Graphics — стробится
+// одним вызовом stroke() снаружи.
+function dashedPolyline(g: Graphics, pts: Pt[], dash: number, gap: number, phase: number) {
+  for (const [a, b] of dashedPolylineSegments(pts, dash, gap, phase)) g.moveTo(a.x, a.y).lineTo(b.x, b.y);
 }
 
 export function drawFx(dt: number) {
