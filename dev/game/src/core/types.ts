@@ -147,6 +147,9 @@ export interface ResourceNode {
 export type Entity = Unit | Building | ResourceNode;
 export type Selectable = Unit | Building | ResourceNode;
 
+// Декор карты — чисто визуальные объекты, не блокируют и не выбираются.
+export interface Decor { img: string; gx: number; gy: number; view?: import('pixi.js').Container; }
+
 export interface Projectile {
   x: number;
   y: number;
@@ -194,6 +197,7 @@ export interface GameState {
   units: Unit[];
   buildings: Building[];
   nodes: ResourceNode[];
+  decor: Decor[];                     // неинтерактивный декор (кусты, цветы, брёвна…)
   projectiles: Projectile[];
   fx: Fx[];
   particles: Particle[];

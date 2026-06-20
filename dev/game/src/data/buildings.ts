@@ -20,7 +20,7 @@ export const BUILDINGS: Record<string, BuildingDef> = {
     desc: '+10 к лимиту населения.',
   },
   farm: {
-    name: 'Поле', img: 'granary', size: 2, hp: 200, build: 14,
+    name: 'Поле', img: 'field', size: 2, hp: 200, build: 14,
     cost: { wood: 60 }, farm: true,
     desc: 'Возобновляемый источник еды — крестьяне жнут бесконечно.',
   },
@@ -50,10 +50,10 @@ export const BUILDINGS: Record<string, BuildingDef> = {
     desc: 'Изучает воинские улучшения: оружие, броню, дружину.',
   },
   tower: {
-    name: 'Башня', img: 'tower', size: 1, hp: 1400, build: 20,
-    cost: { wood: 50, stone: 125 },
-    attack: { dmg: 9, range: 6.5, rate: 1.1, projectile: true }, sight: 8,
-    desc: 'Сама стреляет по врагам в радиусе. Каменная защита.',
+    name: 'Башня', img: 'tower', size: 2, hp: 2200, build: 26,
+    cost: { wood: 90, stone: 220 },
+    attack: { dmg: 27, range: 7, rate: 1.1, projectile: true }, sight: 9,
+    desc: 'Большая башня 2×2. Сама стреляет по врагам в радиусе — втрое сильнее. Каменная защита.',
   },
   wall: {
     name: 'Частокол', img: 'wall', size: 1, hp: 1000, build: 6,

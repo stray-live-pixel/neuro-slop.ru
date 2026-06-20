@@ -18,10 +18,12 @@ export function makeBuildingView(b: Building): BuildingView {
   const def = BUILDINGS[b.key]; const c = new Container() as BuildingView;
   c.sh = c.addChild(new Graphics());
   const t = R.tex[def.img];
-  const sp = c.addChild(new Sprite(t)); sp.anchor.set(0.5, 1);
-  const w = TILE.w * b.size * 1.04; const sc = w / (t.width || w); sp.scale.set(sc);
-  sp.y = TILE.h / 2 * b.size * 0.5; c.sp = sp; c.baseSy = sc; c.spriteH = sc * (t.height || 60);
-  drawFootprintShade(c.sh, b);
+  const flat = !!def.farm;                          // поле — плоский плот, лежит на земле
+  const sp = c.addChild(new Sprite(t)); sp.anchor.set(0.5, flat ? 0.5 : 1);
+  const w = TILE.w * b.size * (flat ? 1.16 : 1.04); const sc = w / (t.width || w); sp.scale.set(sc);
+  sp.y = flat ? TILE.h * b.size * 0.22 : TILE.h / 2 * b.size * 0.5;
+  c.sp = sp; c.baseSy = sc; c.spriteH = sc * (t.height || 60);
+  if (!flat) drawFootprintShade(c.sh, b);
   c.bar = c.addChild(new Graphics());
   c.sel = c.addChild(new Graphics());
   c.smokeT = 0; c.popped = false; c._pop = 0;

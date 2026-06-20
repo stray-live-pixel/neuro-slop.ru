@@ -4,8 +4,9 @@ import { assetUrl } from '../data/config';
 import { iconSVG } from '../ui/icons';
 import { R } from './context';
 
-const ASSET_LIST = ['townhall', 'house', 'granary', 'lumbermill', 'mine', 'barracks', 'blacksmith', 'tower', 'wall',
-  'tree', 'rocks', 'gold', 'berries', 'peasant', 'militia', 'druzhina', 'archer', 'mongol', 'mongol-rider'];
+const ASSET_LIST = ['townhall', 'house', 'granary', 'field', 'lumbermill', 'mine', 'barracks', 'blacksmith', 'tower', 'wall',
+  'tree', 'tree-oak', 'tree-pine', 'tree-autumn', 'rocks', 'gold', 'berries', 'peasant', 'militia', 'druzhina', 'archer', 'mongol', 'mongol-rider',
+  'bush', 'flowers', 'log', 'haystack', 'stump'];
 
 // бейджи действий над юнитом — иконки lucide как текстуры
 const BADGE_LIST = ['axe', 'pickaxe', 'food', 'hammer', 'swords'];

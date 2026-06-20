@@ -40,6 +40,15 @@ export function genMap() {
   blob(4, 4, 'forest', 16, 5); blob(MAP.W - 5, MAP.H - 5, 'forest', 16, 5);
   blob(MAP.W - 6, 6, 'rocks', 10, 4); blob(6, MAP.H - 6, 'goldore', 8, 3);
   recalcPop();
+  // декор для оживления карты — кусты, цветы, брёвна, стога, пни (не блокируют)
+  const DECOR = ['bush', 'bush', 'bush', 'flowers', 'flowers', 'flowers', 'flowers', 'stump', 'log', 'haystack'];
+  for (let i = 0; i < 85; i++) {
+    const x = 1 + ((Math.random() * (MAP.W - 2)) | 0), y = 1 + ((Math.random() * (MAP.H - 2)) | 0);
+    if (G.solid[y][x]) continue;                                   // не на узлах/зданиях
+    if (Math.abs(x - mx) < 3 && Math.abs(y - my) < 3) continue;    // не впритык к ратуше
+    const img = DECOR[(Math.random() * DECOR.length) | 0];
+    G.decor.push({ img, gx: x + (Math.random() - 0.5) * 0.5, gy: y + (Math.random() - 0.5) * 0.5 });
+  }
   // авто-задание стартовым крестьянам: показать, как идёт добыча
   starters.forEach((u, i) => { const kind = i < 3 ? 'forest' : 'berries'; const n = nearestNode(u, kind) || nearestNode(u); if (n) gatherOrder(u, n); });
   centerOn(mx, my);

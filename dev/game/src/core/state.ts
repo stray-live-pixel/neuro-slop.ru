@@ -9,7 +9,7 @@ function createState(): GameState {
     mult: { all: 0, food: 0, wood: 0, stone: 0, gold: 0 },
     up: { meleeDmg: 0, armor: 0, archerDmg: 0, archerRange: 0, towerDmg: 0, towerRange: 0, druzhina: false, stonewall: false },
     researched: new Set<string>(),
-    units: [], buildings: [], nodes: [], projectiles: [], fx: [], particles: [],
+    units: [], buildings: [], nodes: [], decor: [], projectiles: [], fx: [], particles: [],
     selection: [],
     cam: { x: 0, y: 0, zoom: 1 },
     solid: [], tileObj: [],

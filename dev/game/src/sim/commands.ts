@@ -23,6 +23,11 @@ export function buildOrder(u: Unit, b: Building) {
   u.order = { type: 'build', target: b };
   u.path = pathToNear(u.gx, u.gy, b); u.wp = 0;
 }
+// крестьянин жнёт поле (farm-здание) — бесконечный источник еды
+export function farmOrder(u: Unit, b: Building) {
+  u.order = { type: 'gather', target: b };
+  u.path = pathToNear(u.gx, u.gy, b); u.wp = 0;
+}
 export function attackOrder(u: Unit, t: Entity, forced?: boolean) {
   u.order = { type: 'attack', target: t, forced: !!forced };
   u.path = pathToNear(u.gx, u.gy, t); u.wp = 0;
@@ -76,6 +81,7 @@ export function commandSelection(wx: number, wy: number) {
     flash(tile.gx, tile.gy, '#7ec85a');
   } else if (tile && tile.kind === 'building' && (tile as any).side === undefined && BUILDINGS[tile.key]) {
     if (tile.progress < 1) players.forEach(u => u.type === 'peasant' ? buildOrder(u, tile) : moveOrder(u, tile.cx, tile.cy));
+    else if (tile.def.farm) players.forEach(u => u.type === 'peasant' ? farmOrder(u, tile) : moveOrder(u, tile.cx, tile.cy));
     else players.forEach(u => moveOrder(u, tile.cx, tile.cy));
     flash(tile.cx, tile.cy, '#cfa14a');
   } else {

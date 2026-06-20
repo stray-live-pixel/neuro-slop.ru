@@ -30,6 +30,8 @@ export function placeBuilding(key: string, ox: number, oy: number, built: boolea
     queue: [], cd: 0, rally: null, anim: 0,
   };
   markTiles(b, ox, oy, d.size, true);
+  // убрать декор под застройкой
+  if (G.decor.length) G.decor = G.decor.filter(dec => { const tx = dec.gx | 0, ty = dec.gy | 0; return !(tx >= ox && tx < ox + d.size && ty >= oy && ty < oy + d.size); });
   G.buildings.push(b);
   if (d.provides && d.provides.pop) recalcPop();
   return b;

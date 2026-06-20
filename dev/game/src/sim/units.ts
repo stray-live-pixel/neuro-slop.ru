@@ -5,7 +5,7 @@ import { REACH } from '../data/config';
 import { unitStat, gatherMult } from './economy';
 import { removeNode } from './entities';
 import { acquireEnemy, doAttack, attackReach, unitTargetDist } from './combat';
-import { attackOrder, moveOrder, returnToGuard, faceTo, gatherOrder, nearestNode } from './commands';
+import { attackOrder, moveOrder, returnToGuard, faceTo, gatherOrder, farmOrder, nearestNode } from './commands';
 import { pathToNear } from './pathfind';
 import { onBuildComplete } from './buildings';
 import { recalcPop } from './entities';
@@ -46,6 +46,15 @@ export function updateUnit(u: Unit, dt: number) {
 
   if (o.type === 'gather') {
     const node = o.target as any;
+    // поле (farm-здание): бесконечная еда, узел не истощается
+    if (node && node.kind === 'building') {
+      if (!G.buildings.includes(node) || node.progress < 1) { u.order = null; u.gatherRes = null; return; }
+      if (unitTargetDist(u, node) <= REACH) {
+        u.path = null; u.gatherRes = 'food';
+        G.res.food += (u.def.gather || 0) * gatherMult('food') * dt * 0.8;
+      } else if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, node); u.wp = 0; }
+      return;
+    }
     if (!node || node.amount <= 0) {
       u.order = null; u.gatherRes = null;
       const nx = nearestNode(u, node && node.node); if (nx) gatherOrder(u, nx);
@@ -67,7 +76,7 @@ export function updateUnit(u: Unit, dt: number) {
       u.path = null;
       b.progress = Math.min(1, b.progress + (1 / b.def.build) * (u.def.build || 1) * dt);
       b.hp = Math.max(b.hp, b.maxhp * b.progress);
-      if (b.progress >= 1) { b.hp = b.maxhp; recalcPop(); onBuildComplete(b); u.order = null; }
+      if (b.progress >= 1) { b.hp = b.maxhp; recalcPop(); onBuildComplete(b); if (b.def.farm) farmOrder(u, b); else u.order = null; }
     } else if (moveAlong(u, dt, st.speed)) { u.path = pathToNear(u.gx, u.gy, b); u.wp = 0; }
     return;
   }
