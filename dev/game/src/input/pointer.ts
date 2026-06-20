@@ -26,7 +26,7 @@ function setWorldCursor(sx: number, sy: number) {
 function mouseDown(e: PointerEvent) {
   if (G.over) return;
   ensureAudio();
-  const sx = e.offsetX, sy = e.offsetY; const w = s2g(sx, sy);
+  const sx = e.clientX, sy = e.clientY; const w = s2g(sx, sy);
   if (e.button === 2) { if (G.place) { G.place = null; return; } commandSelection(w.x, w.y); return; }
   if (e.button === 1) { mouse.pan = { x: sx, y: sy, cx: G.cam.x, cy: G.cam.y }; return; }
   if (e.button !== 0) return;
@@ -34,7 +34,12 @@ function mouseDown(e: PointerEvent) {
   mouse.down = true; mouse.dragStart = { x: sx, y: sy }; mouse.moved = false;
 }
 function mouseMove(e: PointerEvent) {
-  setWorldCursor(e.offsetX, e.offsetY); mouse.active = true;
+  // pointermove висит на window, поэтому e.offsetX/offsetY были бы относительно элемента под
+  // курсором (например крошечной кнопки HUD → координата ~0 ложно принималась за край экрана и
+  // запускала edge-scroll). Берём clientX/clientY (канвас на весь вьюпорт, inset:0) и помечаем,
+  // что курсор над панелью, чтобы cameraKeys не двигал камеру над UI.
+  mouse.overUI = e.target !== canvas();
+  setWorldCursor(e.clientX, e.clientY); mouse.active = true;
   if (mouse.pan) { G.cam.x = mouse.pan.cx + (mouse.x - mouse.pan.x); G.cam.y = mouse.pan.cy + (mouse.y - mouse.pan.y); }
   if (mouse.down && mouse.dragStart) {
     const dx = mouse.x - mouse.dragStart.x, dy = mouse.y - mouse.dragStart.y;
@@ -88,11 +93,11 @@ function touchTap(sx: number, sy: number) {
 function touchDown(e: PointerEvent) {
   if (G.over) return;
   ensureAudio();
-  touches.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
-  setWorldCursor(e.offsetX, e.offsetY);
+  touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  setWorldCursor(e.clientX, e.clientY);
   if (touches.size === 1) {
-    panLast = { x: e.offsetX, y: e.offsetY };
-    tapStart = { x: e.offsetX, y: e.offsetY, t: performance.now() };
+    panLast = { x: e.clientX, y: e.clientY };
+    tapStart = { x: e.clientX, y: e.clientY, t: performance.now() };
     tapMoved = false; pinchPrev = null;
   } else if (touches.size === 2) {
     pinchPrev = null; tapMoved = true; // два пальца — это жест, не тап
@@ -100,7 +105,7 @@ function touchDown(e: PointerEvent) {
 }
 function touchMove(e: PointerEvent) {
   const p = touches.get(e.pointerId); if (!p) return;
-  p.x = e.offsetX; p.y = e.offsetY;
+  p.x = e.clientX; p.y = e.clientY;
   if (touches.size >= 2) {
     const it = [...touches.values()]; const a = it[0], b = it[1];
     const dist = Math.hypot(a.x - b.x, a.y - b.y);
@@ -113,10 +118,10 @@ function touchMove(e: PointerEvent) {
     return;
   }
   // один палец
-  if (G.place) { setWorldCursor(e.offsetX, e.offsetY); return; } // призрак следует за пальцем
-  if (tapStart && Math.hypot(e.offsetX - tapStart.x, e.offsetY - tapStart.y) > 12) tapMoved = true;
-  if (panLast) { G.cam.x += e.offsetX - panLast.x; G.cam.y += e.offsetY - panLast.y; }
-  panLast = { x: e.offsetX, y: e.offsetY };
+  if (G.place) { setWorldCursor(e.clientX, e.clientY); return; } // призрак следует за пальцем
+  if (tapStart && Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) > 12) tapMoved = true;
+  if (panLast) { G.cam.x += e.clientX - panLast.x; G.cam.y += e.clientY - panLast.y; }
+  panLast = { x: e.clientX, y: e.clientY };
 }
 function touchUp(e: PointerEvent) {
   const had = touches.size;

@@ -9,6 +9,7 @@ import { toast } from '../ui/toast';
 import { sfx } from '../audio/sfx';
 import { togglePerf } from '../perf/metrics';
 import { IS_TOUCH } from './device';
+import { edgePan } from './edgePan';
 import type { Building, Unit } from '../core/types';
 
 export function togglePause(force?: boolean) {
@@ -60,10 +61,11 @@ export function cameraKeys(dt: number) {
   if (keys['s'] || keys['arrowdown']) G.cam.y -= sp;
   if (keys['a'] || keys['arrowleft']) G.cam.x += sp;
   if (keys['d'] || keys['arrowright']) G.cam.x -= sp;
-  // edge-scroll — только мышь на десктопе
-  if (!IS_TOUCH && mouse.active && !mouse.pan) {
-    const m = 22, es = 520 * dt / G.cam.zoom;
-    if (mouse.x < m) G.cam.x += es; else if (mouse.x > window.innerWidth - m) G.cam.x -= es;
-    if (mouse.y < m) G.cam.y += es; else if (mouse.y > window.innerHeight - m) G.cam.y -= es;
-  }
+  // edge-scroll — только мышь на десктопе и только когда курсор над картой, не над UI
+  const ep = edgePan({
+    x: mouse.x, y: mouse.y, active: mouse.active, overUI: mouse.overUI,
+    panning: !!mouse.pan, touch: IS_TOUCH,
+    vw: window.innerWidth, vh: window.innerHeight, zoom: G.cam.zoom, dt,
+  });
+  G.cam.x += ep.dx; G.cam.y += ep.dy;
 }

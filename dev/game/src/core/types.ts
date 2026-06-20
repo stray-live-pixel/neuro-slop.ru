@@ -226,6 +226,7 @@ export interface Mouse {
   pan: { x: number; y: number; cx: number; cy: number } | null;
   active: boolean;
   moved: boolean;
+  overUI: boolean;   // курсор над панелью HUD (не над игровым канвасом) — edge-scroll выключаем
 }
 
 /** Параметры юнита с учётом исследованных улучшений. */

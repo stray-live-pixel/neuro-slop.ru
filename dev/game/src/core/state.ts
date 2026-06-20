@@ -25,7 +25,7 @@ export const G: GameState = createState();
 
 export const mouse: Mouse = {
   x: 0, y: 0, gx: 0, gy: 0, down: false,
-  dragStart: null, dragRect: null, pan: null, active: false, moved: false,
+  dragStart: null, dragRect: null, pan: null, active: false, moved: false, overUI: false,
 };
 
 export const keys: Record<string, boolean> = {};
