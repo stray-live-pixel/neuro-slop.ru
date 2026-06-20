@@ -18,6 +18,7 @@ export function fillHudIcons() {
   document.querySelectorAll<HTMLElement>('.mic[data-icon]').forEach(s => s.innerHTML = iconSVG(s.dataset.icon!, 22, '#4a3b28'));
   el('muteBtn')!.innerHTML = iconSVG('sound', 18);
   el('perfBtn')!.innerHTML = iconSVG('gauge', 18);
+  el('settingsBtn')!.innerHTML = iconSVG('settings', 18);
 }
 
 export function updateHUD() {

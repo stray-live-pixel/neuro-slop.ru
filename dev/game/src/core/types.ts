@@ -202,6 +202,7 @@ export interface GameState {
   fx: Fx[];
   particles: Particle[];
   selection: Selectable[];
+  hover: Selectable | null;           // объект под курсором — подсвечивается контуром
   cam: { x: number; y: number; zoom: number };
   solid: Uint8Array[];
   tileObj: (Entity | null)[][];

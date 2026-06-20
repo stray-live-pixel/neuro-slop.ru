@@ -11,6 +11,7 @@ function createState(): GameState {
     researched: new Set<string>(),
     units: [], buildings: [], nodes: [], decor: [], projectiles: [], fx: [], particles: [],
     selection: [],
+    hover: null,
     cam: { x: 0, y: 0, zoom: 1 },
     solid: [], tileObj: [],
     groups: {},

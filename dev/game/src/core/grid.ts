@@ -15,8 +15,9 @@ export function markTiles(obj: Entity, ox: number, oy: number, s: number, val: b
   }
 }
 
-// объект в тайле по мировым координатам (для кликов/команд)
+// объект в тайле по мировым координатам (для кликов/команд).
+// G.tileObj?.[y] — сетка может быть ещё не построена (наведение мыши на стартовом экране).
 export function pickTile(wx: number, wy: number): Entity | null {
   const x = Math.round(wx), y = Math.round(wy);
-  return inBounds(x, y) ? G.tileObj[y][x] : null;
+  return inBounds(x, y) && G.tileObj[y] ? G.tileObj[y][x] : null;
 }

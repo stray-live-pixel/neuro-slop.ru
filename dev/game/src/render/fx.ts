@@ -1,8 +1,38 @@
 // Частицы, снаряды (стрелы) и вспышки — один Graphics в мировом пространстве.
+import type { Graphics } from 'pixi.js';
 import { iso, colHex } from '../core/iso';
 import { G } from '../core/state';
 import { R } from './context';
+import { moveOrderMarkers } from './moveOrders';
 import type { Building } from '../core/types';
+
+interface Pt { x: number; y: number; }
+
+// Пунктир «бегущая дорожка» вдоль ломаной (мировые координаты). Фаза сдвигается со
+// временем, штрихи плывут к назначению. Копит штрихи в текущий путь Graphics — стробится
+// одним вызовом stroke() снаружи.
+function dashedPolyline(g: Graphics, pts: Pt[], dash: number, gap: number, phase: number) {
+  const period = dash + gap;
+  let d0 = 0;                                          // дистанция от начала ломаной до точки a
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1];
+    const L = Math.hypot(b.x - a.x, b.y - a.y);
+    if (L < 1e-3) continue;
+    const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L;
+    let d = d0; const end = d0 + L;
+    while (d < end - 1e-6) {
+      const m = (((d - phase) % period) + period) % period;   // позиция внутри периода
+      const on = m < dash;
+      const segEnd = Math.min(end, d + (on ? dash - m : period - m));
+      if (on) {
+        g.moveTo(a.x + ux * (d - d0), a.y + uy * (d - d0))
+         .lineTo(a.x + ux * (segEnd - d0), a.y + uy * (segEnd - d0));
+      }
+      d = segEnd;
+    }
+    d0 = end;
+  }
+}
 
 export function drawFx(dt: number) {
   const g = R.fxG; g.clear();
@@ -44,5 +74,23 @@ export function drawFx(dt: number) {
     g.moveTo(p.x, p.y).lineTo(p.x, p.y - 22).stroke({ width: 2, color: 0xf3e6bc, alpha: 0.95 });
     g.poly([p.x, p.y - 22, p.x + 13, p.y - 18.5, p.x, p.y - 15], true).fill({ color: 0xffce42, alpha: 0.95 });
     g.ellipse(p.x, p.y, 4, 2).fill({ color: 0xffce42, alpha: 0.85 });
+  }
+
+  // маршрут и флажок назначения для выделенных юнитов с приказом «идти»
+  const markers = moveOrderMarkers(G.selection);
+  if (markers.length) {
+    const phase = G.time * 26;                          // px/сек — пунктир «течёт» к цели
+    // мягкая подложка-дорожка (один штрих по всем маршрутам)
+    for (const m of markers) dashedPolyline(g, m.route.map(p => iso(p.x, p.y)), 9, 7, phase);
+    g.stroke({ width: 5, color: 0x6fb0ff, alpha: 0.14 });
+    for (const m of markers) dashedPolyline(g, m.route.map(p => iso(p.x, p.y)), 9, 7, phase);
+    g.stroke({ width: 1.8, color: 0xbfe0ff, alpha: 0.7 });
+    // флажок в точке назначения каждого юнита
+    for (const m of markers) {
+      const p = iso(m.dest.x, m.dest.y);
+      g.ellipse(p.x, p.y, 4, 2).fill({ color: 0x6fb0ff, alpha: 0.8 });
+      g.moveTo(p.x, p.y).lineTo(p.x, p.y - 22).stroke({ width: 2, color: 0xeaf2ff, alpha: 0.95 });
+      g.poly([p.x, p.y - 22, p.x + 13, p.y - 18.5, p.x, p.y - 15], true).fill({ color: 0x6fb0ff, alpha: 0.95 });
+    }
   }
 }

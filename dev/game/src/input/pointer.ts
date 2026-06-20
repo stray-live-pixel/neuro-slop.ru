@@ -22,6 +22,16 @@ function setWorldCursor(sx: number, sy: number) {
   const w = s2g(sx, sy); mouse.gx = w.x; mouse.gy = w.y;
 }
 
+// Объект под курсором для контурной подсветки. Только в покое: не при тяге рамки,
+// постановке здания, game over или когда курсор над панелью HUD.
+function updateHover(onCanvas: boolean) {
+  if (!onCanvas || mouse.down || G.place || G.over) { G.hover = null; return; }
+  const u = pickUnit(mouse.x, mouse.y);
+  if (u) { G.hover = u; return; }
+  const t = pickTile(mouse.gx, mouse.gy);
+  G.hover = t && (t.kind === 'building' || t.kind === 'node') ? t : null;
+}
+
 /* ------------------------------ десктоп: мышь ----------------------------- */
 function mouseDown(e: PointerEvent) {
   if (G.over) return;
@@ -40,6 +50,7 @@ function mouseMove(e: PointerEvent) {
   // что курсор над панелью, чтобы cameraKeys не двигал камеру над UI.
   mouse.overUI = e.target !== canvas();
   setWorldCursor(e.clientX, e.clientY); mouse.active = true;
+  updateHover(e.target === canvas());
   if (mouse.pan) { G.cam.x = mouse.pan.cx + (mouse.x - mouse.pan.x); G.cam.y = mouse.pan.cy + (mouse.y - mouse.pan.y); }
   if (mouse.down && mouse.dragStart) {
     const dx = mouse.x - mouse.dragStart.x, dy = mouse.y - mouse.dragStart.y;

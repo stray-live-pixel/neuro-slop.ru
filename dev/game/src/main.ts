@@ -22,12 +22,23 @@ import { ensureAudio, toggleMute } from './audio/sfx';
 import { initKeyboard, cameraKeys } from './input/keyboard';
 import { initPointer } from './input/pointer';
 import { initMobile } from './input/mobile';
+import { initSettings } from './ui/settings';
 import { earlyCall } from './sim/waves';
 import { perfSample, togglePerf } from './perf/metrics';
+import { settings } from './core/settings';
 
 /* ------------------------------ главный цикл ------------------------------ */
-let last = 0, acc = 0;
+let last = 0, acc = 0, lastFrame = 0;
 function loop(ts: number) {
+  requestAnimationFrame(loop);
+  // ограничение частоты кадров (vsync-предел): пропускаем кадр, пока не набежал бюджет.
+  // 1 мс допуск — чтобы при cap == частоте экрана джиттер не ронял нас вдвое.
+  const cap = settings.fpsCap;
+  if (cap > 0) {
+    const minMs = 1000 / cap, elapsed = ts - lastFrame;
+    if (elapsed < minMs - 1) return;
+    lastFrame = ts - (elapsed % minMs);   // выравниваем сетку кадров без накопления дрейфа
+  }
   const dt = Math.min(0.05, (ts - last) / 1000) || 0; last = ts;
   const tFrame = performance.now();
   let simMs = 0, renderMs = 0;
@@ -52,7 +63,6 @@ function loop(ts: number) {
     perfSample(performance.now() - tFrame, simMs, renderMs);
   } catch (err) { console.error('frame error: ' + ((err as Error)?.stack || err)); }
   updateToasts(dt);
-  requestAnimationFrame(loop);
 }
 
 /* ------------------------------ старт игры -------------------------------- */
@@ -86,7 +96,7 @@ function devSeed() {
 /* ------------------------------ загрузка ---------------------------------- */
 async function boot() {
   await initPixi();
-  initKeyboard(); initPointer(); initPanel(); initMobile(); initMinimap();
+  initKeyboard(); initPointer(); initPanel(); initMobile(); initMinimap(); initSettings();
   window.addEventListener('resize', resizeRenderer);
   document.getElementById('muteBtn')!.addEventListener('click', () => toggleMute());
   document.getElementById('perfBtn')!.addEventListener('click', () => togglePerf());

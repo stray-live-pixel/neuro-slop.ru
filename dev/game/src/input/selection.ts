@@ -1,5 +1,5 @@
 // Выделение: выбор по клику/тапу, рамкой, и снятие.
-import { G } from '../core/state';
+import { G, mouse } from '../core/state';
 import { g2s } from '../core/iso';
 import { renderPanel } from '../ui/panel';
 import { sfx } from '../audio/sfx';
@@ -15,6 +15,18 @@ export function pickUnit(sx: number, sy: number): Unit | null {
   return best;
 }
 
+// Единая геометрия попадания юнита в экранную рамку (тело смещено на 14px вверх).
+type Rect = { x: number; y: number; w: number; h: number };
+function inRect(u: Unit, r: Rect): boolean {
+  const s = g2s(u.gx, u.gy);
+  return s.x >= r.x && s.x <= r.x + r.w && s.y - 14 >= r.y && s.y <= r.y + r.h;
+}
+
+// Живое превью рамки: попадёт ли юнит игрока в текущую тянущуюся рамку (до отпускания).
+export function inDragRect(u: Unit): boolean {
+  return mouse.down && !!mouse.dragRect && u.side === 'player' && inRect(u, mouse.dragRect);
+}
+
 export function deselect() { G.selection = []; renderPanel(); }
 
 export function selectOne(o: Selectable | null) {
@@ -25,10 +37,7 @@ export function selectOne(o: Selectable | null) {
 
 export function boxSelect(r: { x: number; y: number; w: number; h: number }, add: boolean) {
   const sel: Selectable[] = add ? G.selection.slice() : [];
-  for (const u of G.units) if (u.side === 'player') {
-    const s = g2s(u.gx, u.gy);
-    if (s.x >= r.x && s.x <= r.x + r.w && s.y - 14 >= r.y && s.y <= r.y + r.h) if (!sel.includes(u)) sel.push(u);
-  }
+  for (const u of G.units) if (u.side === 'player' && inRect(u, r) && !sel.includes(u)) sel.push(u);
   // если в рамке есть юниты — берём только юнитов
   G.selection = sel.length ? sel.filter(o => o.kind === 'unit') : sel;
   renderPanel();

@@ -1,6 +1,6 @@
 // Контекст рендера PixiJS v8: приложение, слои сцены, кэш текстур.
 import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
-import { RENDER_RESOLUTION } from '../data/config';
+import { renderResolution } from '../core/settings';
 import { sizeVignette, makeVignette } from './vignette';
 
 export interface GhostContainer extends Container { gfx: Graphics; sp: Sprite; }
@@ -31,8 +31,8 @@ export async function initPixi() {
   await app.init({
     canvas: canvas(),
     width: VW, height: VH,
-    antialias: true,
-    resolution: RENDER_RESOLUTION,   // всегда 1 — не множим пиксели на 4K/Retina
+    antialias: true,                 // MSAA-сглаживание краёв геометрии
+    resolution: renderResolution(),  // плотность экрана при сглаживании, иначе 1 (настройка)
     autoDensity: true,
     background: 0xc7b89a,
     preference: 'webgl',             // стабильный путь (без WebGPU-различий)
@@ -61,6 +61,7 @@ export async function initPixi() {
 
 export function resizeRenderer() {
   if (!R.app) return;
-  R.app.renderer.resize(window.innerWidth, window.innerHeight);
+  // третий аргумент — плотность рендера; применяет и ресайз окна, и смену сглаживания
+  R.app.renderer.resize(window.innerWidth, window.innerHeight, renderResolution());
   sizeVignette();
 }

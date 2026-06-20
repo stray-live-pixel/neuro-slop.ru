@@ -14,8 +14,7 @@ export const START_RES: Record<ResKey, number> = { food: 300, wood: 320, stone: 
 export const REACH = 1.6;          // радиус «дотянуться» для добычи/стройки (учитывает диагональ 1.414)
 export const FEET = TILE.h * 0.16; // юнит «стоит» чуть ниже центра тайла
 
-// Плотность рендера: всегда 1 (см. требование — не множим пиксели на 4K/Retina).
-export const RENDER_RESOLUTION = 1;
+// Плотность рендера — настройка «Сглаживание» (core/settings.renderResolution).
 
 // Базовый путь (Vite base) и сборка URL спрайтов — работает и в подкаталоге /lab/gardarika/.
 export const BASE = import.meta.env.BASE_URL;

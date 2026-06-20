@@ -7,16 +7,18 @@ import { BUILDINGS } from '../../data/buildings';
 import { spawnSmoke } from '../../sim/effects';
 import { R } from '../context';
 import { drawBarG, drawDiamondSel, drawFootprintShade } from '../draw';
+import { makeOutline, syncOutline, hideOutline } from '../outline';
 import type { Building } from '../../core/types';
 
 export interface BuildingView extends Container {
-  sh: Graphics; sp: Sprite; bar: Graphics; sel: Graphics;
+  sh: Graphics; outline: Container; sp: Sprite; bar: Graphics; sel: Graphics;
   baseSy: number; spriteH: number; smokeT: number; popped: boolean; _pop: number;
 }
 
 export function makeBuildingView(b: Building): BuildingView {
   const def = BUILDINGS[b.key]; const c = new Container() as BuildingView;
   c.sh = c.addChild(new Graphics());
+  c.outline = c.addChild(makeOutline());           // силуэтный контур — позади спрайта
   const t = R.tex[def.img];
   const flat = !!def.farm;                          // поле — плоский плот, лежит на земле
   const sp = c.addChild(new Sprite(t)); sp.anchor.set(0.5, flat ? 0.5 : 1);
@@ -40,7 +42,11 @@ export function updateBuildingView(c: BuildingView, b: Building, dt: number) {
   c.bar.clear();
   if (b.progress < 1) drawBarG(c.bar, 0, c.sp.y - 6, TILE.w * b.size * 0.6, b.progress, 0xe7c14b);
   else if (b.hp < b.maxhp) drawBarG(c.bar, 0, c.sp.y - c.spriteH - 10, TILE.w * b.size * 0.5, b.hp / b.maxhp, 0x6fcf6f);
-  c.sel.clear(); if (G.selection.includes(b)) drawDiamondSel(c.sel, b);
+  const sel = G.selection.includes(b);
+  c.sel.clear(); if (sel) drawDiamondSel(c.sel, b);
+  // наведение — бледный контур по силуэту (у выделённого хватает ромба)
+  if (G.hover === b && !sel) syncOutline(c.outline, c.sp, 0xffffff, 0.5, 3);
+  else hideOutline(c.outline);
   if (b.progress >= 1 && (b.key === 'blacksmith' || b.key === 'house' || b.key === 'townhall')) {
     c.smokeT -= dt;
     if (c.smokeT <= 0) { c.smokeT = b.key === 'blacksmith' ? 0.3 : 0.9; spawnSmoke(p.x + TILE.w * 0.12, p.y - c.spriteH * 0.82); }

@@ -30,6 +30,18 @@ body.touch .desktop-only{display:none;}
 .iconbtn:hover{background:#fff;color:var(--ink);}
 .iconbtn svg{display:block;}
 
+/* ---------- настройки графики ---------- */
+#settings{position:fixed;top:calc(max(10px,env(safe-area-inset-top)) + 46px);left:50%;transform:translateX(-50%);
+  background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;z-index:7;
+  box-shadow:0 8px 24px rgba(60,40,20,.28);backdrop-filter:blur(4px);display:flex;flex-direction:column;gap:6px;min-width:184px;}
+#settings .srow{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:13.5px;font-weight:600;color:#5a4a36;}
+#settings .sval{min-width:54px;cursor:pointer;border:1px solid var(--line);background:#efe5cf;border-radius:8px;
+  padding:3px 10px;font-size:13px;font-weight:700;color:#6a5a44;font-variant-numeric:tabular-nums;transition:.12s;}
+#settings .sval:hover{background:#fff;color:var(--ink);}
+#settings .sval.on{border-color:var(--accent2);background:#eaf0d8;color:#54632a;}
+/* на телефонах верхняя панель и так тесная — настройки скрыты, действуют дефолты */
+body.touch #settingsBtn,body.touch #settings{display:none !important;}
+
 /* ---------- индикатор волны ---------- */
 #waveBox{position:fixed;top:max(10px,env(safe-area-inset-top));right:12px;background:var(--panel);border:1.5px solid var(--line);
   border-radius:12px;padding:8px 14px;font-size:14px;box-shadow:0 6px 20px rgba(60,40,20,.25);z-index:5;

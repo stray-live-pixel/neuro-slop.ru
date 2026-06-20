@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#cdbfa3">
 <title>Гардарика — славянская стратегия обороны</title>
 <meta name="description" content="Изометрическая экономическая стратегия: развивай древнеславянский город, добывай ресурсы, строй и держи 10 волн монгольской орды.">
-  <script type="module" crossorigin src="/lab/gardarika/build/index-EylIt2Si.js"></script>
-  <link rel="stylesheet" crossorigin href="/lab/gardarika/build/index-hAKp4NUI.css">
+  <script type="module" crossorigin src="/lab/gardarika/build/index-CkU7WFBq.js"></script>
+  <link rel="stylesheet" crossorigin href="/lab/gardarika/build/index-Ba03lcnT.css">
 </head>
 <body>
 <canvas id="game"></canvas>
@@ -21,6 +21,13 @@
   <div class="res"><span class="ic" data-icon="pop"></span><span class="val" id="rPop">0/0</span></div>
   <button id="muteBtn" class="iconbtn" title="Звук (вкл/выкл)"></button>
   <button id="perfBtn" class="iconbtn" title="Метрики производительности (F3)"></button>
+  <button id="settingsBtn" class="iconbtn" title="Настройки графики"></button>
+</div>
+
+<!-- настройки графики -->
+<div id="settings" class="hidden">
+  <div class="srow"><span>Сглаживание</span><button id="setSmooth" class="sval"></button></div>
+  <div class="srow"><span>Кадров/с</span><button id="setFps" class="sval"></button></div>
 </div>
 <div id="waveBox"><span id="waveInfo">—</span><button id="callWave" class="hidden">⚔ Позвать волну раньше</button></div>
 <div id="pauseTag" class="hidden">⏸ Пауза</div>

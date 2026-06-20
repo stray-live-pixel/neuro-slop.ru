@@ -6,6 +6,9 @@ dev/game/node_modules/
 # build staging (итог копируется в корень)
 dev/dist/
 
+# вывод инструмента graphify (рабочий, не контент репозитория)
+graphify-out/
+
 # generated types
 dev/.astro/
 

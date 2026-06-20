@@ -7,13 +7,15 @@ import { TILE, FEET } from '../../data/config';
 import { unitStat } from '../../sim/economy';
 import { unitAction, badgeFor } from '../../sim/units';
 import { spawnWorkParticle } from '../../sim/effects';
+import { inDragRect } from '../../input/selection';
 import { R } from '../context';
 import { drawBarG, drawGroundShadow } from '../draw';
+import { makeOutline, syncOutline, hideOutline } from '../outline';
 import type { Unit } from '../../core/types';
 
 interface BadgeContainer extends Container { bg: Graphics; ic: Sprite; }
 export interface UnitView extends Container {
-  sh: Graphics; sel: Graphics; sp: Sprite; bar: Graphics; badge: BadgeContainer;
+  sh: Graphics; sel: Graphics; outline: Container; sp: Sprite; bar: Graphics; badge: BadgeContainer;
   fxT: number; curImg: string | null; selOn: boolean; barOn: boolean; curBadge: string | null;
   baseScale: number; texW: number; spriteH: number;
 }
@@ -22,6 +24,7 @@ export function makeUnitView(_u: Unit): UnitView {
   const c = new Container() as UnitView;
   c.sh = c.addChild(new Graphics());
   c.sel = c.addChild(new Graphics());
+  c.outline = c.addChild(makeOutline());           // силуэтный контур — позади спрайта
   c.sp = c.addChild(new Sprite()); c.sp.anchor.set(0.5, 1);
   c.bar = c.addChild(new Graphics());
   const badge = c.addChild(new Container()) as BadgeContainer;
@@ -65,6 +68,11 @@ export function updateUnitView(c: UnitView, u: Unit, dt: number) {
     c.sel.ellipse(0, FEET, TILE.w * 0.3, TILE.h * 0.18).stroke({ width: 2.4, color: u.side === 'enemy' ? 0xff6a5a : 0xffe07a, alpha: pa });
   } else if (c.selOn) c.sel.clear();
   c.selOn = selOn;
+
+  // контур по силуэту PNG: выделение и превью рамки — белый; наведение — бледный.
+  if (selOn || inDragRect(u)) syncOutline(c.outline, c.sp, 0xffffff, 1, 3);
+  else if (G.hover === u) syncOutline(c.outline, c.sp, 0xffffff, 0.5, 2.6);
+  else hideOutline(c.outline);
 
   // hp-бар (только у раненых)
   if (u.hp < u.maxhp) {
