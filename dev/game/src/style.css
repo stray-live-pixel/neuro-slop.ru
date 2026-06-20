@@ -44,7 +44,7 @@ body.touch .desktop-only{display:none;}
 
 /* ---------- мини-карта ---------- */
 #minimap{position:fixed;left:max(12px,env(safe-area-inset-left));bottom:max(12px,env(safe-area-inset-bottom));
-  width:168px;height:168px;border:1.5px solid var(--line);border-radius:12px;background:var(--panel);z-index:5;
+  width:200px;height:112px;border:1.5px solid var(--line);border-radius:12px;background:var(--panel);z-index:5;
   cursor:pointer;box-shadow:0 6px 20px rgba(60,40,20,.25);touch-action:none;}
 
 /* ---------- метрики производительности ---------- */
@@ -129,7 +129,7 @@ body.touch .desktop-only{display:none;}
   #pauseTag{top:118px;}
   #perf{top:52px;left:8px;min-width:150px;font-size:11px;}
   /* на мобиле панель занимает низ — мини-карту в верхний левый угол */
-  #minimap{width:96px;height:96px;left:8px;bottom:auto;top:calc(48px + env(safe-area-inset-top));}
+  #minimap{width:140px;height:78px;left:8px;bottom:auto;top:calc(48px + env(safe-area-inset-top));}
   #panel{width:96vw;padding:9px 10px;max-height:38vh;}
   .ibtn{width:74px;}
   .ibtn img{width:40px;height:40px;}

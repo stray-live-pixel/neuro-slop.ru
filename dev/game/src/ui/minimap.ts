@@ -1,26 +1,43 @@
-// Мини-карта: обзор всей карты, объекты, рамка вьюпорта и предупреждение о
-// стороне захода волны. Клик/перетаскивание — переместить камеру.
+// Мини-карта в той же изометрической проекции, что и игра: ориентация карты
+// совпадает с видом камеры, рамка вьюпорта — настоящий прямоугольник.
+// Клик/перетаскивание — переместить камеру.
 import { G } from '../core/state';
-import { MAP } from '../data/config';
+import { MAP, TILE } from '../data/config';
 import { s2g, clamp } from '../core/iso';
 import { centerOn } from '../sim/map';
 
 let cv: HTMLCanvasElement | null = null;
 let ctx: CanvasRenderingContext2D | null = null;
-let SZ = 168;
+let W = 200, H = 112;
+
+// изометрия карты без камеры (как core/iso.iso, но локально, чтобы не тащить камеру)
+const HW = TILE.w / 2, HH = TILE.h / 2;
+const isoW = (gx: number, gy: number) => ({ x: (gx - gy) * HW, y: (gx + gy) * HH });
+
+let scale = 1, offX = 0, offY = 0, minWX = 0, minWY = 0;
+function fit() {
+  const cs = [isoW(0, 0), isoW(MAP.W, 0), isoW(0, MAP.H), isoW(MAP.W, MAP.H)];
+  minWX = Math.min(...cs.map(c => c.x)); const maxWX = Math.max(...cs.map(c => c.x));
+  minWY = Math.min(...cs.map(c => c.y)); const maxWY = Math.max(...cs.map(c => c.y));
+  const pad = 6;
+  scale = Math.min((W - 2 * pad) / (maxWX - minWX), (H - 2 * pad) / (maxWY - minWY));
+  offX = (W - (maxWX - minWX) * scale) / 2;
+  offY = (H - (maxWY - minWY) * scale) / 2;
+}
+const toMini = (gx: number, gy: number) => { const w = isoW(gx, gy); return { x: (w.x - minWX) * scale + offX, y: (w.y - minWY) * scale + offY }; };
+function fromMini(px: number, py: number) {
+  const a = ((px - offX) / scale + minWX) / HW, b = ((py - offY) / scale + minWY) / HH;  // обратная изометрия
+  return { x: clamp((a + b) / 2, 0, MAP.W - 1), y: clamp((b - a) / 2, 0, MAP.H - 1) };
+}
 
 export function initMinimap() {
   cv = document.getElementById('minimap') as HTMLCanvasElement | null;
   if (!cv) return;
-  SZ = cv.width;
-  ctx = cv.getContext('2d');
+  W = cv.width; H = cv.height; ctx = cv.getContext('2d'); fit();
 
   const toGrid = (clientX: number, clientY: number) => {
     const r = cv!.getBoundingClientRect();
-    return {
-      x: clamp((clientX - r.left) / r.width * MAP.W, 0, MAP.W - 1),
-      y: clamp((clientY - r.top) / r.height * MAP.H, 0, MAP.H - 1),
-    };
+    return fromMini((clientX - r.left) / r.width * W, (clientY - r.top) / r.height * H);
   };
   let dragging = false;
   const jump = (e: PointerEvent) => { const g = toGrid(e.clientX, e.clientY); centerOn(g.x, g.y); };
@@ -29,48 +46,43 @@ export function initMinimap() {
   window.addEventListener('pointerup', () => { dragging = false; });
 }
 
-const SIDE = ['top', 'right', 'bottom', 'left'];
+// края карты-ромба для каждой стороны захода орды (индекс = w.side)
+const EDGES: [[number, number], [number, number]][] = [
+  [[0, 0], [MAP.W, 0]],          // 0 — север (верхний-правый край ромба)
+  [[MAP.W, 0], [MAP.W, MAP.H]],  // 1 — восток
+  [[MAP.W, MAP.H], [0, MAP.H]],  // 2 — юг
+  [[0, MAP.H], [0, 0]],          // 3 — запад
+];
 
 export function drawMinimap() {
   if (!ctx) return;
-  const s = SZ / MAP.W;
-  ctx.clearRect(0, 0, SZ, SZ);
-  ctx.fillStyle = '#aebf85'; ctx.fillRect(0, 0, SZ, SZ);
+  ctx.clearRect(0, 0, W, H);
 
-  // ресурсные узлы
-  for (const n of G.nodes) {
-    ctx.fillStyle = n.res === 'wood' ? '#5d7b3f' : n.res === 'gold' ? '#c8a33b' : n.res === 'stone' ? '#8b8d91' : '#b9596b';
-    ctx.fillRect(n.gx * s, n.gy * s, Math.max(1, s), Math.max(1, s));
-  }
-  // здания (стены — серые, прочие — синие)
-  for (const b of G.buildings) {
-    ctx.fillStyle = b.key === 'wall' ? '#9b8f78' : '#3a72d6';
-    ctx.fillRect(b.ox * s, b.oy * s, Math.max(2, b.size * s), Math.max(2, b.size * s));
-  }
-  // юниты
-  for (const u of G.units) {
-    ctx.fillStyle = u.side === 'enemy' ? '#e2433a' : u.type === 'peasant' ? '#dcc869' : '#5fcf6f';
-    const r = Math.max(1.6, s * 0.8);
-    ctx.fillRect(u.gx * s - r / 2, u.gy * s - r / 2, r, r);
-  }
-
-  // предупреждение о стороне следующей волны (в подготовке)
-  if (G.wave.state === 'prep') {
-    const a = 0.35 + 0.55 * Math.abs(Math.sin(G.time * 3));
-    ctx.fillStyle = `rgba(231,72,60,${a})`;
-    const len = SZ * 0.5, th = 5, mid = SZ / 2;
-    const side = SIDE[G.wave.side] || 'top';
-    if (side === 'top') ctx.fillRect(mid - len / 2, 0, len, th);
-    else if (side === 'right') ctx.fillRect(SZ - th, mid - len / 2, th, len);
-    else if (side === 'bottom') ctx.fillRect(mid - len / 2, SZ - th, len, th);
-    else ctx.fillRect(0, mid - len / 2, th, len);
-  }
-
-  // рамка вьюпорта камеры (4 угла экрана → сетка)
-  const W = window.innerWidth, H = window.innerHeight;
-  const corners = [s2g(0, 0), s2g(W, 0), s2g(W, H), s2g(0, H)];
+  // подложка-ромб самой карты
+  const dia = [toMini(0, 0), toMini(MAP.W, 0), toMini(MAP.W, MAP.H), toMini(0, MAP.H)];
   ctx.beginPath();
-  corners.forEach((p, i) => { const x = p.x * s, y = p.y * s; i ? ctx!.lineTo(x, y) : ctx!.moveTo(x, y); });
+  dia.forEach((p, i) => i ? ctx!.lineTo(p.x, p.y) : ctx!.moveTo(p.x, p.y));
   ctx.closePath();
-  ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.fillStyle = '#aebf85'; ctx.fill();
+
+  const dot = (gx: number, gy: number, col: string, s: number) => { const p = toMini(gx, gy); ctx!.fillStyle = col; ctx!.fillRect(p.x - s / 2, p.y - s / 2, s, s); };
+  for (const n of G.nodes) dot(n.gx, n.gy, n.res === 'wood' ? '#5d7b3f' : n.res === 'gold' ? '#c8a33b' : n.res === 'stone' ? '#8b8d91' : '#b9596b', 2);
+  for (const b of G.buildings) dot(b.cx, b.cy, b.key === 'wall' ? '#9b8f78' : '#3a72d6', Math.max(3, b.size * 2));
+  for (const u of G.units) dot(u.gx, u.gy, u.side === 'enemy' ? '#e2433a' : u.type === 'peasant' ? '#dcc869' : '#5fcf6f', 2.6);
+
+  // предупреждение о стороне следующей волны — по краю ромба
+  if (G.wave.state === 'prep') {
+    const e = EDGES[G.wave.side] || EDGES[0];
+    const a = toMini(e[0][0], e[0][1]), b = toMini(e[1][0], e[1][1]);
+    ctx.strokeStyle = `rgba(231,72,60,${0.35 + 0.55 * Math.abs(Math.sin(G.time * 3))})`;
+    ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  }
+
+  // рамка вьюпорта камеры (углы экрана → сетка → мини-карта = прямоугольник)
+  const Wp = window.innerWidth, Hp = window.innerHeight;
+  const view = [s2g(0, 0), s2g(Wp, 0), s2g(Wp, Hp), s2g(0, Hp)].map(g => toMini(g.x, g.y));
+  ctx.beginPath();
+  view.forEach((p, i) => i ? ctx!.lineTo(p.x, p.y) : ctx!.moveTo(p.x, p.y));
+  ctx.closePath();
+  ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 1.4; ctx.stroke();
 }
