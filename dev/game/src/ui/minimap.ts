@@ -71,6 +71,7 @@ export function drawMinimap() {
   for (let y = 0; y < MAP.H; y++) for (let x = 0; x < MAP.W; x++) {
     const t = G.terrain[y]?.[x] ?? TERRAIN.LAND;
     if (t === TERRAIN.WATER) dot(x + 0.5, y + 0.5, '#3f8fa8', 1.6);
+    else if (t === TERRAIN.SHALLOW) dot(x + 0.5, y + 0.5, '#81bfb1', 1.55);
     else if (t === TERRAIN.BRIDGE) dot(x + 0.5, y + 0.5, '#9a6d3f', 1.7);
   }
   for (const n of G.nodes) dot(n.gx, n.gy, n.res === 'wood' ? '#5d7b3f' : n.res === 'gold' ? '#c8a33b' : n.res === 'stone' ? '#8b8d91' : '#b9596b', 2);

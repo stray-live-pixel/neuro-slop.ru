@@ -2,7 +2,7 @@
 // а без него (враги) диагональ между двумя занятыми углами по-прежнему закрыта.
 import { describe, it, expect, beforeEach } from 'vitest';
 import { G } from '../core/state';
-import { makeGrid, TERRAIN } from '../core/grid';
+import { isBuildableTile, makeGrid, TERRAIN } from '../core/grid';
 import { findPath } from './pathfind';
 
 beforeEach(() => {
@@ -12,6 +12,7 @@ beforeEach(() => {
 const solid = (x: number, y: number) => { G.solid[y][x] = 1; };
 const water = (x: number, y: number) => { G.terrain[y][x] = TERRAIN.WATER; };
 const bridge = (x: number, y: number) => { G.terrain[y][x] = TERRAIN.BRIDGE; };
+const shallow = (x: number, y: number) => { G.terrain[y][x] = TERRAIN.SHALLOW; };
 
 describe('findPath: cornerCut пускает между зданиями', () => {
   it('по умолчанию диагональ между двумя углами закрыта — путь в обход', () => {
@@ -67,5 +68,14 @@ describe('findPath: вода и мосты', () => {
     expect(p).not.toBeNull();
     expect(p).toContainEqual({ x: 4, y: 5 });
     expect(p![p!.length - 1]).toEqual({ x: 7, y: 5 });
+  });
+
+  it('мелководье проходимо, но не считается землёй для строительства', () => {
+    for (let y = 0; y < G.terrain.length; y++) water(4, y);
+    shallow(4, 4); shallow(4, 5); shallow(4, 6);
+    const p = findPath(2, 5, 7, 5, false, true);
+    expect(p).not.toBeNull();
+    expect(p).toContainEqual({ x: 4, y: 5 });
+    expect(isBuildableTile(4, 5)).toBe(false);
   });
 });

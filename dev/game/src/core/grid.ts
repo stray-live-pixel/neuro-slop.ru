@@ -4,7 +4,7 @@ import { inBounds } from './iso';
 import { MAP } from '../data/config';
 import type { Entity } from './types';
 
-export const TERRAIN = { LAND: 0, WATER: 1, BRIDGE: 2 } as const;
+export const TERRAIN = { LAND: 0, WATER: 1, BRIDGE: 2, SHALLOW: 3 } as const;
 
 export function makeGrid() {
   G.solid = Array.from({ length: MAP.H }, () => new Uint8Array(MAP.W));
@@ -28,6 +28,15 @@ export function isWaterTile(x: number, y: number): boolean {
 
 export function isBridgeTile(x: number, y: number): boolean {
   return terrainAt(x, y) === TERRAIN.BRIDGE;
+}
+
+export function isShallowTile(x: number, y: number): boolean {
+  return terrainAt(x, y) === TERRAIN.SHALLOW;
+}
+
+export function isWaterSurfaceTile(x: number, y: number): boolean {
+  const t = terrainAt(x, y);
+  return t === TERRAIN.WATER || t === TERRAIN.SHALLOW || t === TERRAIN.BRIDGE;
 }
 
 export function isWalkableTile(x: number, y: number, allowSolid = false): boolean {

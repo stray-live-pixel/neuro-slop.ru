@@ -8,7 +8,6 @@ import { rng, pick } from '../core/rng';
 import { placeBuilding, spawnUnit, addNode, recalcPop } from './entities';
 import { gatherOrder, nearestNode } from './commands';
 
-const BRIDGE_DECOR = ['bridge-1', 'bridge-2', 'bridge-3'];
 const WATER_REEDS = ['water-reeds-1', 'water-reeds-2', 'water-reeds-3'];
 const WATER_LILIES = ['water-lilies-1', 'water-lilies-2', 'water-lilies-3'];
 const SHORE_STONES = ['shore-stones-1', 'shore-stones-2', 'shore-stones-3', 'shore-stones-4'];
@@ -26,6 +25,10 @@ function setTerrain(x: number, y: number, t: number) {
   if (inBounds(x, y)) G.terrain[y][x] = t;
 }
 
+function clampTile(v: number, max: number): number {
+  return Math.max(1, Math.min(max - 2, Math.round(v)));
+}
+
 function landFree(x: number, y: number): boolean {
   return inBounds(x, y) && G.terrain[y][x] === TERRAIN.LAND && !G.solid[y][x];
 }
@@ -37,20 +40,38 @@ function nearStart(x: number, y: number, mx: number, my: number, r: number): boo
 function addBridge(cx: number, cy: number, halfLen: number) {
   const x0 = Math.max(1, Math.round(cx - halfLen));
   const x1 = Math.min(MAP.W - 2, Math.round(cx + halfLen));
-  const y0 = Math.max(1, Math.round(cy - 1));
-  const y1 = Math.min(MAP.H - 2, Math.round(cy + 1));
+  const y0 = Math.max(1, Math.round(cy));
+  const y1 = Math.min(MAP.H - 2, Math.round(cy));
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) setTerrain(x, y, TERRAIN.BRIDGE);
-  G.decor.push({ img: pick(BRIDGE_DECOR), gx: cx, gy: cy + 0.1 });
 }
 
 function carvePond(cx: number, cy: number, rx: number, ry: number, mx: number, my: number) {
+  const fordTilt = rng() < 0.5 ? -0.42 : 0.42;
+  const fordWidth = 0.16 + rng() * 0.08;
   for (let y = Math.floor(cy - ry - 2); y <= Math.ceil(cy + ry + 2); y++) for (let x = Math.floor(cx - rx - 2); x <= Math.ceil(cx + rx + 2); x++) {
     if (!inBounds(x, y) || nearStart(x, y, mx, my, 12)) continue;
     const nx = (x - cx) / rx, ny = (y - cy) / ry;
     const wobble = (rng() - 0.5) * 0.22;
-    if (nx * nx + ny * ny + wobble < 1) setTerrain(x, y, TERRAIN.WATER);
+    const d = nx * nx + ny * ny + wobble;
+    if (d < 1) {
+      const ford = Math.abs(ny - nx * fordTilt) < fordWidth;
+      const edge = d > 0.7 || rng() < 0.04;
+      setTerrain(x, y, ford || edge ? TERRAIN.SHALLOW : TERRAIN.WATER);
+    }
   }
-  addBridge(cx, cy, rx + 1);
+
+  // У каждого озера есть естественная мелководная переправа, но без деревянного моста.
+  const steps = Math.ceil(rx * 2.5);
+  for (let i = -steps; i <= steps; i++) {
+    const k = i / Math.max(1, steps);
+    const x = Math.round(cx + k * rx * 0.92);
+    const y = Math.round(cy + k * rx * fordTilt);
+    for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) {
+      const tx = x + ox, ty = y + oy;
+      if (Math.abs(ox) + Math.abs(oy) > 1 && rng() < 0.55) continue;
+      if (inBounds(tx, ty) && !nearStart(tx, ty, mx, my, 12)) setTerrain(tx, ty, TERRAIN.SHALLOW);
+    }
+  }
 }
 
 function generateTerrain(mx: number, my: number) {
@@ -59,7 +80,19 @@ function generateTerrain(mx: number, my: number) {
     const cx = riverCx(y), r = riverR(y);
     for (let x = cx - r; x <= cx + r; x++) if (!nearStart(x, y, mx, my, 10)) setTerrain(x, y, TERRAIN.WATER);
   }
-  [15, 34, 53, 73].forEach(y => addBridge(riverCx(y), y, riverR(y) + 3));
+
+  // Мосты — процедурные переходы через реку. Озёра мостов не получают.
+  const bridgeCount = Math.max(4, Math.round(MAP.H / 23));
+  const margin = Math.max(11, Math.round(MAP.H * 0.12));
+  const minGap = Math.max(8, Math.round(MAP.H / (bridgeCount + 2)));
+  const bridgeRows: number[] = [];
+  for (let i = 0; i < bridgeCount; i++) {
+    let y = clampTile(margin + i * ((MAP.H - margin * 2) / Math.max(1, bridgeCount - 1)) + (rng() - 0.5) * minGap, MAP.H);
+    if (nearStart(riverCx(y), y, mx, my, 13)) y = clampTile(y + (y < my ? -minGap : minGap), MAP.H);
+    if (bridgeRows.some(v => Math.abs(v - y) < minGap)) y = clampTile(y + minGap * 0.7, MAP.H);
+    bridgeRows.push(y);
+    addBridge(riverCx(y), y, riverR(y) + 3 + (rng() < 0.35 ? 1 : 0));
+  }
 
   // Несколько прудов каждый сид получают чуть иную форму и мостик.
   const ponds = [
@@ -119,6 +152,19 @@ function hasNeighborTerrain(x: number, y: number, t: number): boolean {
   return false;
 }
 
+function isWaterSurface(t: number): boolean {
+  return t === TERRAIN.WATER || t === TERRAIN.SHALLOW || t === TERRAIN.BRIDGE;
+}
+
+function hasNeighborWaterSurface(x: number, y: number): boolean {
+  for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) {
+    if (!ox && !oy) continue;
+    const nx = x + ox, ny = y + oy;
+    if (inBounds(nx, ny) && isWaterSurface(G.terrain[ny][nx])) return true;
+  }
+  return false;
+}
+
 function scatterDecor(mx: number, my: number) {
   for (let i = 0; i < 340; i++) {
     const x = 1 + ((rng() * (MAP.W - 2)) | 0), y = 1 + ((rng() * (MAP.H - 2)) | 0);
@@ -129,9 +175,9 @@ function scatterDecor(mx: number, my: number) {
 
   for (let y = 1; y < MAP.H - 1; y++) for (let x = 1; x < MAP.W - 1; x++) {
     const t = G.terrain[y][x];
-    if (t === TERRAIN.WATER && rng() < 0.035) {
+    if ((t === TERRAIN.WATER || t === TERRAIN.SHALLOW) && rng() < (t === TERRAIN.SHALLOW ? 0.018 : 0.035)) {
       G.decor.push({ img: pick(WATER_LILIES), gx: x + (rng() - 0.5) * 0.38, gy: y + (rng() - 0.5) * 0.38 });
-    } else if (t === TERRAIN.LAND && !G.solid[y][x] && hasNeighborTerrain(x, y, TERRAIN.WATER) && rng() < 0.2) {
+    } else if (t === TERRAIN.LAND && !G.solid[y][x] && hasNeighborWaterSurface(x, y) && rng() < 0.26) {
       G.decor.push({
         img: rng() < 0.62 ? pick(WATER_REEDS) : pick(SHORE_STONES),
         gx: x + (rng() - 0.5) * 0.55,

@@ -11,6 +11,7 @@ import { makeDecorView } from './views/decor';
 import { drawFx } from './fx';
 import { updateGhost } from './ghost';
 import { updateClouds } from './clouds';
+import { updateWater } from './ground';
 import type { Entity, Decor } from '../core/types';
 
 const viewReg = new Map<Entity, Container>();
@@ -40,6 +41,7 @@ export function syncScene(dt: number) {
   let vis = 0, total = 0;
 
   // декор — статичные view, создаются один раз, только куллинг
+  updateWater(dt);
   const liveDecor = new Set<Decor>();
   for (const d of G.decor) {
     liveDecor.add(d);

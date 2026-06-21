@@ -31,6 +31,7 @@ function measureBottomPad(tex: Texture): number {
 }
 
 const ASSET_LIST = ['townhall', 'house', 'granary', 'field', 'lumbermill', 'mine', 'barracks', 'blacksmith', 'tower', 'wall-post',
+  'terrain-grass', 'terrain-water', 'terrain-sand', 'terrain-shallow', 'terrain-bridge',
   'tree', 'tree-oak', 'tree-pine', 'tree-autumn', 'rocks', 'gold', 'berries', 'peasant', 'militia', 'druzhina', 'archer', 'mongol', 'mongol-rider',
   'bush', 'flowers', 'log', 'haystack', 'stump',
   'bridge-1', 'bridge-2', 'bridge-3',

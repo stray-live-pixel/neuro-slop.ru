@@ -1,5 +1,5 @@
 // Контекст рендера PixiJS v8: приложение, слои сцены, кэш текстур.
-import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
+import { Application, Container, Filter, Graphics, Sprite, Texture } from 'pixi.js';
 import { renderResolution } from '../core/settings';
 import { sizeVignette, makeVignette } from './vignette';
 
@@ -9,6 +9,13 @@ export interface RenderContext {
   app: Application;
   world: Container;        // камера: позиция + масштаб
   groundG: Graphics;       // изо-земля (рисуется один раз)
+  waterC: Container;       // вода отдельным слоем, чтобы шейдер не трогал землю
+  waterBitmapC: Container; // цельная bitmap-маска воды без жёстких границ тайлов
+  waterG: Graphics;        // статичная поверхность воды
+  waterFxG: Graphics;      // анимированные линии волн
+  terrainTransitionC: Container; // готовые bitmap-переходы вода/песок/трава
+  shoreG: Graphics;        // песчаные берега и мостовая подложка поверх воды
+  waterFilter: Filter | null;
   cloudG: Graphics;        // дрейфующие тени облаков (под объектами)
   objLayer: Container;     // depth-сортируемые объекты
   fxG: Graphics;           // частицы/снаряды/вспышки (мировое пространство)
@@ -21,7 +28,7 @@ export interface RenderContext {
 }
 
 export const R: RenderContext = {
-  tex: {}, pad: {}, badge: {},
+  tex: {}, pad: {}, badge: {}, waterFilter: null,
 } as RenderContext;
 
 const canvas = () => document.getElementById('game') as HTMLCanvasElement;
@@ -44,6 +51,12 @@ export async function initPixi() {
 
   R.world = new Container(); app.stage.addChild(R.world);
   R.groundG = new Graphics(); R.world.addChild(R.groundG);
+  R.waterC = new Container(); R.world.addChild(R.waterC);
+  R.waterBitmapC = new Container(); R.waterC.addChild(R.waterBitmapC);
+  R.waterG = new Graphics(); R.waterC.addChild(R.waterG);
+  R.waterFxG = new Graphics(); R.waterC.addChild(R.waterFxG);
+  R.terrainTransitionC = new Container(); R.world.addChild(R.terrainTransitionC);
+  R.shoreG = new Graphics(); R.world.addChild(R.shoreG);
   R.cloudG = new Graphics(); R.world.addChild(R.cloudG);
   R.objLayer = new Container(); R.objLayer.sortableChildren = true; R.world.addChild(R.objLayer);
   R.fxG = new Graphics(); R.world.addChild(R.fxG);
