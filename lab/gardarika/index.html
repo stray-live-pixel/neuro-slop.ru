@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#cdbfa3">
 <title>Гардарика — славянская стратегия обороны</title>
 <meta name="description" content="Изометрическая экономическая стратегия: развивай древнеславянский город, добывай ресурсы, строй и держи 10 волн монгольской орды.">
-  <script type="module" crossorigin src="/lab/gardarika/build/index-DRimEFIh.js"></script>
-  <link rel="stylesheet" crossorigin href="/lab/gardarika/build/index--0QYCVlc.css">
+  <script type="module" crossorigin src="/lab/gardarika/build/index-BcUf-i-6.js"></script>
+  <link rel="stylesheet" crossorigin href="/lab/gardarika/build/index-BLtpHO0O.css">
 </head>
 <body>
 <canvas id="game"></canvas>
@@ -20,7 +20,8 @@
   <div class="res"><span class="ic" data-icon="gold"></span><span class="val" id="rGold">0</span></div>
   <div class="res"><span class="ic" data-icon="pop"></span><span class="val" id="rPop">0/0</span></div>
   <button id="idleBtn" class="iconbtn idlebtn hidden" title="Свободные крестьяне — выбрать следующего (клавиша «.»)"><span class="iic" data-icon="pop"></span><span class="cnt" id="idleCount">0</span></button>
-  <button id="muteBtn" class="iconbtn" title="Звук (вкл/выкл)"></button>
+  <button id="muteBtn" class="iconbtn" title="Звуковые эффекты (вкл/выкл)"></button>
+  <button id="musicBtn" class="iconbtn" title="Фоновая музыка: включить"></button>
   <button id="perfBtn" class="iconbtn" title="Метрики производительности (F3)"></button>
   <button id="settingsBtn" class="iconbtn" title="Настройки графики"></button>
 </div>
@@ -67,6 +68,11 @@
     • <b>Один палец</b> — двигать карту, <b>два пальца</b> — зум. Кнопки снизу — быстрый выбор.</span><br>
     • Строй <b>избы</b> (население), казармы и кузницу, изучай улучшения, ставь <b>башни и частокол</b>.
     <div class="row"><span>🌾 Еда</span><span>🪵 Дерево</span><span>🪨 Камень</span><span>🪙 Золото</span><span>👥 до 200</span></div>
+  </div>
+  <div class="music-choice" role="group" aria-label="Фоновая музыка">
+    <span>Фоновая музыка</span>
+    <button id="musicStartOn" class="choicebtn" type="button" aria-pressed="false">Вкл</button>
+    <button id="musicStartOff" class="choicebtn active" type="button" aria-pressed="true">Выкл</button>
   </div>
   <button id="startBtn" class="btn" disabled><span id="loading">Готовим ассеты…</span></button>
 </div>
