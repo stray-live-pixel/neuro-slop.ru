@@ -2,7 +2,7 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
 import { G } from '../../core/state';
 import { iso } from '../../core/iso';
-import { TILE } from '../../data/config';
+import { BUILDING_ASSET_SCALE, TILE } from '../../data/config';
 import { BUILDINGS } from '../../data/buildings';
 import { spawnSmoke } from '../../sim/effects';
 import { R } from '../context';
@@ -23,7 +23,7 @@ export function makeBuildingView(b: Building): BuildingView {
   const t = R.tex[def.img];
   const flat = !!def.farm;                          // поле — плоский плот, лежит на земле
   const sp = c.addChild(new Sprite(t)); sp.anchor.set(0.5, flat ? 0.5 : 1);
-  const w = TILE.w * b.size * (flat ? 1.16 : 1.04); const sc = w / (t.width || w); sp.scale.set(sc);
+  const w = TILE.w * b.size * (flat ? 1.16 : 1.04) * BUILDING_ASSET_SCALE; const sc = w / (t.width || w); sp.scale.set(sc);
   sp.y = flat ? TILE.h * b.size * 0.22 : TILE.h / 2 * b.size * 0.5;
   c.sp = sp; c.baseSy = sc; c.spriteH = sc * (t.height || 60);
   if (!flat) sp.y += (R.pad[def.img] || 0) * c.spriteH;   // опустить на пустое поле снизу PNG → стоит на земле

@@ -2,7 +2,7 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
 import { G } from '../../core/state';
 import { iso } from '../../core/iso';
-import { TILE } from '../../data/config';
+import { RESOURCE_BERRY_ASSET_SCALE, RESOURCE_ORE_ASSET_SCALE, TILE } from '../../data/config';
 import { R } from '../context';
 import { drawTileShade } from '../draw';
 import { makeOutline, syncOutline, hideOutline } from '../outline';
@@ -29,7 +29,8 @@ export function makeNodeView(n: ResourceNode): NodeView {
   if (isTree) {                                    // деревья крупные, по целевой высоте (≈×2)
     const targetH = TILE.h * 2.7; sp.scale.set(targetH / (t.height || targetH));
   } else {
-    const w = TILE.w * 1.12; sp.scale.set(w / (t.width || w));
+    const resScale = isOre ? RESOURCE_ORE_ASSET_SCALE : n.img === 'berries' ? RESOURCE_BERRY_ASSET_SCALE : 1;
+    const w = TILE.w * 1.12 * resScale; sp.scale.set(w / (t.width || w));
   }
   sp.y += (R.pad[img] || 0) * sp.scale.y * (t.height || 0);   // опустить на пустое поле снизу PNG
   c.sp = sp;

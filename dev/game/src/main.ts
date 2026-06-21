@@ -29,7 +29,7 @@ import { earlyCall } from './sim/waves';
 import { perfSample, togglePerf } from './perf/metrics';
 import { settings } from './core/settings';
 
-document.documentElement.style.setProperty('--start-cover', `url("${BASE}cover.jpg")`);
+document.documentElement.style.setProperty('--start-cover', `url("${BASE}cover.webp")`);
 
 /* ------------------------------ главный цикл ------------------------------ */
 let last = 0, acc = 0, lastFrame = 0;

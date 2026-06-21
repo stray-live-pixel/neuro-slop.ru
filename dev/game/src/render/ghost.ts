@@ -2,7 +2,7 @@
 // Частокол можно тянуть линией (Shift-режим линии) — тогда подсвечиваем все её тайлы.
 import { G, mouse } from '../core/state';
 import { iso } from '../core/iso';
-import { TILE } from '../data/config';
+import { BUILDING_ASSET_SCALE, TILE } from '../data/config';
 import { BUILDINGS } from '../data/buildings';
 import { canPlace, wallLineCells } from '../sim/placement';
 import { canAfford } from '../sim/economy';
@@ -47,7 +47,7 @@ export function updateGhost() {
     if (sp.texture !== tx) sp.texture = tx;
     sp.scale.set((TILE.h * 1.46) / (tx.height || TILE.h)); sp.y = TILE.h * 0.22;
   } else {
-    if (sp.texture !== tx) { sp.texture = tx; const w = TILE.w * s * 1.04; sp.scale.set(w / (tx.width || w)); }
+    if (sp.texture !== tx) { sp.texture = tx; const w = TILE.w * s * 1.04 * BUILDING_ASSET_SCALE; sp.scale.set(w / (tx.width || w)); }
     // тот же сдвиг на пустое поле снизу PNG, что и у поставленного здания — превью совпадает
     sp.y = TILE.h / 2 * s * 0.5 + (R.pad[d.img] || 0) * sp.scale.y * (tx.height || 0);
   }

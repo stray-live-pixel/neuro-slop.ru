@@ -5,7 +5,7 @@ date: 2026-06-20T17:30:00+03:00
 category: games
 model: 'Claude Opus 4.8 + Gemini 3.1 Flash Image'
 timeSpent: 'одна сессия (~3 часа, автономно)'
-cover: /lab/gardarika/cover.jpg
+cover: /lab/gardarika/cover.webp
 gameUrl: /lab/gardarika/
 ---
 
