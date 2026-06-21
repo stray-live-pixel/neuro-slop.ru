@@ -10,6 +10,7 @@
 // Пространственный хеш по тайлам — проверяем только 9 соседних клеток (дёшево).
 import { G } from '../core/state';
 import { inBounds, clamp } from '../core/iso';
+import { isWaterTile } from '../core/grid';
 import { MAP } from '../data/config';
 import type { Unit } from '../core/types';
 
@@ -25,7 +26,7 @@ export function isMoving(u: Unit): boolean {
 
 function solidAt(x: number, y: number): boolean {
   const xi = x | 0, yi = y | 0;
-  return !inBounds(xi, yi) || !!G.solid[yi][xi];
+  return !inBounds(xi, yi) || isWaterTile(xi, yi) || !!G.solid[yi][xi];
 }
 
 export function separateUnits(dt: number) {

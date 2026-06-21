@@ -4,6 +4,7 @@
 import { G } from '../core/state';
 import { MAP, TILE } from '../data/config';
 import { s2g, clamp } from '../core/iso';
+import { TERRAIN } from '../core/grid';
 import { centerOn } from '../sim/map';
 
 let cv: HTMLCanvasElement | null = null;
@@ -67,6 +68,11 @@ export function drawMinimap() {
   ctx.fillStyle = '#aebf85'; ctx.fill();
 
   const dot = (gx: number, gy: number, col: string, s: number) => { const p = toMini(gx, gy); ctx!.fillStyle = col; ctx!.fillRect(p.x - s / 2, p.y - s / 2, s, s); };
+  for (let y = 0; y < MAP.H; y++) for (let x = 0; x < MAP.W; x++) {
+    const t = G.terrain[y]?.[x] ?? TERRAIN.LAND;
+    if (t === TERRAIN.WATER) dot(x + 0.5, y + 0.5, '#3f8fa8', 1.6);
+    else if (t === TERRAIN.BRIDGE) dot(x + 0.5, y + 0.5, '#9a6d3f', 1.7);
+  }
   for (const n of G.nodes) dot(n.gx, n.gy, n.res === 'wood' ? '#5d7b3f' : n.res === 'gold' ? '#c8a33b' : n.res === 'stone' ? '#8b8d91' : '#b9596b', 2);
   for (const b of G.buildings) dot(b.cx, b.cy, b.key === 'wall' ? '#9b8f78' : '#3a72d6', Math.max(3, b.size * 2));
   for (const u of G.units) dot(u.gx, u.gy, u.side === 'enemy' ? '#e2433a' : u.type === 'peasant' ? '#dcc869' : '#5fcf6f', 2.6);

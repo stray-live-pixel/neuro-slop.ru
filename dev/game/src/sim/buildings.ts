@@ -1,6 +1,7 @@
 // Здания: производство/исследования в очереди, авто-стрельба башен.
 import { G } from '../core/state';
 import { clamp, inBounds } from '../core/iso';
+import { isWalkableTile } from '../core/grid';
 import { MAP } from '../data/config';
 import { TECHS } from '../data/techs';
 import { unitTargetDist } from './combat';
@@ -44,7 +45,7 @@ export function updateBuilding(b: Building, dt: number) {
 
 export function spawnFromBuilding(b: Building, type: string) {
   let sx = b.ox + (b.size >> 1), sy = b.oy + b.size;
-  for (let r = 0; r < 6 && (!inBounds(sx, sy) || G.solid[sy][sx]); r++) { sx = b.ox + (r % b.size); sy = b.oy + b.size + ((r / b.size) | 0); }
+  for (let r = 0; r < 6 && (!inBounds(sx, sy) || !isWalkableTile(sx, sy)); r++) { sx = b.ox + (r % b.size); sy = b.oy + b.size + ((r / b.size) | 0); }
   const u = spawnUnit(type, clamp(sx, 0, MAP.W - 1), clamp(sy, 0, MAP.H - 1), 'player');
   const r = b.rally;
   if (r) { if (r.node && r.node.amount > 0 && type === 'peasant') gatherOrder(u, r.node); else moveOrder(u, r.x, r.y); }

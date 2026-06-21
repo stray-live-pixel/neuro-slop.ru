@@ -1,6 +1,7 @@
 // Волновой «режиссёр»: подготовка, запуск и подсчёт волн орды.
 import { G } from '../core/state';
 import { clamp } from '../core/iso';
+import { isWalkableTile } from '../core/grid';
 import { rng, rndInt } from '../core/rng';
 import { MAP, TOTAL_WAVES } from '../data/config';
 import { UNITS } from '../data/units';
@@ -52,7 +53,7 @@ export function startWave() {
     else if (side === 1) { x = MAP.W - 2; y = clamp(t, 1, MAP.H - 2); }
     else if (side === 2) { x = clamp(t, 1, MAP.W - 2); y = MAP.H - 2; }
     else { x = 1; y = clamp(t, 1, MAP.H - 2); }
-    for (let r = 0; r < 30 && G.solid[y][x]; r++) {
+    for (let r = 0; r < 80 && !isWalkableTile(x, y); r++) {
       x = clamp(x + (rng() < .5 ? 1 : -1), 1, MAP.W - 2);
       y = clamp(y + (rng() < .5 ? 1 : -1), 1, MAP.H - 2);
     }

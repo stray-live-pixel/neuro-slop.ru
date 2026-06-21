@@ -1,6 +1,7 @@
 // A*-поиск пути по сетке. Стены/здания/узлы — преграды.
 import { G } from '../core/state';
 import { inBounds } from '../core/iso';
+import { isWaterTile } from '../core/grid';
 import { MAP } from '../data/config';
 import type { Building, PathPt, ResourceNode, Unit } from '../core/types';
 
@@ -23,7 +24,8 @@ export function findPath(sx: number, sy: number, tx: number, ty: number, allowGo
   // октиль-эвристика (допускает диагонали) — пути ровнее, без «лесенки»
   const h = (x: number, y: number) => { const dx = Math.abs(x - tx), dy = Math.abs(y - ty); return (dx + dy) - 0.586 * Math.min(dx, dy); };
   let guard = 0;
-  while (open.length && guard++ < 9000) {
+  const guardLimit = MAP.W * MAP.H * 6;
+  while (open.length && guard++ < guardLimit) {
     let bi = 0; for (let i = 1; i < open.length; i++) if (open[i].f < open[bi].f) bi = i;
     const cur = open.splice(bi, 1)[0];
     if (cur.x === tx && cur.y === ty) {
@@ -35,8 +37,13 @@ export function findPath(sx: number, sy: number, tx: number, ty: number, allowGo
       const nx = cur.x + dx, ny = cur.y + dy;
       if (!inBounds(nx, ny)) continue;
       const goal = nx === tx && ny === ty;
+      if (isWaterTile(nx, ny)) continue;
       if (G.solid[ny][nx] && !(goal && allowGoalSolid)) continue;
-      if (dx && dy && !cornerCut) { if (G.solid[cur.y][nx] || G.solid[ny][cur.x]) continue; } // без срезания углов
+      if (dx && dy) {
+        // Воду нельзя «срезать» по диагонали даже юнитам игрока: через реку ведут только мосты.
+        if (isWaterTile(nx, cur.y) || isWaterTile(cur.x, ny)) continue;
+        if (!cornerCut && (G.solid[cur.y][nx] || G.solid[ny][cur.x])) continue; // без срезания углов
+      }
       const ng = cur.g + (dx && dy ? 1.41 : 1);
       const nk = key(nx, ny);
       if (ng < (gsc.get(nk) ?? 1e9)) {
@@ -62,7 +69,7 @@ export function pathToNear(sx: number, sy: number, target: Building | ResourceNo
   }
   ring.sort((a, b) => (Math.abs(a[0] - sx) + Math.abs(a[1] - sy)) - (Math.abs(b[0] - sx) + Math.abs(b[1] - sy)));
   for (const [x, y] of ring) {
-    if (!inBounds(x, y) || G.solid[y][x]) continue;
+    if (!inBounds(x, y) || !isWalkableCandidate(x, y)) continue;
     const p = findPath(sx, sy, x, y, false, cornerCut);
     if (p) return p;
   }
@@ -74,7 +81,11 @@ export function pathToNearTile(sx: number, sy: number, tx: number, ty: number, c
   const cands: [number, number][] = [[tx, ty], ...DIRS.map(([dx, dy]) => [tx + dx, ty + dy] as [number, number])];
   cands.sort((a, b) => (Math.abs(a[0] - tx) + Math.abs(a[1] - ty)) - (Math.abs(b[0] - tx) + Math.abs(b[1] - ty)));
   for (const [x, y] of cands) {
-    if (inBounds(x, y) && !G.solid[y][x]) { const p = findPath(sx, sy, x, y, false, cornerCut); if (p) return p; }
+    if (inBounds(x, y) && isWalkableCandidate(x, y)) { const p = findPath(sx, sy, x, y, false, cornerCut); if (p) return p; }
   }
   return null;
+}
+
+function isWalkableCandidate(x: number, y: number): boolean {
+  return !isWaterTile(x, y) && !G.solid[y][x];
 }

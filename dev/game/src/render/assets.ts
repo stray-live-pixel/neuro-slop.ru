@@ -32,7 +32,11 @@ function measureBottomPad(tex: Texture): number {
 
 const ASSET_LIST = ['townhall', 'house', 'granary', 'field', 'lumbermill', 'mine', 'barracks', 'blacksmith', 'tower', 'wall-post',
   'tree', 'tree-oak', 'tree-pine', 'tree-autumn', 'rocks', 'gold', 'berries', 'peasant', 'militia', 'druzhina', 'archer', 'mongol', 'mongol-rider',
-  'bush', 'flowers', 'log', 'haystack', 'stump'];
+  'bush', 'flowers', 'log', 'haystack', 'stump',
+  'bridge-1', 'bridge-2', 'bridge-3',
+  'water-reeds-1', 'water-reeds-2', 'water-reeds-3',
+  'water-lilies-1', 'water-lilies-2', 'water-lilies-3',
+  'shore-stones-1', 'shore-stones-2', 'shore-stones-3', 'shore-stones-4'];
 
 // бейджи действий над юнитом — иконки lucide как текстуры
 const BADGE_LIST = ['axe', 'pickaxe', 'food', 'hammer', 'swords', 'idle'];

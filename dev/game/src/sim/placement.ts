@@ -1,6 +1,6 @@
 // Режим строительства: размещение призрака здания и постановка на землю.
 import { G, keys } from '../core/state';
-import { inBounds } from '../core/iso';
+import { isBuildableTile } from '../core/grid';
 import { BUILDINGS } from '../data/buildings';
 import { canAfford, pay } from './economy';
 import { placeBuilding } from './entities';
@@ -14,7 +14,7 @@ export function startPlacement(key: string) { G.place = { key }; }
 
 export function canPlace(ox: number, oy: number, s: number): boolean {
   for (let y = oy; y < oy + s; y++) for (let x = ox; x < ox + s; x++) {
-    if (!inBounds(x, y) || G.solid[y][x]) return false;
+    if (!isBuildableTile(x, y)) return false;
   }
   return true;
 }

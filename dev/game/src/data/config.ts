@@ -1,7 +1,7 @@
 // Базовые константы мира и рендера.
 import type { ResKey } from '../core/types';
 
-export const MAP = { W: 46, H: 46 };          // размер карты в тайлах
+export const MAP = { W: 92, H: 92 };          // размер карты в тайлах
 export const TILE = { w: 96, h: 48 };          // изометрический тайл (2:1)
 export const BUILDING_ASSET_SCALE = 0.8;       // визуальный масштаб зданий на карте
 export const RESOURCE_ORE_ASSET_SCALE = 0.65;  // визуальный масштаб камня и золота

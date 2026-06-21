@@ -2,7 +2,7 @@
 // а без него (враги) диагональ между двумя занятыми углами по-прежнему закрыта.
 import { describe, it, expect, beforeEach } from 'vitest';
 import { G } from '../core/state';
-import { makeGrid } from '../core/grid';
+import { makeGrid, TERRAIN } from '../core/grid';
 import { findPath } from './pathfind';
 
 beforeEach(() => {
@@ -10,6 +10,8 @@ beforeEach(() => {
 });
 
 const solid = (x: number, y: number) => { G.solid[y][x] = 1; };
+const water = (x: number, y: number) => { G.terrain[y][x] = TERRAIN.WATER; };
+const bridge = (x: number, y: number) => { G.terrain[y][x] = TERRAIN.BRIDGE; };
 
 describe('findPath: cornerCut пускает между зданиями', () => {
   it('по умолчанию диагональ между двумя углами закрыта — путь в обход', () => {
@@ -49,5 +51,21 @@ describe('findPath: без cornerCut здания запирают юнита', 
     expect(p).not.toBeNull();
     expect(p!.length).toBeGreaterThan(0);
     expect(p![p!.length - 1]).toEqual({ x: 8, y: 8 });
+  });
+});
+
+describe('findPath: вода и мосты', () => {
+  it('вода блокирует путь даже для юнитов игрока с cornerCut', () => {
+    for (let y = 0; y < G.terrain.length; y++) water(4, y);
+    expect(findPath(2, 5, 7, 5, false, true)).toBeNull();
+  });
+
+  it('мост через водную полосу открывает маршрут', () => {
+    for (let y = 0; y < G.terrain.length; y++) water(4, y);
+    bridge(4, 5);
+    const p = findPath(2, 5, 7, 5, false, true);
+    expect(p).not.toBeNull();
+    expect(p).toContainEqual({ x: 4, y: 5 });
+    expect(p![p!.length - 1]).toEqual({ x: 7, y: 5 });
   });
 });

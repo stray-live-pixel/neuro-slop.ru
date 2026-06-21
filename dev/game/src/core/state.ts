@@ -14,7 +14,7 @@ function createState(): GameState {
     selection: [],
     hover: null,
     cam: { x: 0, y: 0, zoom: 1 },
-    solid: [], tileObj: [],
+    solid: [], tileObj: [], terrain: [],
     groups: {},
     wave: { index: 0, state: 'prep', timer: 270, alive: 0, announced: false, side: rndInt(4) },
     time: 0, paused: false, speed: 1, over: null,

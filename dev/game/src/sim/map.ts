@@ -1,19 +1,143 @@
-// Генерация стартовой карты: ратуша, крестьяне, ресурсы.
+// Генерация стартовой карты: процедурный ландшафт, ратуша, крестьяне, ресурсы.
 import { G } from '../core/state';
 import { g2s, inBounds } from '../core/iso';
+import { TERRAIN } from '../core/grid';
 import { MAP } from '../data/config';
 import { makeGrid } from '../core/grid';
 import { rng, pick } from '../core/rng';
 import { placeBuilding, spawnUnit, addNode, recalcPop } from './entities';
 import { gatherOrder, nearestNode } from './commands';
 
+const BRIDGE_DECOR = ['bridge-1', 'bridge-2', 'bridge-3'];
+const WATER_REEDS = ['water-reeds-1', 'water-reeds-2', 'water-reeds-3'];
+const WATER_LILIES = ['water-lilies-1', 'water-lilies-2', 'water-lilies-3'];
+const SHORE_STONES = ['shore-stones-1', 'shore-stones-2', 'shore-stones-3', 'shore-stones-4'];
+const LAND_DECOR = ['bush', 'bush', 'bush', 'flowers', 'flowers', 'flowers', 'flowers', 'stump', 'log', 'haystack'];
+
+function riverCx(y: number): number {
+  return Math.round(MAP.W * 0.31 + Math.sin(y * 0.18) * 4.2 + Math.sin(y * 0.065 + 1.7) * 3.1);
+}
+
+function riverR(y: number): number {
+  return 2 + (Math.sin(y * 0.31 + 0.4) > 0.45 ? 1 : 0);
+}
+
+function setTerrain(x: number, y: number, t: number) {
+  if (inBounds(x, y)) G.terrain[y][x] = t;
+}
+
+function landFree(x: number, y: number): boolean {
+  return inBounds(x, y) && G.terrain[y][x] === TERRAIN.LAND && !G.solid[y][x];
+}
+
+function nearStart(x: number, y: number, mx: number, my: number, r: number): boolean {
+  return Math.hypot(x - mx, y - my) <= r;
+}
+
+function addBridge(cx: number, cy: number, halfLen: number) {
+  const x0 = Math.max(1, Math.round(cx - halfLen));
+  const x1 = Math.min(MAP.W - 2, Math.round(cx + halfLen));
+  const y0 = Math.max(1, Math.round(cy - 1));
+  const y1 = Math.min(MAP.H - 2, Math.round(cy + 1));
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) setTerrain(x, y, TERRAIN.BRIDGE);
+  G.decor.push({ img: pick(BRIDGE_DECOR), gx: cx, gy: cy + 0.1 });
+}
+
+function carvePond(cx: number, cy: number, rx: number, ry: number, mx: number, my: number) {
+  for (let y = Math.floor(cy - ry - 2); y <= Math.ceil(cy + ry + 2); y++) for (let x = Math.floor(cx - rx - 2); x <= Math.ceil(cx + rx + 2); x++) {
+    if (!inBounds(x, y) || nearStart(x, y, mx, my, 12)) continue;
+    const nx = (x - cx) / rx, ny = (y - cy) / ry;
+    const wobble = (rng() - 0.5) * 0.22;
+    if (nx * nx + ny * ny + wobble < 1) setTerrain(x, y, TERRAIN.WATER);
+  }
+  addBridge(cx, cy, rx + 1);
+}
+
+function generateTerrain(mx: number, my: number) {
+  // Главная река идёт с севера на юг и делит карту; переходы только по мостам.
+  for (let y = 2; y < MAP.H - 2; y++) {
+    const cx = riverCx(y), r = riverR(y);
+    for (let x = cx - r; x <= cx + r; x++) if (!nearStart(x, y, mx, my, 10)) setTerrain(x, y, TERRAIN.WATER);
+  }
+  [15, 34, 53, 73].forEach(y => addBridge(riverCx(y), y, riverR(y) + 3));
+
+  // Несколько прудов каждый сид получают чуть иную форму и мостик.
+  const ponds = [
+    { cx: MAP.W * 0.67 + (rng() - 0.5) * 7, cy: MAP.H * 0.22 + (rng() - 0.5) * 5, rx: 5 + rng() * 2.5, ry: 3.5 + rng() * 1.8 },
+    { cx: MAP.W * 0.78 + (rng() - 0.5) * 6, cy: MAP.H * 0.68 + (rng() - 0.5) * 7, rx: 6 + rng() * 2.5, ry: 4 + rng() * 2 },
+    { cx: MAP.W * 0.17 + (rng() - 0.5) * 5, cy: MAP.H * 0.78 + (rng() - 0.5) * 6, rx: 4.8 + rng() * 2, ry: 3.8 + rng() * 1.6 },
+  ];
+  ponds.forEach(p => carvePond(p.cx, p.cy, p.rx, p.ry, mx, my));
+
+  // Гарантированная сухая стартовая зона под ратушу и первых крестьян.
+  for (let y = my - 8; y <= my + 8; y++) for (let x = mx - 8; x <= mx + 8; x++) {
+    if (inBounds(x, y) && Math.hypot(x - mx, y - my) <= 8) setTerrain(x, y, TERRAIN.LAND);
+  }
+}
+
 function blob(cx: number, cy: number, kind: string, count: number, spread: number) {
   let placed = 0, tries = 0;
-  while (placed < count && tries < count * 12) {
+  while (placed < count && tries < count * 22) {
     tries++;
     const x = Math.round(cx + (rng() - 0.5) * spread);
     const y = Math.round(cy + (rng() - 0.5) * spread);
-    if (inBounds(x, y) && !G.solid[y][x]) { addNode(kind, x, y); placed++; }
+    if (landFree(x, y)) { addNode(kind, x, y); placed++; }
+  }
+}
+
+function scatterResourceClusters(mx: number, my: number) {
+  // Ближние ресурсы — читаемые стартовые точки вокруг базы.
+  blob(mx - 7, my - 6, 'forest', 32, 8);
+  blob(mx + 9, my - 7, 'forest', 28, 7);
+  blob(mx + 10, my + 7, 'forest', 26, 7);
+  blob(mx - 8, my + 7, 'rocks', 13, 5);
+  blob(mx + 8, my + 9, 'rocks', 12, 5);
+  blob(mx - 9, my + 1, 'goldore', 9, 4);
+  blob(mx + 10, my - 1, 'goldore', 9, 4);
+  blob(mx - 3, my - 7, 'berries', 10, 4);
+  blob(mx + 5, my + 6, 'berries', 10, 4);
+
+  // Дальние процедурные кластеры дают смысл большой карте и мостам.
+  for (let i = 0; i < 22; i++) {
+    const x = 5 + rng() * (MAP.W - 10);
+    const y = 5 + rng() * (MAP.H - 10);
+    if (nearStart(x, y, mx, my, 15)) continue;
+    const roll = rng();
+    if (roll < 0.48) blob(x, y, 'forest', 18 + ((rng() * 12) | 0), 7 + rng() * 4);
+    else if (roll < 0.68) blob(x, y, 'rocks', 7 + ((rng() * 7) | 0), 4 + rng() * 3);
+    else if (roll < 0.84) blob(x, y, 'goldore', 6 + ((rng() * 6) | 0), 3 + rng() * 3);
+    else blob(x, y, 'berries', 7 + ((rng() * 6) | 0), 3 + rng() * 3);
+  }
+}
+
+function hasNeighborTerrain(x: number, y: number, t: number): boolean {
+  for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) {
+    if (!ox && !oy) continue;
+    const nx = x + ox, ny = y + oy;
+    if (inBounds(nx, ny) && G.terrain[ny][nx] === t) return true;
+  }
+  return false;
+}
+
+function scatterDecor(mx: number, my: number) {
+  for (let i = 0; i < 340; i++) {
+    const x = 1 + ((rng() * (MAP.W - 2)) | 0), y = 1 + ((rng() * (MAP.H - 2)) | 0);
+    if (!landFree(x, y)) continue;
+    if (nearStart(x, y, mx, my, 4)) continue;
+    G.decor.push({ img: pick(LAND_DECOR), gx: x + (rng() - 0.5) * 0.5, gy: y + (rng() - 0.5) * 0.5 });
+  }
+
+  for (let y = 1; y < MAP.H - 1; y++) for (let x = 1; x < MAP.W - 1; x++) {
+    const t = G.terrain[y][x];
+    if (t === TERRAIN.WATER && rng() < 0.035) {
+      G.decor.push({ img: pick(WATER_LILIES), gx: x + (rng() - 0.5) * 0.38, gy: y + (rng() - 0.5) * 0.38 });
+    } else if (t === TERRAIN.LAND && !G.solid[y][x] && hasNeighborTerrain(x, y, TERRAIN.WATER) && rng() < 0.2) {
+      G.decor.push({
+        img: rng() < 0.62 ? pick(WATER_REEDS) : pick(SHORE_STONES),
+        gx: x + (rng() - 0.5) * 0.55,
+        gy: y + (rng() - 0.5) * 0.55,
+      });
+    }
   }
 }
 
@@ -26,30 +150,13 @@ export function centerOn(gx: number, gy: number) {
 export function genMap() {
   makeGrid();
   const mx = (MAP.W / 2) | 0, my = (MAP.H / 2) | 0;
+  generateTerrain(mx, my);
   placeBuilding('townhall', mx - 1, my - 1, true);
   const starters = [];
   for (let i = 0; i < 5; i++) starters.push(spawnUnit('peasant', mx + (i - 2), my + 2, 'player'));
-  blob(mx - 7, my - 6, 'forest', 26, 7);
-  blob(mx + 8, my - 7, 'forest', 22, 6);
-  blob(mx + 9, my + 6, 'forest', 20, 6);
-  blob(mx - 8, my + 7, 'rocks', 12, 4);
-  blob(mx + 7, my + 8, 'rocks', 10, 4);
-  blob(mx - 9, my + 1, 'goldore', 8, 3);
-  blob(mx + 9, my - 1, 'goldore', 8, 3);
-  blob(mx - 3, my - 6, 'berries', 9, 3);
-  blob(mx + 4, my + 6, 'berries', 9, 3);
-  blob(4, 4, 'forest', 16, 5); blob(MAP.W - 5, MAP.H - 5, 'forest', 16, 5);
-  blob(MAP.W - 6, 6, 'rocks', 10, 4); blob(6, MAP.H - 6, 'goldore', 8, 3);
+  scatterResourceClusters(mx, my);
   recalcPop();
-  // декор для оживления карты — кусты, цветы, брёвна, стога, пни (не блокируют)
-  const DECOR = ['bush', 'bush', 'bush', 'flowers', 'flowers', 'flowers', 'flowers', 'stump', 'log', 'haystack'];
-  for (let i = 0; i < 85; i++) {
-    const x = 1 + ((rng() * (MAP.W - 2)) | 0), y = 1 + ((rng() * (MAP.H - 2)) | 0);
-    if (G.solid[y][x]) continue;                                   // не на узлах/зданиях
-    if (Math.abs(x - mx) < 3 && Math.abs(y - my) < 3) continue;    // не впритык к ратуше
-    const img = pick(DECOR);
-    G.decor.push({ img, gx: x + (rng() - 0.5) * 0.5, gy: y + (rng() - 0.5) * 0.5 });
-  }
+  scatterDecor(mx, my);
   // авто-задание стартовым крестьянам: показать, как идёт добыча
   starters.forEach((u, i) => { const kind = i < 3 ? 'forest' : 'berries'; const n = nearestNode(u, kind) || nearestNode(u); if (n) gatherOrder(u, n); });
   centerOn(mx, my);

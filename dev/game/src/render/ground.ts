@@ -2,6 +2,8 @@
 // мягкий направленный свет и редкий декор (трава, цветы, камешки, проплешины).
 // Строится один раз — статичный меш, дёшево рисуется каждый кадр.
 import { iso } from '../core/iso';
+import { G } from '../core/state';
+import { TERRAIN } from '../core/grid';
 import { MAP, TILE } from '../data/config';
 import { R } from './context';
 
@@ -30,6 +32,12 @@ function noise(x: number, y: number): number {
 }
 
 const LUSH = 0xa6c178, DRY = 0xc8c98a;   // палитра луга: сочная зелень ↔ суховатая
+const WATER_DEEP = 0x397f99, WATER_SHALLOW = 0x67adc0;
+
+function landAt(gx: number, gy: number): boolean {
+  const x = Math.floor(gx), y = Math.floor(gy);
+  return x >= 0 && y >= 0 && x < MAP.W && y < MAP.H && (G.terrain[y]?.[x] ?? TERRAIN.LAND) === TERRAIN.LAND;
+}
 
 export function buildGround() {
   const g = R.groundG;
@@ -38,6 +46,23 @@ export function buildGround() {
   const span = MAP.W + MAP.H - 2;
   for (let y = 0; y < MAP.H; y++) for (let x = 0; x < MAP.W; x++) {
     const p = iso(x, y);
+    const terrain = G.terrain[y]?.[x] ?? TERRAIN.LAND;
+    if (terrain === TERRAIN.WATER || terrain === TERRAIN.BRIDGE) {
+      const region = noise(x / 7 + 24, y / 7 + 11);
+      const fine = noise(x / 2.4 + 4, y / 2.4 + 19);
+      let tone = lerpCol(WATER_DEEP, WATER_SHALLOW, region * 0.65 + fine * 0.35);
+      tone = shade(tone, 0.05 - (x + y) / span * 0.08);
+      g.poly([p.x, p.y - TH2, p.x + TW2, p.y, p.x, p.y + TH2, p.x - TW2, p.y], true)
+        .fill(tone).stroke({ width: 1, color: 0x2e6477, alpha: 0.5 });
+      g.moveTo(p.x - TW2 * 0.55, p.y - TH2 * 0.08).lineTo(p.x - TW2 * 0.1, p.y - TH2 * 0.26)
+        .moveTo(p.x + TW2 * 0.08, p.y + TH2 * 0.18).lineTo(p.x + TW2 * 0.5, p.y + TH2 * 0.02)
+        .stroke({ width: 1, color: 0xb8e4e8, alpha: 0.22 });
+      if (terrain === TERRAIN.BRIDGE) {
+        g.poly([p.x, p.y - TH2 * 0.42, p.x + TW2 * 0.72, p.y, p.x, p.y + TH2 * 0.42, p.x - TW2 * 0.72, p.y], true)
+          .fill({ color: 0x8a5f35, alpha: 0.24 }).stroke({ width: 1, color: 0x5f3f24, alpha: 0.25 });
+      }
+      continue;
+    }
     const region = noise(x / 9, y / 9);            // крупные пятна
     const fine = noise(x / 3.2 + 13, y / 3.2 + 7); // средняя вариация
     let tone = lerpCol(LUSH, DRY, region * 0.7 + fine * 0.3);
@@ -57,16 +82,18 @@ export function buildGround() {
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 
   // мягкие земляные проплешины в сухих зонах
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < Math.round(MAP.W * MAP.H * 0.014); i++) {
     const gx = rnd() * MAP.W, gy = rnd() * MAP.H;
+    if (!landAt(gx, gy)) continue;
     if (noise(gx / 9, gy / 9) < 0.55) continue;
     const p = iso(gx, gy), rw = TILE.w * (0.45 + rnd() * 0.7);
     g.ellipse(p.x, p.y, rw, rw * 0.5).fill({ color: 0xb3a878, alpha: 0.13 });
   }
 
   // трава пучками — гуще в «зелёных» зонах
-  for (let i = 0; i < 2400; i++) {
+  for (let i = 0; i < Math.round(MAP.W * MAP.H * 0.9); i++) {
     const gx = rnd() * MAP.W, gy = rnd() * MAP.H;
+    if (!landAt(gx, gy)) continue;
     const lush = 1 - noise(gx / 9, gy / 9);
     if (rnd() > 0.22 + lush * 0.62) continue;
     const p = iso(gx, gy);
@@ -77,8 +104,9 @@ export function buildGround() {
   g.stroke({ width: 1.2, color: 0x82a05f, alpha: 0.5 });
 
   // редкие цветочки в зелёных зонах
-  for (let i = 0; i < 140; i++) {
+  for (let i = 0; i < Math.round(MAP.W * MAP.H * 0.065); i++) {
     const gx = rnd() * MAP.W, gy = rnd() * MAP.H;
+    if (!landAt(gx, gy)) continue;
     if (noise(gx / 9, gy / 9) > 0.5) continue;
     const p = iso(gx, gy);
     const col = rnd() < 0.5 ? 0xf4f0d8 : (rnd() < 0.5 ? 0xf2d65a : 0xe9e2f1);
@@ -86,8 +114,9 @@ export function buildGround() {
   }
 
   // камешки в сухих зонах
-  for (let i = 0; i < 110; i++) {
+  for (let i = 0; i < Math.round(MAP.W * MAP.H * 0.05); i++) {
     const gx = rnd() * MAP.W, gy = rnd() * MAP.H;
+    if (!landAt(gx, gy)) continue;
     if (noise(gx / 9, gy / 9) < 0.55) continue;
     const p = iso(gx, gy);
     g.ellipse(p.x, p.y, 2.2, 1.3).fill({ color: 0x9a9486, alpha: 0.5 });

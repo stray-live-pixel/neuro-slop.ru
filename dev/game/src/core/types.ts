@@ -5,6 +5,7 @@ export type ResKey = 'food' | 'wood' | 'stone' | 'gold';
 export type Side = 'player' | 'enemy';
 export type EntityKind = 'unit' | 'building' | 'node';
 export type Cost = Partial<Record<ResKey, number>>;
+export type TerrainCode = 0 | 1 | 2; // 0 land, 1 water, 2 bridge
 
 /* ----------------------------- декларативные определения ------------------ */
 export interface NodeDef {
@@ -221,6 +222,7 @@ export interface GameState {
   cam: { x: number; y: number; zoom: number };
   solid: Uint8Array[];
   tileObj: (Entity | null)[][];
+  terrain: Uint8Array[];              // 0 land, 1 water, 2 bridge
   groups: Record<number, number[]>;   // контрол-группы: цифра → id юнитов
   wave: { index: number; state: 'prep' | 'active'; timer: number; alive: number; announced: boolean; side: number };
   time: number;
