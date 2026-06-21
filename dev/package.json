@@ -17,6 +17,7 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "@data-slot/dialog": "^0.2.166",
+    "@fontsource/ruslan-display": "^5.2.7",
     "@lexingtonthemes/seo": "^0.3.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@tailwindcss/vite": "^4.3.1",

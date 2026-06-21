@@ -2,7 +2,7 @@
 import './style.css';
 import { G, mouse } from './core/state';
 import { seedRng } from './core/rng';
-import { MAP } from './data/config';
+import { BASE, MAP } from './data/config';
 import { TECHS } from './data/techs';
 import { update } from './sim/update';
 import { genMap, centerOn } from './sim/map';
@@ -28,6 +28,8 @@ import { initSettings } from './ui/settings';
 import { earlyCall } from './sim/waves';
 import { perfSample, togglePerf } from './perf/metrics';
 import { settings } from './core/settings';
+
+document.documentElement.style.setProperty('--start-cover', `url("${BASE}cover.jpg")`);
 
 /* ------------------------------ главный цикл ------------------------------ */
 let last = 0, acc = 0, lastFrame = 0;
