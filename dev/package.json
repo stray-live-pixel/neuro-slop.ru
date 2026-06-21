@@ -5,19 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "game:dev": "vite --config game/vite.config.ts",
-    "game:build": "vite build --config game/vite.config.ts",
-    "game:check": "tsc --noEmit -p game/tsconfig.json",
-    "game:test": "vitest run --config game/vitest.config.ts",
-    "game:test:watch": "vitest --config game/vitest.config.ts",
-    "build": "npm run game:build && astro build && npm run sync",
+    "build": "astro build && npm run sync",
     "sync": "rm -rf ../_astro && cp -R dist/. ..",
     "preview": "astro preview"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "@data-slot/dialog": "^0.2.166",
-    "@fontsource/ruslan-display": "^5.2.7",
     "@lexingtonthemes/seo": "^0.3.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@tailwindcss/vite": "^4.3.1",
@@ -28,13 +22,8 @@
     "dompurify": "^3.2.4",
     "lucide-static": "^1.18.0",
     "marked": "^15.0.6",
-    "pixi.js": "^8.19.0",
     "simple-icons": "^16.23.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.1"
-  },
-  "devDependencies": {
-    "jsdom": "^29.1.1",
-    "vitest": "^4.1.9"
   }
 }

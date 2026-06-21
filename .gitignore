@@ -1,7 +1,5 @@
 # dependencies
 dev/node_modules/
-# vitest/vite cache для игры (root тестов = dev/game)
-dev/game/node_modules/
 
 # build staging (итог копируется в корень)
 dev/dist/
