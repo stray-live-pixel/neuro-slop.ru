@@ -1,0 +1,1 @@
+window.OrbitStoryArt={"image":"assets/story-v5/greenhouse.png","width":1774,"height":887,"transparentFraction":0.4457356606577026,"frames":{"dark":{"sourceRect":[13,203,860,520],"anchor":[430,520],"drawSize":[220,133.02325581395348]},"restored":{"sourceRect":[901,141,861,582],"anchor":[430.5,582],"drawSize":[220,148.71080139372822]}}};
